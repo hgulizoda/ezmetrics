@@ -8,7 +8,6 @@ import FormHelperText from '@mui/material/FormHelperText';
 import Iconify from '../iconify';
 import type { UploadProps } from './types';
 import { UploadPlaceholder } from './components/placeholder';
-import { RejectionFiles } from './components/rejection-files';
 import { MultiFilePreview } from './components/preview-multi-file';
 import { DeleteButton, SingleFilePreview } from './components/preview-single-file';
 
@@ -108,7 +107,7 @@ export function Upload({
         </FormHelperText>
       )}
 
-      <RejectionFiles files={fileRejections} />
+      {/* <RejectionFiles files={fileRejections} /> */}
 
       {/* Multi files */}
       {renderMultiPreview}

@@ -27,6 +27,7 @@ export const useGetAllBonuses = (params: IFilters) => {
     queryFn: () => bonusesAPI.getAll(params),
     // eslint-disable-next-line @typescript-eslint/no-shadow
     select: (data: IApiResponse<IBonusesList[]>) => ({
+      // @ts-expect-error asd
       bonuses: getBonusesAdapter(get(data, 'data', [])),
       pagination: get(data, 'data.pagination', {
         total_records: 5,

@@ -12,7 +12,6 @@ import { useTranslate } from 'src/locales';
 import Iconify from '../iconify';
 import { UploadProps } from './types';
 import MultiFilePreview from './preview-multi-file';
-import RejectionFiles from './errors-rejection-files';
 import SingleFilePreview from './preview-single-file';
 
 // ----------------------------------------------------------------------
@@ -147,13 +146,10 @@ export default function Upload({
 
         {hasFile ? renderSinglePreview : renderPlaceholder}
       </Box>
-
       {removeSinglePreview}
-
       {helperText && helperText}
 
-      <RejectionFiles fileRejections={fileRejections} />
-
+      {/* <RejectionFiles fileRejections={fileRejections} /> */}
       {renderMultiPreview}
     </Box>
   );

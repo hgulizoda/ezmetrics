@@ -1,0 +1,460 @@
+{
+  "title": "Главная",
+  "actions": {
+    "save": "Сохранить",
+    "cancel": "Отменить",
+    "archive": "Архивировать",
+    "edit": "Редактировать",
+    "delete": "Удалить",
+    "send": "Отправить",
+    "clear": "Очистить",
+    "search": "Поиск",
+    "yes": "Да",
+    "not": "Нет",
+    "clearAll": "Удалить все"
+  },
+  "bonus": {
+    "title": "Бонусы",
+    "table": {
+      "ball": "Балл",
+      "status": "Статус",
+      "capacity": "Вместимость",
+      "weight": "Вес"
+    },
+    "enum": {
+      "used": "Использован",
+      "not_used": "Не использован"
+    }
+  },
+  "users": {
+    "title": "Пользователи",
+    "formTitle": "Создать пользователя",
+    "firstName": "Имя",
+    "lastName": "Фамилия",
+    "dob": "Дата рождения",
+    "phone": "Номер телефона",
+    "company": "Название компании",
+    "table": {
+      "fullName": "Ф.И.О пользователя",
+      "clientID": "ID пользователя",
+      "phone": "Номер телефона",
+      "company": "Название компании",
+      "orders": "Отправки",
+      "status": "Статус",
+      "verifed": "Подтверждён",
+      "notVerifed": "Не подтверждён"
+    },
+    "actions": {
+      "giveVerification": "Подтвердить",
+      "takeVerification": "Отменить"
+    },
+    "confirm": {
+      "title": "Архивировать пользователя",
+      "extra": "Вы уверены, что хотите архивировать пользователя?",
+      "update": "Обновить",
+      "titleSecond": "Пользователя(ей)",
+      "actions": {
+        "verify": "подтвердить",
+        "unverify": "отменить подтверждение"
+      },
+      "firstContentVerify": "Подтвердить всех пользователей",
+      "secondContentVerify": "Подтвердить регистрацию пользователя(ей) на платформе NEXUS",
+      "firstContentUnVerify": "Отменить подтверждение всех пользователей",
+      "secondContentUnVerify": "Отменить подтверждение регистрации пользователя(ей) на платформе NEXUS"
+    }
+  },
+  "packages": {
+    "title": "Отправки",
+    "trucks": "Отправки",
+    "count": "Количество грузов",
+    "extraPackages": "Оставшиеся отправления",
+    "status": {
+      "all": "Все",
+      "chinaWarehouse": "Склад",
+      "chinaBorder": "Отправлен",
+      "transit": "Транзит",
+      "uzbCustoms": "Таможня",
+      "normalize": "Оформление",
+      "delivered": "Доставлен"
+    },
+    "tableTitle": {
+      "fullName": "Ф.И.О",
+      "clientID": "ID пользователя",
+      "packageID": "ID отправления",
+      "packageNumber": "Упаковки",
+      "stockNumber": "Количество",
+      "capacity": "Объем (м³)",
+      "weight": "Вес (кг)",
+      "truck": "№ отправки",
+      "sendedDate": "Дата отправки",
+      "updatedDate": "Дата обновления",
+      "status": "Статус",
+      "truckID": "№ отправки",
+      "totalPackagesNumber": "Общее количество отправлений",
+      "totalWeight": "Общий вес",
+      "totalCapacity": "Общий объем",
+      "truckPackges": "Товары отправки",
+      "description": "Наименование товара",
+      "trucks": "Отправки",
+      "partOrder": "Оставленные грузы",
+      "partAllOrder": "Все товары"
+    },
+    "createPackageForm": {
+      "title": "Добавить новый товар",
+      "userID": "ID пользователя",
+      "titleSecond": "Редактировать груз",
+      "packageNumber": "Количество упаковок",
+      "stockNumber": "Общее количество товаров",
+      "capacity": "Объем груза",
+      "weight": "Вес груза",
+      "description": "Введите наименование товара",
+      "short": "Введите примечание",
+      "imageUpload": "Выберите файл",
+      "imageUploadDescription": "Перетащите файлы сюда или выберите с устройства"
+    },
+    "actions": {
+      "chinaBorder": "На китайскую границу",
+      "partial": "Разделить груз",
+      "truck": "Выберите № отправки",
+      "truckLabel": "Выберите № отправки",
+      "client": "Вид транспорта",
+      "trnasit": "Отправить в транзит",
+      "takePackage": "Выгрузить груз из отправки",
+      "takePackageDescription": "Полностью выгрузить груз из отправки",
+      "takePackageAction": "Извлечь",
+      "selectTransit": "Выберите транзитную зону",
+      "sendTransit": "Перевести отправку на этап 'Транзит'",
+      "sendUZBCustoms": "Перевести отправку на этап 'Таможня <0/>'",
+      "addTruck": "Добавить в грузовик",
+      "back": "Вернуть назад",
+      "send": "Отправить",
+      "sendUZBCustomsDescription": "Перевести отправку на этап 'Таможня <0/>'",
+      "sendUZB": "Таможня <0/>",
+      "sendNormalize": "Оформление",
+      "sendNormalizeDescription": "Перевести отправку на этап 'Оформление'",
+      "sendDelivered": "Доставлен",
+      "sendDeliveredDescription": "Перевести отправку на этап 'Доставлен'",
+      "archivePackage": "Архивировать груз",
+      "alert": "При разделении заказа данные должны быть меньше исходных значений.",
+      "backChinaWarehouseTitle": "Вернуть товар",
+      "backChinaWarehouseContent": "Вернуть товар на этап 'Склад <0/>'",
+      "backChinaBorderContent": "Вернуть товар на этап 'Отправлен'",
+      "backTransitZone": "Вернуть товар на этап 'Транзит'",
+      "sendDeliveredWithoutNormalize": "Перевести товар на этап 'Доставлен'",
+      "backToUzb": "Вернуть товар на этап 'Таможня <0/>'",
+      "archiveTruckAllPackages": "Aрхивировать отправку со всеми его товарами",
+      "backToNormalize": "Вернуть товар на этап 'Оформление'",
+      "totalPackagesWeight": "Общий вес груза",
+      "totalPackagesCapacity": "Итого",
+      "dataNotFound": "Данные не найдены",
+      "noResultsFound": "Результаты не найдены",
+      "errorOccurred": "Произошла ошибка!",
+      "pleaseTryAgain": "Пожалуйста, попробуйте снова.",
+      "noDataForRequest": "Данные по запросу отсутствуют.",
+      "backTruckToPrevTitle": "Отменить отправку",
+      "backTruckToPrevContent": "Вы действительно хотите отменить эту отправку?"
+    },
+    "delivered": {
+      "title": "Доставка",
+      "content": "Доставка без оформления отправлений"
+    }
+  },
+  "transport": {
+    "title": "Транспорт",
+    "truck": "Грузовики",
+    "truckName": "Тип отправки",
+    "truckStatus": "Статус",
+    "createdTime": "Дата создания отправки",
+    "estimatedArrivalTime": "Предполагаемая дата доставки",
+    "form": {
+      "title": "Добавить новую отправку",
+      "titleUpdate": "Редактирование отправки",
+      "truckNumber": "№ отправки",
+      "truckType": "Тип отправки",
+      "containerNumber": "№ Контейнера",
+      "containerType": "Тип транспорта",
+      "truckCreatedDate": "Дата создания отправки",
+      "truckEstimatedDate": "Предполагаемая дата доставки"
+    },
+    "actions": {
+      "deleteTruck": "Удалить отправку",
+      "confirmDeletion": "Вы хотите удалить отправку?",
+      "archiveTruck": "Архивировать отправку",
+      "confirmArchive": "Вы хотите архивировать отправку?",
+      "doubleArchive": "Архивировать отправки",
+      "doubleDelete": "Удалить отправки"
+    }
+  },
+  "banner": {
+    "title": "Баннер",
+    "extraTitle": "Изображения баннера",
+    "imageTitle": "Отсортированные изображения баннера",
+    "imageUZ": "Изображения баннера (УЗ)",
+    "imageRU": "Изображения баннера (РУ)"
+  },
+  "archive": {
+    "title": "Архив",
+    "takeArchive": "Вернуть",
+    "actions": {
+      "userDelete": "Удалить пользователя",
+      "userUnArchive": "Восстановить пользователя из архива",
+      "multiArchive": "Восстановить пользователей из архива",
+      "multiDelete": "Удалить пользователей из архива",
+      "packageDelete": "Удалить отправление",
+      "truckDelete": "Вы уверены, что хотите удалить архивированную отправку?",
+      "truckUnArchive": "Вы уверены, восстановить отправку из архива ?",
+      "orderDelete": "Удалить груз"
+    }
+  },
+  "prices": {
+    "title": "Цены",
+    "auto": "Транспорт",
+    "air": "Авиаперевозки",
+    "table": {
+      "title": "Виды транспорта",
+      "name": "Название",
+      "createdDate": "Дата создания",
+      "updatedDate": "Дата обновления"
+    },
+    "formTable": {
+      "auto": {
+        "title": "Информация и цены на транспорт",
+        "nameUZ": "Название (UZ)",
+        "nameRU": "Название (RU)",
+        "nameEN": "Название (EN)",
+        "nameCN": "Название (CN)",
+        "descriptionUZ": "Описание (UZ)",
+        "descriptionRU": "Описание (RU)",
+        "descriptionEN": "Описание (EN)",
+        "descriptionCN": "Описание (CN)",
+        "weight": "Вес",
+        "unit": "Единица измерения",
+        "price": "Цена ($)",
+        "isDangeroud": "Цена для опасных грузов ($)",
+        "isCustoms": "Стоимость оформления ($)",
+        "actions": {
+          "add": "Добавить",
+          "save": "Сохранить",
+          "deleteDescription": "Этот тип транспорта будет удален вместе со всеми ценами",
+          "addPrice": "Добавить новую цену",
+          "dangerCargo": "Опасный груз",
+          "customsClearance": "Таможенное оформление"
+        }
+      },
+      "air": {
+        "title": "Стоимость и информация о воздушных грузоперевозках",
+        "createdDate": "Дата создания",
+        "updatedDate": "Дата обновления",
+        "shortDescFirst": "Информация",
+        "shortDescSecond": "Цена",
+        "nameUZ": "Название (UZ)",
+        "nameRU": "Название (RU)",
+        "nameEN": "Название (EN)",
+        "nameCN": "Название (CN)",
+        "descriptionUZ": "Описание (UZ)",
+        "descriptionRU": "Описание (RU)",
+        "descriptionEN": "Описание (EN)",
+        "descriptionCN": "Описание (CN)",
+        "1mkub": "Кг в 1 м³",
+        "1kgprice": "Цена за 1 кг ($)",
+        "normalizePrice": "Стоимость оформления документов ($)"
+      }
+    }
+  },
+  "store": {
+    "title": "Склад",
+    "info": "Информация о складе",
+    "form": {
+      "title": "Добавить новый склад",
+      "titleUpdate": "Редактировать склад",
+      "reciver": "Получатель",
+      "phone": "Номер телефона",
+      "date": "Время приема",
+      "chatID": "WeChat ID",
+      "address": "Адрес",
+      "editSuccess": "Склад успешно отредактирован"
+    },
+    "delete": {
+      "title": "Удалить склад",
+      "content": "Этот склад будет удалён безвозвратно!",
+      "deleteSuccess": "Склад успешно удалён"
+    }
+  },
+  "notification": {
+    "table": {
+      "title": "Уведомления",
+      "send": "Отправить уведомление",
+      "name": "Название",
+      "content": "Текст",
+      "created": "Время отправки",
+      "update": "Время обновления"
+    },
+    "form": {
+      "titleFirst": "Отправка уведомления",
+      "titleSecond": "Редактирование уведомления",
+      "titleUZ": "Название уведомления (UZ)",
+      "titleRU": "Название уведомления (RU)",
+      "contentUZ": "Текст уведомления (UZ)",
+      "contentRU": "Текст уведомления (RU)",
+      "imageUZ": "Изображение уведомления (UZ)",
+      "imageRU": "Изображение уведомления (RU)"
+    },
+    "actions": {
+      "delete": "Удалить"
+    }
+  },
+  "truckOrderDetails": {
+    "title": "ID заказа",
+    "status": "Статус",
+    "statusUpdated": "Дата обновления статуса",
+    "packageCapacity": "Объем заказа",
+    "orderedDate": "Дата заказа",
+    "packageWeight": "Вес заказа",
+    "deliveredDate": "Предполагаемая дата доставки",
+    "totalOrders": "Количество заказов",
+    "totalPlaces": "Количество упаковок заказа",
+    "timeLine": "Этапы доставки"
+  },
+  "profile": {
+    "title": "Личный кабинет пользователя",
+    "tabs": {
+      "profile": "Информация",
+      "orders": "Заказы"
+    },
+    "profileTab": {
+      "title": "Информация о пользователе",
+      "firstName": "Имя",
+      "lastName": "Фамилия",
+      "dob": "Дата рождения",
+      "phone": "Номер телефона",
+      "company": "Название компании",
+      "userID": "ID пользователя",
+      "ordername": "Наименование товара"
+    },
+    "ordersTabs": {
+      "title": "Заказы",
+      "miniTabs": {
+        "all": "Все",
+        "inProgress": "В процессе",
+        "delivered": "Доставлено"
+      },
+      "card": {
+        "title": "ID пользователя",
+        "status": "Статус",
+        "update": "Предполагаемая дата доставки",
+        "created": "Дата заказа",
+        "timeline": "Этап доставки",
+        "orderWeight": "Вес груза",
+        "orderCapacity": "Объем груза",
+        "totalPlaces": "Количество упаковок",
+        "orderCount": "Общее количество товаров",
+        "kg": "кг",
+        "m3": "м³",
+        "counts": "Количество",
+        "places": "Упаковки",
+        "note": "Примечание"
+      }
+    }
+  },
+  "shipmentStatus": {
+    "inchinawarehouse": "Склад",
+    "tochinaborder": "Отправлен",
+    "intransit": "Транзит",
+    "touzbcustoms": "Таможня",
+    "incustoms": "Оформление",
+    "delivered": "Доставлен",
+    "new": "Новый"
+  },
+  "shipmentTooltip": {
+    "pending": "Ожидает прибытия на склад",
+    "inChinaWarehouse": "На складе в Китае",
+    "toChinaBorder": "Отправлен к границе Китая",
+    "inTransit": "Перемещен в транзитную зону (КЗ, КГ)",
+    "toUzbCustoms": "Выехал из транзитной зоны в таможенный склад Узбекистана",
+    "inCustoms": "Прибыл на таможенный склад, начат процесс оформления",
+    "delivered": "Таможенное оформление завершено, груз доставлен"
+  },
+  "timeLineProcess": {
+    "current": "Текущий",
+    "waiting": "Ожидается",
+    "complete": "Завершено"
+  },
+  "month": {
+    "jan": "Январь",
+    "feb": "Февраль",
+    "mar": "Март",
+    "apr": "Апрель",
+    "may": "Май",
+    "jun": "Июнь",
+    "jul": "Июль",
+    "aug": "Август",
+    "sep": "Сентябрь",
+    "oct": "Октябрь",
+    "nov": "Ноябрь",
+    "dec": "Декабрь"
+  },
+  "userStatus": {
+    "verified": "Подтвержден",
+    "notVerified": "Не подтвержден"
+  },
+  "multiStatusActions": {
+    "sendChinaBorder": "Отправлен",
+    "sendTransit": "Транзит",
+    "sendUZB": "Таможня",
+    "sendNormalize": "Оформление",
+    "sendDelivered": "Доставить",
+    "action": "Действия"
+  },
+  "mutate": {
+    "packageDeleted": "Посылка удалена",
+    "userArchived": "Пользователь архивирован",
+    "usersArchived": "Пользователи архивированы",
+
+    "deleted": "Удалено",
+    "userDeleted": "Пользователь удален",
+    "userUnArchived": "Пользователь восстановлен из архива",
+    "notificationSended": "Уведомление отправлено",
+    "notificationDeleted": "Уведомление удалено",
+    "notificationUpdated": "Уведомление обновлено",
+    "packageSendedChinaBorder": "Посылка отправлена на китайскую границу.",
+    "packagesSendedChinaBorder": "Посылки отправлены на китайскую границу.",
+    "packageCreated": "Посылка успешно добавлена",
+    "packageUpdated": "Посылка обновлена",
+    "packageBacked": "Посылка возвращена",
+    "packageArchived": "Посылка архивирована",
+    "packageAdded": "Посылка добавлена в грузовик",
+    "packageDelivered": "Посылка доставлена",
+    "priceUpdated": "Цены обновлены",
+    "priceCreated": "Цены созданы",
+    "truckAdded": "Грузовик успешно добавлен",
+    "infoUpdate": "Информация обновлена",
+    "infoDeleted": "Информация удалена",
+    "infosDeleted": "Информация удалена",
+    "truckArchived": "Грузовик архивирован",
+    "trucksArchived": "Грузовики архивированы",
+    "bannerUploaded": "Изображения баннера успешно загружены!",
+    "bannerUpdated": "Изображения баннера успешно заменены",
+    "bannerDeleted": "Изображения баннера удалены",
+    "storeCreated": "Склад создан",
+    "truckSended": "Грузовик отправлен",
+    "packagePartial": "Заказ частично выполнен",
+    "takeFromTruck": "Заказ забран с грузовика",
+    "userInfoUpdate": "Информация о пользователе обновлена",
+    "userVerify": "Пользователь подтвержден",
+    "usersVerify": "Пользователи подтверждены",
+    "userCreated": "Пользователь создан"
+  },
+  "uploadText": {
+    "upload": "Выберите файл",
+    "desc": "Выберите файл с вашего устройства"
+  },
+  "density": {
+    "compact": "Компактный",
+    "standart": "Стандарт",
+    "comfortable": "Комфортный"
+  },
+  "country": {
+    "kz": "Казахстан",
+    "kg": "Кыргызстан"
+  }
+}

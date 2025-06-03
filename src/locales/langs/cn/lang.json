@@ -1,0 +1,395 @@
+{
+  "title": "主要",
+  "actions": {
+    "save": "保存",
+    "cancel": "取消",
+    "archive": "归档",
+    "edit": "编辑",
+    "delete": "删除",
+    "send": "发送",
+    "clear": "清除",
+    "search": "搜索"
+  },
+  "users": {
+    "title": "用户",
+    "formTitle": "创建用户",
+    "firstName": "名字",
+    "lastName": "姓氏",
+    "dob": "出生日期",
+    "phone": "电话号码",
+    "company": "公司名称",
+    "table": {
+      "fullName": "用户全名",
+      "clientID": "用户ID",
+      "phone": "电话号码",
+      "company": "公司名称",
+      "orders": "订单",
+      "status": "状态",
+      "verifed": "已验证",
+      "notVerifed": "未验证"
+    },
+    "actions": {
+      "giveVerification": "验证",
+      "takeVerification": "取消验证"
+    },
+    "confirm": {
+      "title": "存档用户",
+      "extra": "您是否确认存档此用户？",
+      "update": "更新",
+      "titleSecond": "用户",
+      "actions": {
+        "verify": "验证",
+        "unverify": "取消验证"
+      },
+      "firstContentVerify": "验证所有用户",
+      "secondContentVerify": "确认用户已在NEXUS平台注册",
+      "firstContentUnVerify": "取消所有用户的验证",
+      "secondContentUnVerify": "确认用户未在NEXUS平台注册"
+    }
+  },
+  "packages": {
+    "title": "包裹",
+    "trucks": "卡车",
+    "extraPackages": "剩余包裹",
+    "status": {
+      "all": "所有",
+      "chinaWarehouse": "中国仓库",
+      "chinaBorder": "中国边境",
+      "transit": "过境区",
+      "uzbCustoms": "乌兹别克海关仓库",
+      "normalize": "手续办理中",
+      "delivered": "已交付"
+    },
+    "tableTitle": {
+      "fullName": "全名",
+      "clientID": "用户ID",
+      "packageID": "包裹ID",
+      "packageNumber": "包裹数量",
+      "stockNumber": "数量",
+      "capacity": "容量",
+      "weight": "重量",
+      "truck": "卡车",
+      "sendedDate": "发送日期",
+      "updatedDate": "更新时间",
+      "status": "状态",
+      "truckID": "卡车ID",
+      "totalPackagesNumber": "包裹总数",
+      "totalWeight": "总重量",
+      "totalCapacity": "总容量",
+      "truckPackges": "卡车包裹",
+      "description": "描述",
+      "trucks": "卡车",
+      "partOrder": "剩余包裹"
+    },
+    "createPackageForm": {
+      "title": "创建新货物",
+      "userID": "用户ID",
+      "titleSecond": "编辑货物",
+      "packageNumber": "包裹数量",
+      "stockNumber": "商品总数",
+      "capacity": "货物容量",
+      "weight": "货物重量",
+      "description": "货物描述",
+      "short": "简短描述",
+      "imageUpload": "选择文件",
+      "imageUploadDescription": "将文件拖到此处或从设备中选择"
+    },
+    "actions": {
+      "chinaBorder": "发送到中国边境",
+      "partial": "拆分货物",
+      "truck": "选择卡车",
+      "truckLabel": "选择卡车",
+      "client": "客户",
+      "trnasit": "发送到过境区",
+      "takePackage": "从卡车取出货物",
+      "takePackageDescription": "完全从卡车卸货而不拆分",
+      "takePackageAction": "取出",
+      "selectTransit": "选择过境区",
+      "sendTransit": "将卡车发送到过境区",
+      "sendUZBCustoms": "发送到乌兹别克海关",
+      "addTruck": "添加到卡车",
+      "back": "返回",
+      "send": "发送",
+      "sendUZBCustomsDescription": "将所有包裹发送到乌兹别克海关",
+      "sendNormalize": "发送到手续办理",
+      "sendNormalizeDescription": "将所有包裹发送到手续办理",
+      "sendDelivered": "发送到交付",
+      "sendDeliveredDescription": "将所有包裹送达",
+      "archivePackage": "归档包裹",
+      "alert": "当订单拆分时，信息应小于原始值。",
+      "backChinaWarehouseTitle": "返回到中国仓库",
+      "backChinaWarehouseContent": "包裹将返回到中国仓库",
+      "backChinaBorderContent": "包裹将返回到中国边境",
+      "backTransitZone": "包裹将返回到过境区",
+      "sendDeliveredWithoutNormalize": "没有手续的交付",
+      "backToUzb": "包裹将返回到乌兹别克海关",
+      "archiveTruckAllPackages": "归档卡车的所有包裹",
+      "backToNormalize": "包裹将返回到手续办理",
+      "totalPackagesWeight": "包裹总重量",
+      "totalPackagesCapacity": "包裹总容量",
+      "dataNotFound": "没有数据",
+      "noResultsFound": "没有找到结果",
+      "errorOccurred": "发生错误！",
+      "pleaseTryAgain": "请再试一次。",
+      "noDataForRequest": "没有此请求的数据"
+    }
+  },
+  "transport": {
+    "title": "运输工具",
+    "truck": "卡车",
+    "truckName": "卡车名称",
+    "truckStatus": "卡车状态",
+    "createdTime": "卡车创建时间",
+    "form": {
+      "title": "添加新卡车",
+      "titleUpdate": "编辑卡车",
+      "truckNumber": "卡车编号",
+      "truckType": "卡车类型",
+      "containerType": "集装箱类型",
+      "truckCreatedDate": "卡车创建日期"
+    },
+    "actions": {
+      "deleteTruck": "删除卡车",
+      "confirmDeletion": "您确定要注销此卡车吗？",
+      "archiveTruck": "归档卡车",
+      "confirmArchive": "您确定要归档此卡车吗？",
+      "doubleActions": "归档或删除卡车",
+      "doubleActionsDescription": "您确定要归档或删除此卡车吗？"
+    }
+  },
+  "banner": {
+    "title": "横幅",
+    "extraTitle": "横幅图片",
+    "imageTitle": "排列的横幅图片"
+  },
+  "archive": {
+    "title": "档案",
+    "takeArchive": "从档案中移除",
+    "actions": {
+      "userDelete": "删除用户",
+      "userUnArchive": "从档案中恢复用户",
+      "userDoubleActions": "从档案中恢复或删除用户",
+      "packageDelete": "删除包裹",
+      "truckDelete": "删除归档的卡车"
+    }
+  },
+  "prices": {
+    "title": "价格",
+    "auto": "运输",
+    "air": "空运",
+    "table": {
+      "title": "运输类型",
+      "name": "名称",
+      "createdDate": "创建日期",
+      "updatedDate": "更新日期"
+    },
+    "formTable": {
+      "auto": {
+        "title": "运输信息和价格",
+        "nameUZ": "名称 (UZ)",
+        "nameRU": "名称 (RU)",
+        "nameEN": "名称 (EN)",
+        "nameCN": "名称 (CN)",
+        "descriptionUZ": "信息 (UZ)",
+        "descriptionRU": "信息 (RU)",
+        "descriptionEN": "信息 (EN)",
+        "descriptionCN": "信息 (CN)",
+        "weight": "重量",
+        "unit": "计量单位",
+        "price": "价格 ($)",
+        "isDangeroud": "危险货物价格 ($)",
+        "isCustoms": "清关费用 ($)",
+        "actions": {
+          "add": "添加",
+          "save": "保存",
+          "deleteDescription": "此运输类型将删除所有价格",
+          "addPrice": "添加新价格",
+          "dangerCargo": "危险货物",
+          "customsClearance": "清关"
+        }
+      },
+      "air": {
+        "title": "空运费用和信息",
+        "createdDate": "创建日期",
+        "updatedDate": "更新日期",
+        "shortDescFirst": "信息",
+        "shortDescSecond": "价格",
+        "nameUZ": "名称 (UZ)",
+        "nameRU": "名称 (RU)",
+        "nameEN": "名称 (EN)",
+        "nameCN": "名称 (CN)",
+        "descriptionUZ": "信息 (UZ)",
+        "descriptionRU": "信息 (RU)",
+        "descriptionEN": "信息 (EN)",
+        "descriptionCN": "信息 (CN)",
+        "1mkub": "1 立方米的千克数",
+        "1kgprice": "每千克价格 ($)",
+        "normalizePrice": "文书处理费用 ($)"
+      }
+    }
+  },
+  "store": {
+    "title": "仓库",
+    "info": "仓库信息",
+    "form": {
+      "title": "添加新仓库",
+      "reciver": "接收者",
+      "phone": "电话号码",
+      "date": "接收时间",
+      "chatID": "WeChat ID",
+      "address": "地址"
+    }
+  },
+  "notification": {
+    "table": {
+      "title": "通知",
+      "send": "发送通知",
+      "name": "名称",
+      "content": "内容",
+      "created": "发送时间",
+      "update": "更新时间"
+    },
+    "form": {
+      "titleFirst": "发送通知",
+      "titleSecond": "编辑通知",
+      "titleUZ": "通知名称 (UZ)",
+      "titleRU": "通知名称 (RU)",
+      "contentUZ": "通知内容 (UZ)",
+      "contentRU": "通知内容 (RU)",
+      "imageUZ": "通知图片 (UZ)",
+      "imageRU": "通知图片 (RU)"
+    },
+    "actions": {
+      "delete": "删除通知"
+    }
+  },
+  "truckOrderDetails": {
+    "title": "订单ID编号",
+    "status": "状态",
+    "statusUpdated": "状态更新时间",
+    "packageCapacity": "订单容量",
+    "orderedDate": "订单日期",
+    "packageWeight": "订单重量",
+    "deliveredDate": "预计交货日期",
+    "totalOrders": "订单数量",
+    "totalPlaces": "订单包裹数量",
+    "timeLine": "交货阶段"
+  },
+  "profile": {
+    "title": "用户个人中心",
+    "tabs": {
+      "profile": "信息",
+      "orders": "订单"
+    },
+    "profileTab": {
+      "title": "用户信息",
+      "firstName": "名字",
+      "lastName": "姓氏",
+      "dob": "出生日期",
+      "phone": "电话号码",
+      "company": "公司名称",
+      "userID": "用户ID"
+    },
+    "ordersTabs": {
+      "title": "订单",
+      "miniTabs": {
+        "all": "所有订单",
+        "inProgress": "进行中",
+        "delivered": "已交付"
+      },
+      "card": {
+        "title": "订单ID编号",
+        "status": "状态",
+        "update": "更新时间",
+        "created": "订单创建日期",
+        "timeline": "交货阶段"
+      }
+    }
+  },
+  "shipmentStatus": {
+    "pending": "等待入库",
+    "inchinawarehouse": "在中国仓库",
+    "tochinaborder": "前往中国边境",
+    "intransit": "运输中",
+    "touzbcustoms": "在乌兹别克斯坦海关途中",
+    "incustoms": "海关手续中",
+    "delivered": "已交付",
+    "new": "新货"
+  },
+  "shipmentTooltip": {
+    "pending": "等待到达仓库",
+    "inChinaWarehouse": "在中国仓库",
+    "toChinaBorder": "已前往中国边境",
+    "inTransit": "运输途中的过境区（哈萨克斯坦、吉尔吉斯斯坦）",
+    "toUzbCustoms": "从过境区出发，前往乌兹别克斯坦海关仓库",
+    "inCustoms": "货物已到达海关仓库，开始海关处理程序",
+    "delivered": "海关手续完成，货物已交付"
+  },
+  "timeLineProcess": {
+    "current": "当前",
+    "waiting": "等待中",
+    "complete": "已完成"
+  },
+  "month": {
+    "jan": "一月",
+    "feb": "二月",
+    "mar": "三月",
+    "apr": "四月",
+    "may": "五月",
+    "jun": "六月",
+    "jul": "七月",
+    "aug": "八月",
+    "sep": "九月",
+    "oct": "十月",
+    "nov": "十一月",
+    "dec": "十二月"
+  },
+  "userStatus": {
+    "verified": "已验证",
+    "notVerified": "未验证"
+  },
+  "multiStatusActions": {
+    "sendChinaBorder": "发送到中国边境",
+    "sendTransit": "发送到过境区",
+    "sendUZB": "发送到乌兹别克斯坦海关",
+    "sendNormalize": "发送到海关手续",
+    "sendDelivered": "发送已交付",
+    "action": "操作"
+  },
+  "mutate": {
+    "packageDeleted": "包裹已删除",
+    "deleted": "已删除",
+    "userDeleted": "用户已删除",
+    "userUnArchived": "用户已从档案中恢复",
+    "notificationSended": "消息已发送",
+    "notificationDeleted": "消息已删除",
+    "notificationUpdated": "消息已更新",
+    "packageSendedChinaBorder": "包裹已发送至中国边境。",
+    "packagesSendedChinaBorder": "包裹已发送至中国边境。",
+    "packageCreated": "包裹成功添加",
+    "packageUpdated": "包裹已更新",
+    "packageBacked": "包裹已退回",
+    "packageArchived": "包裹已归档",
+    "packageAdded": "包裹已添加到卡车",
+    "packageDelivered": "包裹已送达",
+    "priceUpdated": "价格已更新",
+    "priceCreated": "价格已创建",
+    "truckAdded": "卡车已成功添加",
+    "infoUpdate": "信息已更新",
+    "infoDeleted": "信息已删除",
+    "infosDeleted": "信息已删除",
+    "truckArchived": "卡车已归档",
+    "trucksArchived": "卡车已归档",
+    "bannerUploaded": "横幅图片已成功上传！",
+    "bannerUpdated": "横幅图片已成功更换",
+    "bannerDeleted": "横幅图片已删除",
+    "storeCreated": "仓库已创建",
+    "truckSended": "卡车已发送",
+    "packagePartial": "订单已部分完成",
+    "takeFromTruck": "订单已从卡车中取出",
+    "userInfoUpdate": "用户信息已更新",
+    "userVerify": "用户已验证",
+    "usersVerify": "用户已验证",
+    "userCreated": "用户已创建"
+  }
+}

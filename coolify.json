@@ -1,0 +1,7 @@
+{
+  "type": "static",
+  "static": {
+    "directory": "dist",
+    "spa": true
+  }
+}

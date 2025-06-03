@@ -1,0 +1,408 @@
+{
+  "title": "Main",
+  "actions": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "archive": "Archive",
+    "edit": "Edit",
+    "delete": "Delete",
+    "send": "Send",
+    "clear": "Clear",
+    "search": "Search"
+  },
+  "bonus": {
+    "title": "Bonuses",
+    "table": {
+      "ball": "Ball",
+      "status": "Status",
+      "capacity": "Capacity",
+      "weight": "Weight"
+    },
+    "enum": {
+      "used": "Used",
+      "not_used": "Not Used"
+    }
+  },
+  "users": {
+    "title": "Users",
+    "formTitle": "Create User",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "dob": "Date of Birth",
+    "phone": "Phone Number",
+    "company": "Company Name",
+    "table": {
+      "fullName": "User Full Name",
+      "clientID": "User ID",
+      "phone": "Phone Number",
+      "company": "Company Name",
+      "orders": "Orders",
+      "status": "Status",
+      "verifed": "Verified",
+      "notVerifed": "Not Verified"
+    },
+    "actions": {
+      "giveVerification": "Verify",
+      "takeVerification": "Revoke Verification"
+    },
+    "confirm": {
+      "title": "Archive User",
+      "extra": "Are you sure you want to archive the user?",
+      "update": "Update",
+      "titleSecond": "User(s)",
+      "actions": {
+        "verify": "verify",
+        "unverify": "revoke verification"
+      },
+      "firstContentVerify": "Verify all users",
+      "secondContentVerify": "Confirm that the user(s) have registered on the NEXUS platform",
+      "firstContentUnVerify": "Revoke verification from all users",
+      "secondContentUnVerify": "Revoke confirmation of user(s) registration on the NEXUS platform"
+    }
+  },
+  "packages": {
+    "title": "Shipments",
+    "trucks": "Trucks",
+    "extraPackages": "Remaining Shipments",
+    "status": {
+      "all": "All",
+      "chinaWarehouse": "China Warehouse",
+      "chinaBorder": "China Border",
+      "transit": "Transit Zone",
+      "uzbCustoms": "Uzbekistan Customs Warehouse",
+      "normalize": "Processing",
+      "delivered": "Delivered"
+    },
+    "tableTitle": {
+      "fullName": "Full Name",
+      "clientID": "User ID",
+      "packageID": "Package ID",
+      "packageNumber": "Parcel",
+      "stockNumber": "Quantity",
+      "capacity": "Capacity",
+      "weight": "Weight",
+      "truck": "Truck",
+      "sendedDate": "Sent Date",
+      "updatedDate": "Updated Date",
+      "status": "Status",
+      "truckID": "Truck ID",
+      "totalPackagesNumber": "Total Shipments",
+      "totalWeight": "Total Weight",
+      "totalCapacity": "Total Capacity",
+      "truckPackges": "Truck Orders",
+      "description": "Description",
+      "trucks": "Trucks",
+      "partOrder": "Backlog shipments"
+    },
+    "createPackageForm": {
+      "title": "Create New Cargo",
+      "userID": "User ID",
+      "titleSecond": "Edit Cargo",
+      "packageNumber": "Number of Packages",
+      "stockNumber": "Total Number of Goods",
+      "capacity": "Cargo Capacity",
+      "weight": "Cargo Weight",
+      "description": "Cargo Description",
+      "short": "Brief Information",
+      "imageUpload": "Select File",
+      "imageUploadDescription": "Drag files here or select from your device"
+    },
+    "actions": {
+      "chinaBorder": "To the China border",
+      "partial": "Split the cargo",
+      "truck": "Select the truck for transportation",
+      "truckLabel": "Select a truck",
+      "client": "Client",
+      "trnasit": "Send to transit",
+      "takePackage": "Remove cargo from the truck",
+      "takePackageDescription": "Remove the shipment completely from the truck without splitting",
+      "takePackageAction": "Remove",
+      "selectTransit": "Select transit zone",
+      "sendTransit": "Send the truck to the transit zone",
+      "sendUZBCustoms": "Send to UZB customs",
+      "addTruck": "Add to the truck",
+      "back": "Return back",
+      "send": "Send",
+      "sendUZBCustomsDescription": "Send the truck along with all shipments to UZB customs",
+      "sendNormalize": "Send for processing",
+      "sendNormalizeDescription": "Send the truck along with all shipments for the processing procedure",
+      "sendDelivered": "Deliver",
+      "sendDeliveredDescription": "Deliver the truck along with all shipments",
+      "archivePackage": "Archive shipment",
+      "alert": "When the order is split, the data must be smaller than the original values.",
+      "backChinaWarehouseTitle": "Return shipment",
+      "backChinaWarehouseContent": "The shipment will be returned to the China warehouse",
+      "backChinaBorderContent": "The shipment will be returned to the China border",
+      "backTransitZone": "The shipment will be returned to the transit zone",
+      "sendDeliveredWithoutNormalize": "Deliver the shipment without the processing procedure",
+      "backToUzb": "The shipment will be returned to UZB customs",
+      "archiveTruckAllPackages": "Archive the truck along with all shipments",
+      "backToNormalize": "The shipment will be returned to the processing procedure",
+      "totalPackagesWeight": "Total cargo weight",
+      "totalPackagesCapacity": "Total cargo volume",
+      "dataNotFound": "No data available",
+      "noResultsFound": "No results found",
+      "errorOccurred": "An error occurred!",
+      "pleaseTryAgain": "Please try again.",
+      "noDataForRequest": "No data available for the request."
+    }
+  },
+  "transport": {
+    "title": "Transport",
+    "truck": "Trucks",
+    "truckName": "Truck name",
+    "truckStatus": "Truck status",
+    "createdTime": "Truck creation date",
+    "form": {
+      "title": "Add a new truck",
+      "titleUpdate": "Edit truck",
+      "truckNumber": "Truck number",
+      "truckType": "Truck type",
+      "containerType": "Container type",
+      "truckCreatedDate": "Truck creation date"
+    },
+    "actions": {
+      "deleteTruck": "Delete truck",
+      "confirmDeletion": "Are you sure you want to remove the truck from the list?",
+      "archiveTruck": "Archive truck",
+      "confirmArchive": "Are you sure you want to archive the truck?",
+      "doubleActions": "Archive or delete the truck",
+      "doubleActionsDescription": "Do you want to archive or delete the truck?"
+    }
+  },
+  "banner": {
+    "title": "Banner",
+    "extraTitle": "Banner images",
+    "imageTitle": "Ordered images of the banner"
+  },
+  "archive": {
+    "title": "Archive",
+    "takeArchive": "Restore from archive",
+    "actions": {
+      "userDelete": "Delete user",
+      "userUnArchive": "Unarchive user",
+      "userDoubleActions": "Unarchive or delete user",
+      "packageDelete": "Delete shipment",
+      "truckDelete": "Delete archived truck"
+    }
+  },
+  "prices": {
+    "title": "Prices",
+    "auto": "Transport",
+    "air": "Air transport",
+    "table": {
+      "title": "Types of transport",
+      "name": "Name",
+      "createdDate": "Created date",
+      "updatedDate": "Updated date"
+    },
+    "formTable": {
+      "auto": {
+        "title": "Transport details and prices",
+        "nameUZ": "Name (UZ)",
+        "nameRU": "Name (RU)",
+        "nameEN": "Name (EN)",
+        "nameCN": "Name (CN)",
+        "descriptionUZ": "Details (UZ)",
+        "descriptionRU": "Details (RU)",
+        "descriptionEN": "Details (EN)",
+        "descriptionCN": "Details (CN)",
+        "weight": "Weight",
+        "unit": "Measurement unit",
+        "price": "Price ($)",
+        "isDangeroud": "Price for hazardous cargo ($)",
+        "isCustoms": "Customs clearance price ($)",
+        "actions": {
+          "add": "Add",
+          "save": "Save",
+          "deleteDescription": "This type of transport will be deleted along with all prices",
+          "addPrice": "Add new price",
+          "dangerCargo": "Hazardous cargo",
+          "customsClearance": "Customs clearance"
+        }
+      },
+      "air": {
+        "title": "Air freight prices and details",
+        "createdDate": "Created date",
+        "updatedDate": "Updated date",
+        "shortDescFirst": "Details",
+        "shortDescSecond": "Price",
+        "nameUZ": "Name (UZ)",
+        "nameRU": "Name (RU)",
+        "nameEN": "Name (EN)",
+        "nameCN": "Name (CN)",
+        "descriptionUZ": "Details (UZ)",
+        "descriptionRU": "Details (RU)",
+        "descriptionEN": "Details (EN)",
+        "descriptionCN": "Details (CN)",
+        "1mkub": "Kg in 1 m³",
+        "1kgprice": "Price per kg ($)",
+        "normalizePrice": "Documentation price ($)"
+      }
+    }
+  },
+  "store": {
+    "title": "Warehouse",
+    "info": "Warehouse information",
+    "form": {
+      "title": "Add a new warehouse",
+      "reciver": "Recipient",
+      "phone": "Phone number",
+      "date": "Receiving time",
+      "chatID": "WeChat ID",
+      "address": "Address"
+    }
+  },
+  "notification": {
+    "table": {
+      "title": "Notifications",
+      "send": "Send notification",
+      "name": "Name",
+      "content": "Text",
+      "created": "Sent time",
+      "update": "Updated time"
+    },
+    "form": {
+      "titleFirst": "Send notification",
+      "titleSecond": "Edit notification",
+      "titleUZ": "Notification title (UZ)",
+      "titleRU": "Notification title (RU)",
+      "contentUZ": "Notification text (UZ)",
+      "contentRU": "Notification text (RU)",
+      "imageUZ": "Notification image (UZ)",
+      "imageRU": "Notification image (RU)"
+    },
+    "actions": {
+      "delete": "Delete notification"
+    }
+  },
+  "truckOrderDetails": {
+    "title": "Order ID Number",
+    "status": "Status",
+    "statusUpdated": "Status Updated Date",
+    "packageCapacity": "Order Volume",
+    "orderedDate": "Order Date",
+    "packageWeight": "Order Weight",
+    "deliveredDate": "Estimated Delivery Date",
+    "totalOrders": "Total Orders",
+    "totalPlaces": "Total Packages",
+    "timeLine": "Delivery Stage"
+  },
+  "profile": {
+    "title": "User Dashboard",
+    "tabs": {
+      "profile": "Information",
+      "orders": "Orders"
+    },
+    "profileTab": {
+      "title": "User Information",
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "dob": "Date of Birth",
+      "phone": "Phone Number",
+      "company": "Company Name",
+      "userID": "User ID"
+    },
+    "ordersTabs": {
+      "title": "Orders",
+      "miniTabs": {
+        "all": "All",
+        "inProgress": "In Progress",
+        "delivered": "Delivered"
+      },
+      "card": {
+        "title": "Order ID Number",
+        "status": "Status",
+        "update": "Updated Date",
+        "created": "Order Date",
+        "timeline": "Delivery Stage"
+      }
+    }
+  },
+  "shipmentStatus": {
+    "pending": "Awaiting Warehouse",
+    "inchinawarehouse": "In China Warehouse",
+    "tochinaborder": "At China Border",
+    "intransit": "In Transit Zone",
+    "touzbcustoms": "On the Way to UZB Customs",
+    "incustoms": "Processing",
+    "delivered": "Delivered",
+    "new": "New"
+  },
+  "shipmentTooltip": {
+    "pending": "Awaiting arrival at the warehouse",
+    "inChinaWarehouse": "In the China warehouse",
+    "toChinaBorder": "On the way to China border",
+    "inTransit": "Moved to transit zone (KZ, KG)",
+    "toUzbCustoms": "Departed from the transit zone to UZB customs warehouse",
+    "inCustoms": "Arrived at customs warehouse and processing has started",
+    "delivered": "Customs processing completed and goods delivered"
+  },
+  "timeLineProcess": {
+    "current": "Current",
+    "waiting": "Waiting",
+    "complete": "Completed"
+  },
+  "month": {
+    "jan": "January",
+    "feb": "February",
+    "mar": "March",
+    "apr": "April",
+    "may": "May",
+    "jun": "June",
+    "jul": "July",
+    "aug": "August",
+    "sep": "September",
+    "oct": "October",
+    "nov": "November",
+    "dec": "December"
+  },
+  "userStatus": {
+    "verified": "Verified",
+    "notVerified": "Not Verified"
+  },
+  "multiStatusActions": {
+    "sendChinaBorder": "Send to China Border",
+    "sendTransit": "Send to Transit Zone",
+    "sendUZB": "Send to UZB Customs",
+    "sendNormalize": "Send for Processing",
+    "sendDelivered": "Deliver",
+    "action": "Actions"
+  },
+  "mutate": {
+    "packageDeleted": "Package deleted",
+    "deleted": "Deleted",
+    "userDeleted": "User deleted",
+    "userUnArchived": "User unarchived",
+    "notificationSended": "Notification sent",
+    "notificationDeleted": "Notification deleted",
+    "notificationUpdated": "Notification updated",
+    "packageSendedChinaBorder": "Package sent to China border.",
+    "packagesSendedChinaBorder": "Packages sent to China border.",
+    "packageCreated": "Package successfully added",
+    "packageUpdated": "Package updated",
+    "packageBacked": "Package returned",
+    "packageArchived": "Package archived",
+    "packageAdded": "Package added to the truck",
+    "packageDelivered": "Package delivered",
+    "priceUpdated": "Prices updated",
+    "priceCreated": "Prices created",
+    "truckAdded": "Truck successfully added",
+    "infoUpdate": "Information updated",
+    "infoDeleted": "Information deleted",
+    "infosDeleted": "Information deleted",
+    "truckArchived": "Truck archived",
+    "trucksArchived": "Trucks archived",
+    "bannerUploaded": "Banner images successfully uploaded!",
+    "bannerUpdated": "Banner images successfully updated",
+    "bannerDeleted": "Banner images deleted",
+    "storeCreated": "Warehouse created",
+    "truckSended": "Truck sent",
+    "packagePartial": "Order partially fulfilled",
+    "takeFromTruck": "Order removed from truck",
+    "userInfoUpdate": "User information updated",
+    "userVerify": "User verified",
+    "usersVerify": "Users verified",
+    "userCreated": "User created"
+  }
+}

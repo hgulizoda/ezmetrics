@@ -1,0 +1,462 @@
+{
+  "title": "Asosiy",
+  "actions": {
+    "save": "Saqlash",
+    "cancel": "Bekor qilish",
+    "archive": "Arxivlash",
+    "edit": "Taxrirlash",
+    "delete": "O'chirish",
+    "send": "Yuborish",
+    "clear": "Tozalash",
+    "search": "Qidirish",
+    "yes": "Ha",
+    "not": "Yo'q",
+    "clearAll": "Barchasini o`chirish"
+  },
+  "users": {
+    "title": "Foydalanuvchilar",
+    "formTitle": "Foydalanuvchi yaratish",
+    "firstName": "Ism",
+    "lastName": "Familiya",
+    "dob": "Tug'ilgan sana",
+    "phone": "Telefon raqam",
+    "company": "Kompaniya nomi",
+    "table": {
+      "fullName": "Foydalanuvchi F.I.SH",
+      "clientID": "Foydalanuvchi ID",
+      "phone": "Telefon raqam",
+      "company": "Kompaniya nomi",
+      "orders": "Jo'natmalar",
+      "status": "Status",
+      "verifed": "Tasdiqlangan",
+      "notVerifed": "Tasdiqlanmagan"
+    },
+    "actions": {
+      "giveVerification": "Tasdiqlash",
+      "takeVerification": "Bekor qilish"
+    },
+    "confirm": {
+      "title": "Foydalanuvchini arxivlash",
+      "extra": "Foydalanuvchini arxivlashga rozimisiz ?",
+      "update": "Yangilash",
+      "titleSecond": "Foydalanuvchi(lar)ni",
+      "actions": {
+        "verify": "tasdiqlash",
+        "unverify": "tasdiqni olish"
+      },
+      "firstContentVerify": "Barcha foydalanuvchilarni tasdiqlash",
+      "secondContentVerify": "Foydalanuvchi(lar)ni NEXUS platformasidan ro'yxatdan o'tganligini tasdiqlash",
+      "firstContentUnVerify": "Barcha foydalanuchilardan tasdiqni olish",
+      "secondContentUnVerify": "Foydalanuvchi(lar)ni NEXUS platformasidan ro'yxatdan o'tganligi haqidagi tasdiqni olish"
+    }
+  },
+  "bonus": {
+    "title": "Bonuslar",
+    "table": {
+      "ball": "Ball",
+      "status": "Status",
+      "capacity": "Hajmi",
+      "weight": "Og'irligi (kg)"
+    },
+    "enum": {
+      "used": "Ishlatilgan",
+      "not_used": "Ishlatilmagan"
+    }
+  },
+  "packages": {
+    "title": "Jo'natmalar",
+    "trucks": "Jo'natmalar",
+    "count": "Yuklar soni",
+    "extraPackages": "Qoldiq jo'natamalar",
+    "status": {
+      "all": "Barchasi",
+      "chinaWarehouse": "Ombor",
+      "chinaBorder": "Jo'natildi",
+      "transit": "Tranzit",
+      "uzbCustoms": "Bojxona ",
+      "normalize": "Rasmiylashtirish",
+      "delivered": "Yetkazildi"
+    },
+    "tableTitle": {
+      "fullName": "F.I.SH",
+      "clientID": "Foydalanuvchi ID",
+      "packageID": "Jo'natma ID",
+      "packageNumber": "Qadoq",
+      "stockNumber": "Soni",
+      "capacity": "Hajmi (m³)",
+      "weight": "Og'irligi (kg)",
+      "truck": "Jo'natma №",
+      "sendedDate": "Jo'natilgan sana",
+      "updatedDate": "Yangilangan sana",
+      "status": "Status",
+      "truckID": "Jo'natma №",
+      "totalPackagesNumber": "Qadoq soni",
+      "totalWeight": "Umumiy og'irligi",
+      "totalCapacity": "Umumiy hajmi",
+      "truckPackges": "Jo'natma tovarlari",
+      "description": "Tovar nomi",
+      "trucks": "Jo'natmalar",
+      "partOrder": "Qoldirilgan yuklar",
+      "partAllOrder": "Barcha yuklar"
+    },
+    "createPackageForm": {
+      "title": "Yangi tovar qo'shish",
+      "userID": "Foydalanuvchi ID",
+      "titleSecond": "Yukni taxrirlash",
+      "packageNumber": "Qadoqlar soni",
+      "stockNumber": "Umumiy tovarlar soni",
+      "capacity": "Yuk hajmi",
+      "weight": "Yuk og'irligi",
+      "description": "Tovar nomini kiriting",
+      "short": "Izoh kiriting",
+      "imageUpload": "Fayl tanlang",
+      "imageUploadDescription": "Faylarni bu yerga torting yoki qurilmangizdan tanlang"
+    },
+    "actions": {
+      "chinaBorder": "Jo'natildiga",
+      "partial": "Yukni bo'lish",
+      "truck": "Jo'natmani tanlang",
+      "truckLabel": "Jo'natma",
+      "client": "Transport turi",
+      "trnasit": "Tranzitga yuborish",
+      "takePackage": "Yukni jo'natmadan chiqarish",
+      "takePackageDescription": "Yukni jo’natmadan to’liq chiqarish",
+      "takePackageAction": "Chiqarish",
+      "selectTransit": "Tranzit zonani tanlang",
+      "sendTransit": "Jo'natmani 'Tranzit' bosqichiga o'tkazish",
+      "sendUZBCustoms": "Jo'natmani 'Bojxona <0/>' bosqichiga o'tkazish",
+      "sendUZB": "Bojxona <0/>",
+      "addTruck": "Jo'natmaga qo'shish",
+      "back": "Orqaga qaytarish",
+      "send": "Yuborish",
+      "sendUZBCustomsDescription": "Jo'natmani 'Bojxona <0/>' bosqichiga o'tkazish",
+      "sendNormalize": "Rasmiylashtirish",
+      "sendNormalizeDescription": "Jo'natmani 'Rasmiylashtirish' bosqichiga o'tkazish",
+      "sendDelivered": "Yetkazildi",
+      "sendDeliveredDescription": "Jo'natmani 'Yetkazildi' bosqichiga o'tkazish",
+      "archivePackage": "Yukni arxivlash",
+      "alert": "Buyurtma qismga bo`linganda, ma'lumotlar asl qiymatdan kichik bo'lishi kerak.",
+      "backChinaWarehouseTitle": "Tovarni ortga qaytarish",
+      "backChinaWarehouseContent": "Tovarni 'Ombor <0/>' bosqichiga qaytarish",
+      "backChinaBorderContent": "Tovarni 'Jo'natildi' bosqichiga qaytarish",
+      "backTransitZone": "Tovarni 'Tranzit' bosqichiga qaytarish",
+      "sendDeliveredWithoutNormalize": "Tovarni 'Yetkazildi' bosqichiga o'tkazish",
+      "backToUzb": "Tovarni 'Bojxona <0/>' bosqichiga qaytarish",
+      "archiveTruckAllPackages": "Jo'natmani barcha tovarlarilari bilan arxivlash",
+      "backToNormalize": "Tovarni 'Rasmiylashtirish' bosqichiga qaytarish",
+      "totalPackagesWeight": "Umumiy yuk o`g`irligi",
+      "totalPackagesCapacity": "Umumiy",
+      "dataNotFound": "Ma`lumotlar mavjud emas",
+      "noResultsFound": "Natijalar topilmadi",
+      "errorOccurred": "Xatolik yuz berdi !",
+      "pleaseTryAgain": "Iltimos qaytadan urinib koring.",
+      "noDataForRequest": "So'rov bo'yicha ma'lumotlar mavjud emas.",
+      "backTruckToPrevTitle": "Jo'natmani ortga qaytarish",
+      "backTruckToPrevContent": "Siz rostdanham ushbu jo'natmani ortga qaytarmoqchimisiz?"
+    },
+    "delivered": {
+      "title": "Yetkazib berish",
+      "content": "Jo'natmalarni rasmiylashtirish jarayonisiz yetkazib berish"
+    }
+  },
+  "transport": {
+    "title": "Transport",
+    "truck": "Jo'natmalar",
+    "truckName": "Jo'natma turi",
+    "truckStatus": "Status",
+    "createdTime": "Jo'natma yaratilgan sana",
+    "estimatedArrivalTime": "Taxminiy yetkazish sanasi",
+    "form": {
+      "title": "Yangi jo'natma qo'shish",
+      "titleUpdate": "Jo'natmani taxrirlash",
+      "truckNumber": "Jo'natma №",
+      "containerNumber": "Konteyner №",
+      "truckType": "Jo'natma turi",
+      "containerType": "Transport turi",
+      "truckCreatedDate": "Jo'natma yaratilgan sana",
+      "truckEstimatedDate": "Taxminiy yetkazish sanasi"
+    },
+    "actions": {
+      "deleteTruck": "Jo'natmani o'chirish",
+      "confirmDeletion": "Siz jo'natmani ro'yxatdan o'chirib tashlamoqchimisiz ?",
+      "archiveTruck": "Jo'natmani arxivlash",
+      "confirmArchive": "Siz jo'natmani arxivlamoqchimsiz ?",
+      "doubleArchive": "Jo'natmalarni arxivlash",
+      "doubleDelete": "Jo'natmalarni  o'chirish"
+    }
+  },
+  "banner": {
+    "title": "Banner",
+    "extraTitle": "Banner rasmlari",
+    "imageTitle": "Bannerning tartiblangan rasmlari",
+    "imageUZ": "Banner rasmi (UZ)",
+    "imageRU": "Banner rasmi (RU)"
+  },
+  "archive": {
+    "title": "Arxiv",
+    "takeArchive": "Qaytarish",
+    "actions": {
+      "userDelete": "Foydalanuvchini o'chirish",
+      "userUnArchive": "Foydalanuvchini arxivdan chiqarish",
+      "multiArchive": "Foydalanuvchilarni ortga qaytarish",
+      "multiDelete": "Foydalanuvchilarni arxivdan o'chirish",
+      "packageDelete": "Jo'natmani o'chirish",
+      "truckDelete": "Arxivlangan jo'natmani o'chirmoqchisiz ?",
+      "orderDelete": "Yukni o'chirish",
+      "truckUnArchive": "Jo'natmani arxivdan chiqarmoqchimisiz ?"
+    }
+  },
+  "prices": {
+    "title": "Narxlar",
+    "auto": "Transport",
+    "air": "Havo transporti",
+    "table": {
+      "title": "Transport turlari",
+      "name": "Nomi",
+      "createdDate": "Yaratilgan sana",
+      "updatedDate": "Yangilangan sana"
+    },
+    "formTable": {
+      "auto": {
+        "title": "Transport ma'lumotlari va narxlari",
+        "nameUZ": "Nomi (UZ)",
+        "nameRU": "Nomi (RU)",
+        "nameEN": "Nomi (EN)",
+        "nameCN": "Nomi (CN)",
+        "descriptionUZ": "Ma'lumotlari (UZ)",
+        "descriptionRU": "Ma'lumotlari (RU)",
+        "descriptionEN": "Ma'lumotlari (EN)",
+        "descriptionCN": "Ma'lumotlari (CN)",
+        "weight": "Og'irligi",
+        "unit": "O'lchov birligi",
+        "price": "Narxi ($)",
+        "isDangeroud": "Xavfli yuklar uchun narx ($)",
+        "isCustoms": "Rasmiylashtirish narx ($)",
+        "actions": {
+          "add": "Qo'shish",
+          "save": "Saqlash",
+          "deleteDescription": "Ushbu transport turi barcha narxlari bilan o'chiriladi",
+          "addPrice": "Yangi narx qo'shish",
+          "dangerCargo": "Xavfli yuk",
+          "customsClearance": "Rasmiylashtirish"
+        }
+      },
+      "air": {
+        "title": "Havo yuk tashish narxi va ma'lumotlari",
+        "createdDate": "Yaratilgan sana",
+        "updatedDate": "Yangilangan sana",
+        "shortDescFirst": "Ma'lumotlari",
+        "shortDescSecond": "Narxi",
+        "nameUZ": "Nomi (UZ)",
+        "nameRU": "Nomi (RU)",
+        "nameEN": "Nomi (EN)",
+        "nameCN": "Nomi (CN)",
+        "descriptionUZ": "Ma'lumotlari (UZ)",
+        "descriptionRU": "Ma'lumotlari (RU)",
+        "descriptionEN": "Ma'lumotlari (EN)",
+        "descriptionCN": "Ma'lumotlari (CN)",
+        "1mkub": "1 m³ dagi kg",
+        "1kgprice": "1 kg narxi ($)",
+        "normalizePrice": "Hujjatlashtirish narxi ($)"
+      }
+    }
+  },
+  "store": {
+    "title": "Omborxona",
+    "info": "Omborxona ma'lumotlari",
+    "form": {
+      "title": "Yangi omborxona qo'shish",
+      "titleUpdate": "Omborxonani taxrirlash",
+      "reciver": "Qabul qiluvchi",
+      "phone": "Telefon raqam",
+      "date": "Qabul vaqti",
+      "chatID": "WeChat ID",
+      "address": "Manzil",
+      "editSuccess": "Omborxona muvaffaqiyatli tahrirlandi"
+    },
+    "delete": {
+      "title": "Omborxonani o'chirish",
+      "content": "Ushbu omborxona butunlay o'chib ketadi! ",
+      "deleteSuccess": "Omborxona muvaffaqiyatli o'chirildi"
+    }
+  },
+  "notification": {
+    "table": {
+      "title": "Habarnomalar",
+      "send": "Habarnoma yuborish",
+      "name": "Nomi",
+      "content": "Matn",
+      "created": "Yuborilgan vaqt",
+      "update": "Yangilangan vaqt"
+    },
+    "form": {
+      "titleFirst": "Habarnoma yuborish",
+      "titleSecond": "Habarnoma taxrirlash",
+      "titleUZ": "Habar nomi (UZ)",
+      "titleRU": "Habar nomi (RU)",
+      "contentUZ": "Habar matni (UZ)",
+      "contentRU": "Habar matni (RU)",
+      "imageUZ": "Habarnoma rasmi (UZ)",
+      "imageRU": "Habarnoma rasmi (RU)"
+    },
+    "actions": {
+      "delete": "O'chirish",
+      "content": "Ushbu habarnomani o'chirib tashlamoqchimisiz ?"
+    }
+  },
+  "truckOrderDetails": {
+    "title": "Buyurtma ID raqami",
+    "status": "Status",
+    "statusUpdated": "Status yangilangan sana",
+    "packageCapacity": "Buyurtma hajmi",
+    "orderedDate": "Buyurtma berilgan sanasi",
+    "packageWeight": "Buyurtma og'irligi",
+    "deliveredDate": "Izoh",
+    "totalOrders": "Buyurtmalar soni",
+    "totalPlaces": "Buyurtma qadoqlar soni",
+    "timeLine": "Yetkazib berish bosqichi"
+  },
+  "profile": {
+    "title": "Foydalanuvchi shaxsiy kabineti",
+    "tabs": {
+      "profile": "Ma'lumotlar",
+      "orders": "Buyurtmalar"
+    },
+    "profileTab": {
+      "title": "Foydalanuvchi ma'lumotlari",
+      "firstName": "Ism",
+      "lastName": "Familiya",
+      "dob": "Tug'ilgan sana",
+      "phone": "Telefon raqam",
+      "company": "Kompaniya nomi",
+      "userID": "Foydalanuvchi ID",
+      "ordername": "Tovar nomi"
+    },
+    "ordersTabs": {
+      "title": "Buyurtmalar",
+      "miniTabs": {
+        "all": "Barchasi",
+        "inProgress": "Jarayonda",
+        "delivered": "Yetkazib berildi"
+      },
+      "card": {
+        "title": "Foydalanuvchi ID raqami",
+        "status": "Status",
+        "update": "Taxminiy yetkazish sanasi",
+        "created": "Buyurtma berilgan sana",
+        "timeline": "Yetkazib berish bosqichi",
+        "orderWeight": "Yuk og'irligi",
+        "orderCapacity": "Yuk hajmi",
+        "totalPlaces": "Qadoqlar soni",
+        "orderCount": "Umumiy tovarlar soni",
+        "kg": "kg",
+        "m3": "m³",
+        "counts": "Soni",
+        "places": "Qadoq",
+        "note": "Izoh"
+      }
+    }
+  },
+  "shipmentStatus": {
+    "pending": "Omborga kutilmoqda",
+    "inchinawarehouse": "Ombor",
+    "tochinaborder": "Jo'natildi",
+    "intransit": "Tranzit",
+    "touzbcustoms": "Bojxona",
+    "incustoms": "Rasmiylashtirish",
+    "delivered": "Yetkazildi",
+    "new": "Yangi"
+  },
+  "shipmentTooltip": {
+    "pending": "Omborga kelishi kutilmoqda",
+    "inChinaWarehouse": "Xitoydagi omborda",
+    "toChinaBorder": "Xitoy chegarasiga ketdi",
+    "inTransit": "Tranzit zonaga o'tdi (KZ, KG)",
+    "toUzbCustoms": "Tranzit zonadan UZB bojxona omborxonasiga yo'lga chiqdi",
+    "inCustoms": "Yuk bojxona omborxonasiga yetib keldi va rasmiylashtiruv jarayoni boshlandi",
+    "delivered": "Bojxona rasmiylashtiruvi yakunlandi va yuk yetkazib berildi"
+  },
+  "timeLineProcess": {
+    "current": "Hozirgi",
+    "waiting": "Kutilmoqda",
+    "complete": "Yakunlangan"
+  },
+  "month": {
+    "jan": "Yanvar",
+    "feb": "Fevral",
+    "mar": "Mart",
+    "apr": "Aprel",
+    "may": "May",
+    "jun": "Iyun",
+    "jul": "Iyul",
+    "aug": "Avgust",
+    "sep": "Sentabr",
+    "oct": "Oktyabr",
+    "nov": "Noyabr",
+    "dec": "Dekabr"
+  },
+  "userStatus": {
+    "verified": "Tasdiqlangan",
+    "notVerified": "Tasdiqlanmagan"
+  },
+  "multiStatusActions": {
+    "sendChinaBorder": "Jo'natildi",
+    "sendTransit": "Tranzit",
+    "sendUZB": "Bojxona ",
+    "sendNormalize": "Rasmiylashtirish",
+    "sendDelivered": "Yetkazib berish",
+    "action": "Amallar"
+  },
+  "mutate": {
+    "packageDeleted": "Jo`natmalar o`chirildi",
+    "deleted": "O'chirildi",
+    "userDeleted": "Foydalanuvchi o`chirildi",
+    "userArchived": "Foydalanuvchi arxivlandi",
+    "usersArchived": "Foydalanuvchilar arxivlandi",
+    "userUnArchived": "Foydalanuvchi arxivdan chiqarildi",
+    "notificationSended": "Xabar yuborildi",
+    "notificationDeleted": "Xabar o'chirildi",
+    "notificationUpdated": "Xabar yangilandi",
+    "packageSendedChinaBorder": "Jo'natma xitoy chegarasiga yuborildi.",
+    "packagesSendedChinaBorder": "Jo'natmalar xitoy chegarasiga yuborildi.",
+    "packageCreated": "Yuk muvaffaqiyatli qo'shildi",
+    "packageUpdated": "Jo'natma yangilandi",
+    "packageBacked": "Jo'natma ortga qaytarildi",
+    "packageArchived": "Jo'natma arxivlandi",
+    "packageAdded": "Tovar jo'natmaga qo'shildi",
+    "packageDelivered": "Jo'natma yetkazib berildi",
+    "priceUpdated": "Narxlar yangilandi",
+    "priceCreated": "Narxlar yaratildi",
+    "truckAdded": "Jo'natma muvaffaqiyatli qo'shildi",
+    "infoUpdate": "Ma'lumot o'zgartirildi",
+    "infoDeleted": "Ma'lumot o'chirildi",
+    "infosDeleted": "Ma'lumotlar o'chirildi",
+    "truckArchived": "Jo'natma arxivlandi",
+    "trucksArchived": "Jo'natmalar arxivlandi",
+    "bannerUploaded": "Banner rasmlari muvaffaqiyatli yuklandi!",
+    "bannerUpdated": "Banner rasmlari muvaffaqiyatli almashtirildi",
+    "bannerDeleted": "Banner rasmlar o'chirildi",
+    "storeCreated": "Omborxona yaratildi",
+    "truckSended": "Jo'natma yuborildi",
+    "packagePartial": "Buyurtma bo`lindi",
+    "takeFromTruck": "Yuk jo'natmadan chiqarildi",
+    "userInfoUpdate": "Foydalanuvchi ma'lumotlari yangilandi",
+    "userVerify": "Foydalanuvchi tasdiqlandi",
+    "usersVerify": "Foydalanuvchilar tasdiqlandi",
+    "userCreated": "Foydalanuvchi yaratildi"
+  },
+
+  "uploadText": {
+    "upload": "Fayl tanlang",
+    "desc": "Faylni qurilmangizdan tanlang"
+  },
+  "density": {
+    "comfortable": "Qulay",
+    "standart": "Standart",
+    "compact": "Ixcham"
+  },
+  "country": {
+    "kz": "Qozog'iston",
+    "kg": "Qirg'iziston"
+  }
+}

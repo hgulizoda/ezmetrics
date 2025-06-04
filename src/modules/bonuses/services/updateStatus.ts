@@ -16,6 +16,9 @@ export const useUpdateStatus = () => {
       queryClient.invalidateQueries({
         queryKey: ['bonuses'],
       });
+      queryClient.invalidateQueries({
+        queryKey: ['bonuses_user'],
+      });
       toast.success('Updated', { position: 'top-center' });
     },
     onError: (err) => {

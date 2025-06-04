@@ -40,6 +40,7 @@ interface IProps<T> extends Omit<React.ComponentProps<typeof DataGrid>, 'columns
   onSearchChange: (e: string) => void;
   hasTotal?: boolean;
   search: string;
+  isSearch?: boolean;
   filterComponent?: React.ReactNode;
   totals?: {
     total_capacity: number;
@@ -64,6 +65,7 @@ export default function DataGridCustom<T>({
   checkBoxSelection,
   totals,
   hasTotal = true,
+  isSearch = true,
   rowCount = rows.length,
   filterComponent,
   multiStatusTitle,
@@ -126,14 +128,16 @@ export default function DataGridCustom<T>({
 
   return (
     <Box position="relative" height="100%">
-      <Box position="absolute" width={250} left={16} top={12} zIndex={100}>
-        <TextField
-          fullWidth
-          placeholder={t('actions.search')}
-          value={search}
-          onChange={(e) => onSearchChange(e.target.value)}
-        />
-      </Box>
+      {isSearch && (
+        <Box position="absolute" width={250} left={16} top={12} zIndex={100}>
+          <TextField
+            fullWidth
+            placeholder={t('actions.search')}
+            value={search}
+            onChange={(e) => onSearchChange(e.target.value)}
+          />
+        </Box>
+      )}
       {!rowSelectionModel?.length && (
         <Box position="absolute" right={16} top={22} zIndex={100}>
           <Density onDensityChange={setDensity} />

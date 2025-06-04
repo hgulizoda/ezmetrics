@@ -36,7 +36,9 @@ export const UserDetailLayout = () => {
   const navigate = useNavigate();
   const pathname = usePathname();
   const { profile } = useGetProfileMe(params.id);
-
+  const isProfile = pathname.endsWith(params.id);
+  const isBonus = pathname.endsWith('bonus');
+  const isOrders = pathname.includes('orders');
   return (
     <Box>
       <Container maxWidth={false}>
@@ -124,18 +126,25 @@ export const UserDetailLayout = () => {
             }}
           >
             <Button
-              onClick={() => {
-                navigate(`${paths.dashboard.users}/${params.id}`);
-              }}
+              onClick={() => navigate(`${paths.dashboard.users}/${params.id}`)}
               startIcon={<Iconify icon="solar:user-id-linear" width={24} />}
-              variant={pathname.includes('orders') ? 'outlined' : 'contained'}
+              variant={isProfile ? 'contained' : 'outlined'}
             >
               {t('profile.tabs.profile')}
             </Button>
+
+            <Button
+              onClick={() => navigate(`${paths.dashboard.users}/${params.id}/bonus`)}
+              startIcon={<Iconify icon="mage:gift" width={24} />}
+              variant={isBonus ? 'contained' : 'outlined'}
+            >
+              {t('bonus.title')}
+            </Button>
+
             <Button
               onClick={() => navigate(`${paths.dashboard.users}/${params.id}/orders`)}
               startIcon={<Iconify icon="hugeicons:package" width={24} />}
-              variant={pathname.includes('orders') ? 'contained' : 'outlined'}
+              variant={isOrders ? 'contained' : 'outlined'}
             >
               {t('profile.tabs.orders')}
             </Button>

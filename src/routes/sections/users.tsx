@@ -5,6 +5,8 @@ import UserOrders from 'src/modules/user/ui/userOrders/UserOrders';
 import UserPackages from 'src/modules/package/ui/userPackages/UserPackages';
 import UserInformation from 'src/modules/user/ui/userInformation/UserInformation';
 
+import BonusesProfileView from '../../modules/bonuses/ui/profile/ProfileTabel';
+
 // ----------------------------------------------------------------------
 
 export const usersRoutes = [
@@ -25,6 +27,10 @@ export const usersRoutes = [
               { element: <UserPackages />, index: true },
               { element: <UserPackages />, path: ':status' },
             ],
+          },
+          {
+            element: <BonusesProfileView />,
+            path: 'bonus',
           },
         ],
       },

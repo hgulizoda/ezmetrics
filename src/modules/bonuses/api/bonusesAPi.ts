@@ -10,6 +10,12 @@ export const bonusesAPI = {
     axiosInstance
       .get<IApiResponse<IBonusesList[]>>('user-bonus/all', { params })
       .then((res) => res.data),
+  // get user Bonuses
+
+  getUserBonuses: (params: IFilters, id: string) =>
+    axiosInstance
+      .get<IApiResponse<IBonusesList[]>>(`user-bonus/user_id/${id}`, { params })
+      .then((res) => res.data),
   // get one  Bonuse
   getOne: (id: string) => axiosInstance.get<IApiResponse<IBonusesList>>(`/bonuses/${id}`),
   updateStatus: (bonus_id: string, user_id: string) =>

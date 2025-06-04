@@ -1,4 +1,6 @@
-import { Box } from '@mui/material';
+import { useSearchParams } from 'react-router-dom';
+
+import { Box, Button } from '@mui/material';
 
 import { baseColumns } from './col';
 import { useBonusesFilter } from './useFilter';
@@ -11,6 +13,7 @@ import DataGridCustom from '../../../components/data-grid-view/data-grid-custom'
 
 const BonusesView = () => {
   const { t } = useTranslate('lang');
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const {
     onPaginationChange,
@@ -23,6 +26,7 @@ const BonusesView = () => {
     page: paginationInfo.page + 1,
     limit: paginationInfo.pageSize,
     search,
+    status: searchParams.get('status'),
   });
   const { updateBunusStatus } = useUpdateStatus();
 
@@ -35,27 +39,63 @@ const BonusesView = () => {
   return (
     <Box sx={{ height: '100%' }}>
       <h1>{t('bonus.title')}</h1>
-      <Box
-        sx={{
-          borderRadius: '16px',
-          border: '1px solid #919EAB1F',
-          boxShadow: '0px 12px 24px -4px #919EAB1F',
-          overflow: 'hidden',
-          width: '100%',
-        }}
-      >
-        <Box height={700} p={1} sx={{ width: '100%' }}>
-          <DataGridCustom<IBonusesList>
-            data={bonuses}
-            col={baseColumns({ t, handleUpdateStatus })}
-            loading={isLoading}
-            rowCount={pagination.total_records}
-            onPaginationModelChange={onPaginationChange}
-            initialState={{ pagination: { paginationModel: paginationInfo } }}
-            onSearchChange={onSearchChange}
-            search={search}
-            hasTotal={false}
-          />
+      <Box position="relative">
+        <Box
+          position="absolute"
+          left={300}
+          top={25}
+          zIndex={999}
+          maxWidth={380}
+          gap={2}
+          display="flex"
+        >
+          <Button
+            variant={searchParams.get('status') === null ? 'contained' : 'outlined'}
+            onClick={() =>
+              setSearchParams((prev) => {
+                const parns = new URLSearchParams(prev);
+                parns.delete('status');
+                return parns;
+              })
+            }
+          >
+            {t('bonus.all')}
+          </Button>
+          <Button
+            variant={searchParams.get('status') === 'used' ? 'contained' : 'outlined'}
+            onClick={() => setSearchParams((prev) => ({ ...prev, status: 'used' }))}
+          >
+            {t('bonus.used')}
+          </Button>
+          <Button
+            variant={searchParams.get('status') === 'not_used' ? 'contained' : 'outlined'}
+            onClick={() => setSearchParams((prev) => ({ ...prev, status: 'not_used' }))}
+          >
+            {t('bonus.notUsed')}
+          </Button>
+        </Box>
+        <Box
+          sx={{
+            borderRadius: '16px',
+            border: '1px solid #919EAB1F',
+            boxShadow: '0px 12px 24px -4px #919EAB1F',
+            overflow: 'hidden',
+            width: '100%',
+          }}
+        >
+          <Box height={700} p={1} sx={{ width: '100%' }}>
+            <DataGridCustom<IBonusesList>
+              data={bonuses}
+              col={baseColumns({ t, handleUpdateStatus })}
+              loading={isLoading}
+              rowCount={pagination.total_records}
+              onPaginationModelChange={onPaginationChange}
+              initialState={{ pagination: { paginationModel: paginationInfo } }}
+              onSearchChange={onSearchChange}
+              search={search}
+              hasTotal={false}
+            />
+          </Box>
         </Box>
       </Box>
     </Box>

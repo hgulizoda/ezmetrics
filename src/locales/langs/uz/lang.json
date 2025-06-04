@@ -59,6 +59,9 @@
       "weight": "Og'irligi (kg)",
       "verify": "Ishlatish"
     },
+    "all": "Barchasi",
+    "notUsed": "Ishlatilmagan",
+    "used": "Ishlatilgan",
     "enum": {
       "used": "Ishlatilgan",
       "not_used": "Ishlatilmagan"

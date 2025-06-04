@@ -19,6 +19,9 @@
       "weight": "Weight",
       "verify": "Applay"
     },
+    "all": "All",
+    "notUsed": "Not Used",
+    "used": "Used",
     "enum": {
       "used": "Used",
       "not_used": "Not Used"

@@ -13,6 +13,7 @@ import { pricesRoutes } from './auto';
 import { archiveRoutes } from './archive';
 import { packagesRoutes } from './packages';
 import { settingsRoutes } from './settings';
+import ChatRoot from '../../pages/dashboard/chat';
 
 const BannerRoot = lazy(() => import('src/pages/dashboard/settings/Banner'));
 const StoreRoot = lazy(() => import('src/pages/dashboard/store'));
@@ -73,10 +74,10 @@ export const dashboardRoutes = [
         element: <BonusPageRoot />,
         path: 'bonus',
       },
-      // {
-      //   path: 'chat',
-      //   element: <ChatRoot />,
-      // },
+      {
+        path: 'chat',
+        element: <ChatRoot />,
+      },
       {
         path: 'statistics',
         element: <Statistics />,

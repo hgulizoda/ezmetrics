@@ -92,12 +92,12 @@ export function useNavData() {
             roles: ['superadmin', 'admin'],
             icon: <Iconify icon="tdesign:notification" width={24} />,
           },
-          // {
-          //   title: 'Chat',
-          //   path: paths.dashboard.chat,
-          //   roles: ['superadmin', 'admin'],
-          //   icon: <Iconify icon="hugeicons:bubble-chat-user" width={24} />,
-          // },
+          {
+            title: 'Chat',
+            path: paths.dashboard.chat,
+            roles: ['superadmin', 'admin'],
+            icon: <Iconify icon="hugeicons:bubble-chat-user" width={24} />,
+          },
           {
             title: 'Statistics',
             path: paths.dashboard.statistics,

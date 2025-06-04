@@ -1,5 +1,3 @@
-'use client';
-
 import dayjs from 'dayjs';
 import { useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
@@ -47,7 +45,7 @@ export default function CustomersList() {
     () =>
       (onlineUsers &&
         data?.data
-          .filter((el: any) => el.profile.first_name.toLowerCase().includes(searchContact))
+          .filter((el: any) => el?.profile?.first_name?.toLowerCase().includes(searchContact))
           .map((user: ICustomerRes) => {
             const isUserOnline = onlineUsers?.some((u) => u.user_id === user.user._id);
             return {
@@ -194,8 +192,8 @@ export default function CustomersList() {
           renderInput={(params) => <TextField {...params} placeholder="Mijozlar" />}
           disablePortal
           options={users.users.map((customer: IUser) => ({
-            label: customer.fullName,
-            value: customer.id,
+            label: customer?.fullName,
+            value: customer?.id,
           }))}
           onChange={createNewChat}
           loading={isPending}

@@ -1,9 +1,9 @@
 import { TFunction } from 'i18next';
 import { Link } from 'react-router-dom';
 
+import { Box } from '@mui/material';
 import Chip from '@mui/material/Chip';
-import { GridColDef } from '@mui/x-data-grid';
-import { Box, IconButton } from '@mui/material';
+import { GridColDef, GridActionsCellItem } from '@mui/x-data-grid';
 
 import { paths } from 'src/routes/paths';
 
@@ -75,19 +75,23 @@ export const baseColumns = ({ t, handleUpdateStatus }: Props): GridColDef<IBonus
     renderCell: ({ row }) => <Box>{row.total_weight}</Box>,
   },
   {
-    field: '',
+    field: 'actions',
+    type: 'actions',
+    headerName: '',
     flex: 1,
     maxWidth: 60,
-    renderCell: ({ row }) => (
-      <>
-        {row.status === 'not_used' && (
-          <Box sx={{ display: 'flex', gap: 2 }}>
-            <IconButton onClick={() => handleUpdateStatus(row._id, row.user._id)}>
-              <Iconify icon="material-symbols:check" />
-            </IconButton>
-          </Box>
-        )}
-      </>
-    ),
+    getActions: ({ row }) => {
+      if (row.status === 'not_used') {
+        return [
+          <GridActionsCellItem
+            key={row._id}
+            icon={<Iconify icon="material-symbols:check" />}
+            label="Check"
+            onClick={() => handleUpdateStatus(row._id, row.user._id)}
+          />,
+        ];
+      }
+      return [];
+    },
   },
 ];

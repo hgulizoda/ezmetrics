@@ -16,7 +16,8 @@
       "ball": "Ball",
       "status": "Status",
       "capacity": "Capacity",
-      "weight": "Weight"
+      "weight": "Weight",
+      "verify": "Applay"
     },
     "enum": {
       "used": "Used",

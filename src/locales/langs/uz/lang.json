@@ -56,7 +56,8 @@
       "ball": "Ball",
       "status": "Status",
       "capacity": "Hajmi",
-      "weight": "Og'irligi (kg)"
+      "weight": "Og'irligi (kg)",
+      "verify": "Ishlatish"
     },
     "enum": {
       "used": "Ishlatilgan",

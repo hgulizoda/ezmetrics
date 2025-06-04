@@ -19,6 +19,8 @@
       "weight": "Weight",
       "verify": "Applay"
     },
+    "volumeLimit": "Volume limit",
+    "limitAdd": "Add limit",
     "all": "All",
     "notUsed": "Not Used",
     "used": "Used",

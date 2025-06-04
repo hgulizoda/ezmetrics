@@ -59,6 +59,8 @@
       "weight": "Og'irligi (kg)",
       "verify": "Ishlatish"
     },
+    "volumeLimit": "Hajim limiti",
+    "limitAdd": "Limit qo'shish",
     "all": "Barchasi",
     "notUsed": "Ishlatilmagan",
     "used": "Ishlatilgan",

@@ -1,19 +1,45 @@
+import { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
 import { useSearchParams } from 'react-router-dom';
+import { yupResolver } from '@hookform/resolvers/yup';
 
-import { Box, Button } from '@mui/material';
+import { LoadingButton } from '@mui/lab';
+import {
+  Box,
+  Grid,
+  Dialog,
+  Button,
+  Divider,
+  useTheme,
+  Typography,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+} from '@mui/material';
 
 import { baseColumns } from './col';
 import { useBonusesFilter } from './useFilter';
 import { useTranslate } from '../../../locales';
+import Iconify from '../../../components/iconify';
 import { IBonusesList } from '../types/BunusesList';
 import { useGetAllBonuses } from '../services/getAll';
+import { useGetBonusLimit } from '../services/getLimit';
+import { useBoolean } from '../../../hooks/use-boolean';
+import { useUpdateLimit } from '../services/updateLimit';
 import { useUpdateStatus } from '../services/updateStatus';
+import { RHFTextField } from '../../../components/hook-form';
+import { limitSchema, LimitSchemaForm } from '../libs/limitsForm';
 import { ErrorData } from '../../../components/error-data/error-data';
+import FormProvider from '../../../components/hook-form/form-provider';
 import DataGridCustom from '../../../components/data-grid-view/data-grid-custom';
 
 const BonusesView = () => {
   const { t } = useTranslate('lang');
+  const theme = useTheme();
   const [searchParams, setSearchParams] = useSearchParams();
+  const open = useBoolean();
+
+  const { updateBunusLimit, isPending: isLimitPending } = useUpdateLimit();
 
   const {
     onPaginationChange,
@@ -21,6 +47,8 @@ const BonusesView = () => {
     onSearchChange,
     search,
   } = useBonusesFilter();
+
+  const { limits, isLoading: isLimitLoading } = useGetBonusLimit();
 
   const { bonuses, pagination, isLoading } = useGetAllBonuses({
     page: paginationInfo.page + 1,
@@ -33,12 +61,94 @@ const BonusesView = () => {
   const handleUpdateStatus = async (bonus_id: string, user_id: string) => {
     await updateBunusStatus({ bonus_id, user_id });
   };
+  const methods = useForm<LimitSchemaForm>({
+    resolver: yupResolver(limitSchema),
+  });
+  useEffect(() => {
+    if (!isLimitLoading) {
+      methods.reset({
+        volume_limit: limits.volume_limit,
+      });
+    }
+  }, [isLimitLoading, methods, limits.volume_limit]);
+
+  const onSubmit = async (data: LimitSchemaForm) => {
+    await updateBunusLimit({
+      volume_limit: data.volume_limit!,
+    });
+    open.setValue(false);
+  };
 
   if (!bonuses) return <ErrorData />;
 
   return (
     <Box sx={{ height: '100%' }}>
-      <h1>{t('bonus.title')}</h1>
+      <Box
+        sx={{
+          display: 'flex',
+          width: '100%',
+          alignItems: 'center',
+          gap: 3,
+          mb: 2,
+          justifyContent: 'space-between',
+        }}
+      >
+        <Typography variant="h4" component="h2" display="flex" gap={1}>
+          {t('bonus.title')}
+          <Typography variant="h4" color={theme.palette.grey[400]}>
+            ({bonuses.length})
+          </Typography>
+        </Typography>
+        <Box display="flex" ml={1} gap={1}>
+          <Button
+            variant="contained"
+            color="primary"
+            startIcon={<Iconify icon="ic:round-add" />}
+            onClick={open.onTrue}
+          >
+            {t('bonus.limitAdd')}
+          </Button>
+        </Box>
+      </Box>
+      <Dialog open={open.value} onClose={open.onFalse} fullWidth maxWidth="xs">
+        <FormProvider methods={methods} onSubmit={methods.handleSubmit(onSubmit)}>
+          <DialogTitle sx={{ py: 2 }}>{t('bonus.limitAdd')}</DialogTitle>
+          <Divider />
+          <DialogContent sx={{ py: 3 }}>
+            <Grid container spacing={2}>
+              <Grid item xs={12}>
+                <RHFTextField
+                  fullWidth
+                  type="number"
+                  name="volume_limit"
+                  label={t('bonus.volumeLimit')}
+                  placeholder={t('bonus.volumeLimit')}
+                />
+              </Grid>
+            </Grid>
+            <DialogActions
+              sx={{
+                py: 2,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'flex-end',
+              }}
+            >
+              <Button variant="contained" color="error" type="button" onClick={open.onFalse}>
+                {t('actions.cancel')}
+              </Button>
+              <LoadingButton
+                loading={isLimitPending}
+                variant="contained"
+                color="primary"
+                type="submit"
+              >
+                {t('actions.save')}
+              </LoadingButton>
+            </DialogActions>
+          </DialogContent>
+        </FormProvider>
+      </Dialog>
       <Box position="relative">
         <Box
           position="absolute"

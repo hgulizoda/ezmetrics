@@ -35,6 +35,7 @@ import { ICustomerRes, IOnlineUsers } from '../types/chat';
 
 export default function CustomersList() {
   const { data, isLoading } = useGetChatLists();
+
   const { data: onlineUsers } = useQuery<IOnlineUsers[]>({
     queryKey: ['online_users'],
   });
@@ -60,7 +61,7 @@ export default function CustomersList() {
   const { createAsync } = useCreateRoom();
   const { data: users, isLoading: isPending } = useGetUsersList({
     page: 1,
-    limit: 10,
+    limit: 10000,
   });
 
   const createNewChat = async (

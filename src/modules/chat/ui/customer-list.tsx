@@ -193,7 +193,7 @@ export default function CustomersList() {
           renderInput={(params) => <TextField {...params} placeholder="Mijozlar" />}
           disablePortal
           options={users.users.map((customer: IUser) => ({
-            label: customer?.fullName,
+            label: `${customer?.fullName} ${customer?.customerId}`,
             value: customer?.id,
           }))}
           onChange={createNewChat}

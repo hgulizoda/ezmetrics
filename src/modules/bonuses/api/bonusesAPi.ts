@@ -20,6 +20,8 @@ export const bonusesAPI = {
   getOne: (id: string) => axiosInstance.get<IApiResponse<IBonusesList>>(`/bonuses/${id}`),
   updateStatus: (bonus_id: string, user_id: string) =>
     axiosInstance.post(`/user-bonus/use/${bonus_id}/${user_id}`),
+  unUseBonus: (bonus_id: string, user_id: string) =>
+    axiosInstance.post(`/user-bonus/unuse/${bonus_id}/${user_id}`),
   getLimit: () => axiosInstance.get('user-bonus/get-limit').then((res) => res.data),
   changeLimit: (limit: IUpdateLimit) => axiosInstance.post('user-bonus/change-limit', limit),
 };

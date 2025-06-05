@@ -16,9 +16,14 @@ import { statusColor, statusLabel } from '../libs/statusLabel';
 interface Props {
   t: TFunction;
   handleUpdateStatus: (bonus_id: string, user_id: string) => Promise<void>;
+  handleUnuseBonuse: (bonus_id: string, user_id: string) => Promise<void>;
 }
 
-export const baseColumns = ({ t, handleUpdateStatus }: Props): GridColDef<IBonusesList>[] => [
+export const baseColumns = ({
+  t,
+  handleUpdateStatus,
+  handleUnuseBonuse,
+}: Props): GridColDef<IBonusesList>[] => [
   {
     field: 'fullName',
     headerName: t('users.table.fullName'),
@@ -87,12 +92,20 @@ export const baseColumns = ({ t, handleUpdateStatus }: Props): GridColDef<IBonus
             showInMenu
             key={row._id}
             icon={<Iconify icon="material-symbols:check" />}
-            label="Check"
+            label={t('bonus.action.used')}
             onClick={() => handleUpdateStatus(row._id, row.user._id)}
           />,
         ];
       }
-      return [];
+      return [
+        <GridActionsCellItem
+          showInMenu
+          key={row._id}
+          icon={<Iconify icon="material-symbols:close" />}
+          label={t('bonus.action.not_used')}
+          onClick={() => handleUnuseBonuse(row._id, row.user._id)}
+        />,
+      ];
     },
   },
 ];

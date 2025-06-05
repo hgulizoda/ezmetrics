@@ -23,6 +23,7 @@ import { useTranslate } from '../../../locales';
 import Iconify from '../../../components/iconify';
 import { IBonusesList } from '../types/BunusesList';
 import { useGetAllBonuses } from '../services/getAll';
+import { useUnuseBouns } from '../services/unUseBonus';
 import { useGetBonusLimit } from '../services/getLimit';
 import { useBoolean } from '../../../hooks/use-boolean';
 import { useUpdateLimit } from '../services/updateLimit';
@@ -57,9 +58,13 @@ const BonusesView = () => {
     status: searchParams.get('status'),
   });
   const { updateBunusStatus } = useUpdateStatus();
+  const { unuseBouns } = useUnuseBouns();
 
   const handleUpdateStatus = async (bonus_id: string, user_id: string) => {
     await updateBunusStatus({ bonus_id, user_id });
+  };
+  const handleUnuseBonuse = async (bonus_id: string, user_id: string) => {
+    await unuseBouns({ bonus_id, user_id });
   };
   const methods = useForm<LimitSchemaForm>({
     resolver: yupResolver(limitSchema),
@@ -196,7 +201,7 @@ const BonusesView = () => {
           <Box height={700} p={1} sx={{ width: '100%' }}>
             <DataGridCustom<IBonusesList>
               data={bonuses}
-              col={baseColumns({ t, handleUpdateStatus })}
+              col={baseColumns({ t, handleUpdateStatus, handleUnuseBonuse })}
               loading={isLoading}
               rowCount={pagination.total_records}
               onPaginationModelChange={onPaginationChange}

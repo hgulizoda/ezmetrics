@@ -12,6 +12,10 @@
   },
   "bonus": {
     "title": "Bonuses",
+    "action": {
+      "used": "Apply",
+      "not_used": "Return"
+    },
     "table": {
       "ball": "Ball",
       "status": "Status",
@@ -32,6 +36,7 @@
   "users": {
     "title": "Users",
     "formTitle": "Create User",
+
     "firstName": "First Name",
     "lastName": "Last Name",
     "dob": "Date of Birth",

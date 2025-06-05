@@ -59,6 +59,10 @@
       "weight": "Og'irligi (kg)",
       "verify": "Ishlatish"
     },
+    "action": {
+      "used": "Qo'lash",
+      "not_used": "Qaytarish"
+    },
     "volumeLimit": "Hajim limiti",
     "limitAdd": "Limit qo'shish",
     "all": "Barchasi",

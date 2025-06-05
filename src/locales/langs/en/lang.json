@@ -15,8 +15,8 @@
     "table": {
       "ball": "Ball",
       "status": "Status",
-      "capacity": "Capacity",
-      "weight": "Weight",
+      "capacity": "Capacity (m³)",
+      "weight": "Weight (kg)",
       "verify": "Applay"
     },
     "volumeLimit": "Volume limit",

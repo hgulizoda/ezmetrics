@@ -55,7 +55,7 @@
     "table": {
       "ball": "Ball",
       "status": "Status",
-      "capacity": "Hajmi",
+      "capacity": "Hajmi (m³)",
       "weight": "Og'irligi (kg)",
       "verify": "Ishlatish"
     },

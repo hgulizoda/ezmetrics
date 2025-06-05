@@ -18,8 +18,8 @@
     "table": {
       "ball": "Балл",
       "status": "Статус",
-      "capacity": "Вместимость",
-      "weight": "Вес",
+      "capacity": "Вместимость (m³)",
+      "weight": "Вес (кг)",
       "verify": "Применить"
     },
     "volumeLimit": "Лимит объема",

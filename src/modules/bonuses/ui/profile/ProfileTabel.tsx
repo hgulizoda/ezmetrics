@@ -6,6 +6,7 @@ import { baseColumns } from '../col';
 import { useBonusesFilter } from '../useFilter';
 import { useTranslate } from '../../../../locales';
 import { IBonusesList } from '../../types/BunusesList';
+import { useUnuseBouns } from '../../services/unUseBonus';
 import { useUpdateStatus } from '../../services/updateStatus';
 import { useGetUserBonuses } from '../../services/getUserBonus';
 import { ErrorData } from '../../../../components/error-data/error-data';
@@ -27,9 +28,13 @@ const BonusesProfileView = () => {
     id!
   );
   const { updateBunusStatus } = useUpdateStatus();
+  const { unuseBouns } = useUnuseBouns();
 
   const handleUpdateStatus = async (bonus_id: string, user_id: string) => {
     await updateBunusStatus({ bonus_id, user_id });
+  };
+  const handleUnuseBonuse = async (bonus_id: string, user_id: string) => {
+    await unuseBouns({ bonus_id, user_id });
   };
 
   if (!bonuses) return <ErrorData />;
@@ -83,7 +88,7 @@ const BonusesProfileView = () => {
           <Box height={700} p={1} sx={{ width: '100%' }}>
             <DataGridCustom<IBonusesList>
               data={bonuses}
-              col={baseColumns({ t, handleUpdateStatus })}
+              col={baseColumns({ t, handleUpdateStatus, handleUnuseBonuse })}
               loading={isLoading}
               rowCount={pagination.total_records}
               onPaginationModelChange={onPaginationChange}

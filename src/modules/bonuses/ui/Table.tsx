@@ -175,13 +175,13 @@ const BonusesView = () => {
             variant={searchParams.get('status') === 'used' ? 'contained' : 'outlined'}
             onClick={() => setSearchParams((prev) => ({ ...prev, status: 'used' }))}
           >
-            {t('bonus.used')}
+            {t('bonus.enum.used')}
           </Button>
           <Button
             variant={searchParams.get('status') === 'not_used' ? 'contained' : 'outlined'}
             onClick={() => setSearchParams((prev) => ({ ...prev, status: 'not_used' }))}
           >
-            {t('bonus.notUsed')}
+            {t('bonus.enum.not_used')}
           </Button>
         </Box>
         <Box

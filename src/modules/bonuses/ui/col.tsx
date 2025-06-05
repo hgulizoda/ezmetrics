@@ -84,6 +84,7 @@ export const baseColumns = ({ t, handleUpdateStatus }: Props): GridColDef<IBonus
       if (row.status === 'not_used') {
         return [
           <GridActionsCellItem
+            showInMenu
             key={row._id}
             icon={<Iconify icon="material-symbols:check" />}
             label="Check"

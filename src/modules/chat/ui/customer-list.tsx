@@ -1,7 +1,8 @@
 import dayjs from 'dayjs';
-import { useMemo, useState } from 'react';
+import { debounce } from 'lodash';
 import { useQuery } from '@tanstack/react-query';
 import { useSearchParams } from 'react-router-dom';
+import { useMemo, useState, useEffect } from 'react';
 
 import { Search } from '@mui/icons-material';
 import {
@@ -35,6 +36,8 @@ import { ICustomerRes, IOnlineUsers } from '../types/chat';
 
 export default function CustomersList() {
   const { data, isLoading } = useGetChatLists();
+  const [search, setSearch] = useState<string>();
+  const [autoOpen, setAutoOpen] = useState(false);
 
   const { data: onlineUsers } = useQuery<IOnlineUsers[]>({
     queryKey: ['online_users'],
@@ -62,7 +65,10 @@ export default function CustomersList() {
   const { data: users, isLoading: isPending } = useGetUsersList({
     page: 1,
     limit: 10000,
+    search,
   });
+
+  console.log(users);
 
   const createNewChat = async (
     event: React.SyntheticEvent,
@@ -76,6 +82,21 @@ export default function CustomersList() {
       await createAsync(value.value).then((res) => setSearchParams({ id: res.data._id }));
     }
   };
+
+  const debouncedSearch = useMemo(
+    () =>
+      debounce((value: string) => {
+        setSearch(value);
+      }, 500),
+    []
+  );
+
+  useEffect(
+    () => () => {
+      debouncedSearch.cancel();
+    },
+    [debouncedSearch]
+  );
 
   if (isLoading) return 'Loading...';
 
@@ -190,14 +211,34 @@ export default function CustomersList() {
         }}
       >
         <Autocomplete
-          renderInput={(params) => <TextField {...params} placeholder="Mijozlar" />}
+          open={autoOpen}
+          onOpen={() => setAutoOpen(true)}
+          onClose={() => setAutoOpen(false)}
           disablePortal
-          options={users.users.map((customer: IUser) => ({
-            label: `${customer?.fullName} ${customer?.customerId}`,
-            value: customer?.id,
-          }))}
-          onChange={createNewChat}
           loading={isPending}
+          options={
+            users?.users?.map((customer: IUser) => ({
+              label: typeof customer?.fullName === 'string' ? customer.fullName : '',
+              value: customer?.id,
+            })) || []
+          }
+          filterOptions={(x) => x} // disable client-side filtering
+          getOptionLabel={(option) => option.label} // make sure Autocomplete knows what to display
+          onInputChange={(event: any, value: string, reason: string) => {
+            setSearchParams({});
+            if (reason !== 'reset') {
+              debouncedSearch(value);
+              if (value.trim()) {
+                setAutoOpen(true);
+              } else {
+                setAutoOpen(false);
+              }
+            }
+          }}
+          onChange={createNewChat}
+          noOptionsText={isPending ? 'Qidirilmoqda...' : 'Hech narsa topilmadi'}
+          loadingText="Yuklanmoqda..."
+          renderInput={(params) => <TextField {...params} placeholder="Mijozlar" />}
         />
       </CustomPopover>
     </Box>

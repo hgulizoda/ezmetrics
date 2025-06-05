@@ -65,8 +65,8 @@
     "notUsed": "Ishlatilmagan",
     "used": "Ishlatilgan",
     "enum": {
-      "used": "Ishlatilgan",
-      "not_used": "Ishlatilmagan"
+      "used": "Foydalanilgan",
+      "not_used": "Foydalanilmagan"
     }
   },
   "packages": {

@@ -92,7 +92,6 @@ export function AuthProvider({ children }: Props) {
           data: { data },
         } = await axios.get(endpoints.auth.me);
         const user = data[0];
-
         dispatch({
           type: Types.INITIAL,
           payload: {
@@ -145,7 +144,9 @@ export function AuthProvider({ children }: Props) {
         },
       },
     });
-  }, []);
+
+    initialize();
+  }, [initialize]);
 
   // LOGOUT
   const logout = useCallback(async () => {

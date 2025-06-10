@@ -1,8 +1,7 @@
 import dayjs from 'dayjs';
-import { debounce } from 'lodash';
 import { useQuery } from '@tanstack/react-query';
 import { useSearchParams } from 'react-router-dom';
-import { useMemo, useState, useEffect } from 'react';
+import { useRef, useMemo, useState, MouseEvent } from 'react';
 
 import { Search } from '@mui/icons-material';
 import {
@@ -22,6 +21,8 @@ import {
   InputAdornment,
 } from '@mui/material';
 
+import { useDebounce } from 'src/hooks/use-debounce';
+
 import { IUser } from 'src/modules/user/types/User';
 import { useGetUsersList } from 'src/modules/user/hook/user';
 import AccountPopover from 'src/layouts/common/account-popover';
@@ -38,6 +39,10 @@ export default function CustomersList() {
   const { data, isLoading } = useGetChatLists();
   const [search, setSearch] = useState<string>();
   const [autoOpen, setAutoOpen] = useState(false);
+
+  const debouncedSearch = useDebounce(search, 500);
+
+  const ref = useRef<HTMLDivElement >(null);
 
   const { data: onlineUsers } = useQuery<IOnlineUsers[]>({
     queryKey: ['online_users'],
@@ -65,7 +70,7 @@ export default function CustomersList() {
   const { data: users, isLoading: isPending } = useGetUsersList({
     page: 1,
     limit: 10000,
-    search: search?.trim() || '',
+    search: debouncedSearch,
   });
 
   const createNewChat = async (
@@ -81,20 +86,11 @@ export default function CustomersList() {
     }
   };
 
-  const debouncedSearch = useMemo(
-    () =>
-      debounce((value: string) => {
-        setSearch(value);
-      }, 500),
-    []
-  );
+  const handlePopoverOpen = (e: MouseEvent<HTMLElement>) => {
+    popover.onOpen(e);
 
-  useEffect(
-    () => () => {
-      debouncedSearch.cancel();
-    },
-    [debouncedSearch]
-  );
+    setAutoOpen(true);
+  };
 
   if (isLoading) return 'Loading...';
 
@@ -111,7 +107,7 @@ export default function CustomersList() {
         <AccountPopover />
 
         <Tooltip title="Yangi chat boshlash">
-          <IconButton onClick={popover.onOpen}>
+          <IconButton onClick={handlePopoverOpen}>
             <Iconify icon="hugeicons:add-male" width={25} />
           </IconButton>
         </Tooltip>
@@ -205,40 +201,41 @@ export default function CustomersList() {
         onClose={popover.onClose}
         sx={{
           width: '300px',
-          height: '430px',
+          height: '450px'
         }}
       >
         <Autocomplete
           open={autoOpen}
           onOpen={() => setAutoOpen(true)}
-          onClose={() => setAutoOpen(false)}
           disablePortal
+          openOnFocus
+          ref={ref}
           loading={isPending}
           options={
-            users?.users?.map((customer: IUser) => ({
-              label: typeof customer?.fullName === 'string' ? customer.fullName : '',
+            (users?.users?.slice().map((customer: IUser) => ({
+              label: `${customer.customerId} — ${customer.fullName}`,
               value: customer?.id,
-            })) || []
+            })) || []).sort((a, b) => getOptionLabelFullName(a.label).localeCompare(getOptionLabelFullName(b.label)))
           }
           filterOptions={(x) => x} // disable client-side filtering
           getOptionLabel={(option) => option.label} // make sure Autocomplete knows what to display
+          inputValue={search}
           onInputChange={(event: any, value: string, reason: string) => {
             setSearchParams({});
             if (reason !== 'reset') {
-              debouncedSearch(value);
-              if (value.trim()) {
-                setAutoOpen(true);
-              } else {
-                setAutoOpen(false);
-              }
+              setSearch(value);
             }
           }}
           onChange={createNewChat}
           noOptionsText={isPending ? 'Qidirilmoqda...' : 'Hech narsa topilmadi'}
           loadingText="Yuklanmoqda..."
-          renderInput={(params) => <TextField {...params} placeholder="Mijozlar" />}
+          renderInput={(params) => <TextField {...params} focused autoFocus placeholder="Mijozlar" />}
         />
       </CustomPopover>
     </Box>
   );
+}
+
+function getOptionLabelFullName(label: string) {
+  return label.split(" — ")[1];
 }

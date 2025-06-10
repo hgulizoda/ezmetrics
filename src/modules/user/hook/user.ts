@@ -1,4 +1,5 @@
 import { get } from 'lodash';
+import { useMemo } from 'react';
 import { enqueueSnackbar } from 'notistack';
 import { useQuery, useMutation } from '@tanstack/react-query';
 
@@ -20,13 +21,19 @@ export const useGetUsersList = (params?: IFilterProps) => {
     users: [],
     pagination: null,
   };
+
+  const normalizedParams = useMemo<IFilterProps | undefined>(
+    () => params && { ...params, search: normalizeSearch(params.search || '') },
+    [params]
+  );
+
   const {
     data = initialData,
     isLoading,
     error,
   } = useQuery({
-    queryKey: ['users', params],
-    queryFn: () => user.getAll(params && params),
+    queryKey: ['users', normalizedParams],
+    queryFn: () => user.getAll(normalizedParams && normalizedParams),
     select: (item: IApiResponse<IUserRes>) => ({
       users: userAdapter(get(item, 'data', [])),
       pagination: get(item, 'pagination', null),
@@ -35,6 +42,16 @@ export const useGetUsersList = (params?: IFilterProps) => {
 
   return { data, isLoading, error };
 };
+
+function normalizeSearch(search: string) {
+  if (!search) return '';
+
+  if (search.startsWith('+')) {
+    return search.replaceAll(" ", "").replace("+", "");
+  }
+
+  return search.trim();
+}
 
 export const useUpdateUser = ({ id }: IUserId) => {
   const { t } = useTranslate('lang');

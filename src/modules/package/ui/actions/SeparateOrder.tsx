@@ -26,7 +26,6 @@ interface Props {
 }
 
 export const SeparateOrder = ({ id, onClose, open, query }: Props) => {
-  console.log(id);
   const { t } = useTranslate('lang');
   const { onSeparate, isSeparating } = useSeparatePackage(id, query);
   const { data } = useGetTruckOrder(id);

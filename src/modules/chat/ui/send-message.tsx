@@ -55,8 +55,9 @@ export const SendMessage = () => {
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    console.log(file);
+
     if (!file || !chatId) return;
+    
     try {
       const uploadedUrl = await uploadAsync({ file });
       if (uploadedUrl) {

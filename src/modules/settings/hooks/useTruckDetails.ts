@@ -15,9 +15,7 @@ export const useGetTruckDetails = ({ id, params }: IProps) => {
   const { data, isLoading, error } = useQuery({
     queryKey: ['truckDetails', params],
     queryFn: () => truckDetails.getOrder({ id, params }),
-    select: (res) => {
-      console.log(res);
-      return {
+    select: (res) => ({
         orders: truckDetailsAdapter(get(res, 'data.orders', [])),
         name: get(res, 'data.name'),
         totals: get(res, 'data.totals'),
@@ -25,8 +23,7 @@ export const useGetTruckDetails = ({ id, params }: IProps) => {
         estimatedArrivalDate: get(res, 'data.estimated_arrival_date', '--'),
         containerNumber: get(res, 'data.container_number', '--'),
         status: get(res, 'data.status'),
-      };
-    },
+      }),
   });
 
   return { data, isLoading, error };

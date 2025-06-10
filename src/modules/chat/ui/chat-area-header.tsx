@@ -35,7 +35,7 @@ export const ChatHeader = () => {
       setSingleUser(chats.data.find((el: any) => el._id === chatId));
     }
   }, [chatId, chats]);
-  console.log(singleUser);
+
   useEffect(() => {
     const onlineUsers: IOnlineUsers[] = queryClient.getQueryData(['online_users']) || [];
     setIsOnline(onlineUsers?.some((el) => el.user_id === singleUser?.user?._id));

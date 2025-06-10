@@ -61,7 +61,6 @@ export const UpdateTruck = ({ open, onClose, initialValue }: IDialogProps) => {
     }
   }, [form, initialValue]);
   const formSubmit = async (formValues: TruckFormType) => {
-    console.log(formValues);
     await updateTruck({
       values: {
         name: `${formValues.id}-${formValues.type}-${formValues.number}`,

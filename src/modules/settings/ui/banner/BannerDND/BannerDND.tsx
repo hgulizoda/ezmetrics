@@ -20,7 +20,7 @@ import Circular from '../../../../../components/loading-screen/circular-screen';
 export const BannerDND = () => {
   const { reorderBanner } = useReorderBanner();
   const { isLoading, error, images } = useGetBanner();
-  console.log(images);
+
   const [activeId, setActiveId] = useState<UniqueIdentifier | string | null>(null);
   const [imageItem, setImageItem] = useState<IBanner[]>([]);
 

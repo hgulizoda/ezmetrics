@@ -11,7 +11,7 @@ export const useChatSocket = () => {
 
   useEffect(() => {
     if (user?._id) {
-      const socket = io('https://api.nexus-development.qisqa.link/chat', {
+      const socket = io(`${import.meta.env.VITE_BASE_URL}/chat`, {
         extraHeaders: {
           user_id: user?._id,
           is_admin: 'true',
@@ -41,7 +41,7 @@ export const useChatSocket = () => {
 
     return () => {};
   }, [user?._id]);
-
+  
   const emit = (event: string, payload: any) => {
     socketRef.current?.emit(event, payload);
   };

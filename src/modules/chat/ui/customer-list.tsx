@@ -68,8 +68,6 @@ export default function CustomersList() {
     search,
   });
 
-  console.log(users);
-
   const createNewChat = async (
     event: React.SyntheticEvent,
     value: {

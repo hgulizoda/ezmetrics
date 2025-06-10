@@ -32,7 +32,7 @@ interface LastMessage {
   _id: string; // Unique identifier
 }
 
-interface Profile {
+export interface Profile {
   app_lang: 'uz';
   avatar: string;
   birth_date: string; // ISO 8601 date and time string

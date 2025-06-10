@@ -54,7 +54,7 @@ export default function CustomersList() {
     () =>
       (onlineUsers &&
         data?.data
-          .filter((el: any) => el?.profile?.first_name?.toLowerCase().includes(searchContact))
+          .filter((el: any) => searchExistingChat(el, searchContact))
           .map((user: ICustomerRes) => {
             const isUserOnline = onlineUsers?.some((u) => u.user_id === user.user._id);
             return {
@@ -158,7 +158,7 @@ export default function CustomersList() {
                 primary={
                   <Box display="flex" width="100%" justifyContent="space-between">
                     <Typography variant="subtitle2">
-                      {customer?.profile?.first_name} {customer?.profile?.last_name}
+                      {customer?.profile?.first_name} {customer?.profile?.last_name} ({customer?.user?.user_id})
                     </Typography>
                     <Typography variant="caption" color="text.secondary">
                       {dayjs(customer.last_message?.created_at).format('LT')}
@@ -234,6 +234,10 @@ export default function CustomersList() {
       </CustomPopover>
     </Box>
   );
+}
+
+function searchExistingChat(profile: ICustomerRes, search: string) {
+  return `${profile.user.user_id} ${profile.profile?.first_name} ${profile.profile?.last_name}`.trim().toLowerCase().includes(search.trim().toLowerCase());
 }
 
 function getOptionLabelFullName(label: string) {

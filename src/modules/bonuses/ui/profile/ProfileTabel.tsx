@@ -47,7 +47,7 @@ const BonusesProfileView = () => {
           left={10}
           top={25}
           zIndex={999}
-          maxWidth={380}
+          maxWidth={480}
           gap={2}
           display="flex"
         >
@@ -74,6 +74,12 @@ const BonusesProfileView = () => {
             onClick={() => setSearchParams((prev) => ({ ...prev, status: 'not_used' }))}
           >
             {t('bonus.notUsed')}
+          </Button>
+          <Button
+            variant={searchParams.get('status') === 'in_progress' ? 'contained' : 'outlined'}
+            onClick={() => setSearchParams((prev) => ({ ...prev, status: 'in_progress' }))}
+          >
+            {t('bonus.enum.in_progress')}
           </Button>
         </Box>
         <Box

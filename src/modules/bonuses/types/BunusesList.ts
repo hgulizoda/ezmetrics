@@ -1,6 +1,7 @@
 export enum BonusesStatus {
   USED = 'used',
   NOT_USED = 'not_used',
+  IN_PROGRESS = 'in_progress',
 }
 export interface IBonusesList {
   profile: Profile;

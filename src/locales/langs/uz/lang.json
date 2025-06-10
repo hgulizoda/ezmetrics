@@ -60,7 +60,7 @@
       "verify": "Ishlatish"
     },
     "action": {
-      "used": "Qo'lash",
+      "used": "Foydalanish",
       "not_used": "Qaytarish"
     },
     "volumeLimit": "Hajim limiti",
@@ -70,7 +70,8 @@
     "used": "Ishlatilgan",
     "enum": {
       "used": "Foydalanilgan",
-      "not_used": "Foydalanilmagan"
+      "not_used": "Foydalanilmagan",
+      "in_progress": "Jarayonda"
     }
   },
   "packages": {

@@ -30,7 +30,8 @@
     "used": "Used",
     "enum": {
       "used": "Used",
-      "not_used": "Not Used"
+      "not_used": "Not Used",
+      "in_progress": "In Progress"
     }
   },
   "users": {

@@ -86,6 +86,9 @@ export const baseColumns = ({
     flex: 1,
     maxWidth: 60,
     getActions: ({ row }) => {
+      if (row.status === 'in_progress') {
+        return [];
+      }
       if (row.status === 'not_used') {
         return [
           <GridActionsCellItem

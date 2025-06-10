@@ -65,7 +65,7 @@ export default function CustomersList() {
   const { data: users, isLoading: isPending } = useGetUsersList({
     page: 1,
     limit: 10000,
-    search,
+    search: search?.trim() || '',
   });
 
   const createNewChat = async (

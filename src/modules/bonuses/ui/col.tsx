@@ -86,7 +86,7 @@ export const baseColumns = ({
     flex: 1,
     maxWidth: 60,
     getActions: ({ row }) => {
-      if (row.status === 'in_progress') {
+      if (row.status === 'inprogress') {
         return [];
       }
       if (row.status === 'not_used') {

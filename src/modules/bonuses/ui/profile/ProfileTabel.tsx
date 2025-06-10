@@ -76,8 +76,8 @@ const BonusesProfileView = () => {
             {t('bonus.notUsed')}
           </Button>
           <Button
-            variant={searchParams.get('status') === 'in_progress' ? 'contained' : 'outlined'}
-            onClick={() => setSearchParams((prev) => ({ ...prev, status: 'in_progress' }))}
+            variant={searchParams.get('status') === 'inprogress' ? 'contained' : 'outlined'}
+            onClick={() => setSearchParams((prev) => ({ ...prev, status: 'inprogress' }))}
           >
             {t('bonus.enum.in_progress')}
           </Button>

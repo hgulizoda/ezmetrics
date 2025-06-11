@@ -60,17 +60,17 @@ export const SendMessage = () => {
   };
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
+    const {files} = e.target;
 
-    if (!file || !chatId) return;
+    if (!files?.length || !chatId) return;
     
     try {
-      const uploadedUrl = await uploadAsync({ file });
+      const uploadedUrl = await Promise.all([...files].map((file) => uploadAsync({ file })));
       if (uploadedUrl) {
         emit('send_message', {
           room: chatId,
-          content: uploadedUrl.url,
-          type: file.type === 'video/mp4' ? 'video' : 'image',
+          file_url: uploadedUrl.map((url) => url.url),
+          type: files[0].type === 'video/mp4' ? 'video' : 'image',
         });
       }
     } catch (err) {
@@ -81,15 +81,15 @@ export const SendMessage = () => {
   };
 
   const handleDocChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
+    const {files} = e.target;
 
-    if (!file || !chatId) return;
+    if (!files?.length || !chatId) return;
     try {
-      const uploadedUrl = await uploadFile({ file });
+      const uploadedUrl = await Promise.all([...files].map((file) => uploadAsync({ file })));
       if (uploadedUrl) {
         emit('send_message', {
           room: chatId,
-          content: uploadedUrl.url,
+          file_url: uploadedUrl.map((url) => url.url),
           type: 'file',
         });
       }
@@ -136,7 +136,7 @@ export const SendMessage = () => {
           if (uploadedUrl) {
             emit('send_message', {
               room: chatId,
-              content: uploadedUrl.url,
+              file_url: uploadedUrl.url,
               type: 'audio',
             });
           }
@@ -215,6 +215,7 @@ export const SendMessage = () => {
         type="file"
         style={{ display: 'none' }}
         ref={imageInputRef}
+        multiple
         onChange={handleFileChange}
         accept="image/*,.mp4"
       />

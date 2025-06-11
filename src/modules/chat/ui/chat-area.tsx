@@ -235,14 +235,14 @@ export default function ChatArea() {
                       <Box display="flex" flexDirection="column">
                         {message.file_url?.map((url) => (
                           <Link href={url} target="_blank">
-                            <iframe
+                            <video
                               width="200px"
                               height="150px"
                               src={url}
                               title="Embedded Video"
-                              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                              allowFullScreen
-                            />
+                              controls
+                              autoPlay
+                            ><track kind="captions" srcLang="en" src="" /></video>
                           </Link>
                         ))}
                       </Box>

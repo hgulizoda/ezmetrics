@@ -54,63 +54,72 @@ export default function ChatRoomAttachments({ messages }: Props) {
             attachment.type !== 'text' &&
             attachment.type !== 'audio' &&
             attachment.type !== 'gif' && (
-              <Grid item xs={12} md={3} key={attachment._id}>
-                {attachment.type === 'image' && attachment.file_url?.map((url) => (
-                  <Link href={url} target="_blank" rel="noopener">
-                    <img
-                      src={url}
-                      alt="img"
-                      height={65}
-                      width="100%"
-                      style={{
-                        borderRadius: 10,
-                        objectFit: 'cover',
-                        border: `1px solid ${theme.palette.divider}`,
-                      }}
-                    />
-                  </Link>
-                ))}
+              <>
+                {attachment.type === 'image' &&
+                  attachment.file_url?.map((url) => (
+                    <Grid item xs={12} md={3} key={attachment._id}>
+                      <Link href={url} target="_blank" rel="noopener">
+                        <img
+                          src={url}
+                          alt="img"
+                          height={65}
+                          width="100%"
+                          style={{
+                            borderRadius: 10,
+                            objectFit: 'cover',
+                            border: `1px solid ${theme.palette.divider}`,
+                          }}
+                        />
+                      </Link>
+                    </Grid>
+                  ))}
 
-                {attachment.type === 'video' && attachment.file_url?.map((url) => (
-                  <Box
-                    component={Link}
-                    href={url}
-                    target="_blank"
-                    color="inherit"
-                    sx={{
-                      borderRadius: '10px',
-                      border: `1px solid ${theme.palette.divider}`,
-                      height: 65,
-                      display: 'flex',
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      bgcolor: theme.palette.background.neutral,
-                    }}
-                  >
-                    <Iconify icon="mingcute:video-fill" width={50} />
-                  </Box>
-                ))}
+                {attachment.type === 'video' &&
+                  attachment.file_url?.map((url) => (
+                    <Grid item xs={12} md={3} key={attachment._id}>
+                      <Box
+                        component={Link}
+                        href={url}
+                        target="_blank"
+                        color="inherit"
+                        sx={{
+                          borderRadius: '10px',
+                          border: `1px solid ${theme.palette.divider}`,
+                          height: 65,
+                          display: 'flex',
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                          bgcolor: theme.palette.background.neutral,
+                        }}
+                      >
+                        <Iconify icon="mingcute:video-fill" width={50} />
+                      </Box>
+                    </Grid>
+                  ))}
 
-                {attachment.type === 'file' && attachment.file_url?.map((url) => (
-                  <Box
-                    component={Link}
-                    href={url}
-                    target="_blank"
-                    color="inherit"
-                    sx={{
-                      borderRadius: '10px',
-                      border: `1px solid ${theme.palette.divider}`,
-                      height: 65,
-                      display: 'flex',
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      bgcolor: theme.palette.background.neutral,
-                    }}
-                  >
-                    <Iconify icon="solar:file-bold-duotone" width={50} />
-                  </Box>
-                ))}
-              </Grid>
+                {attachment.type === 'file' &&
+                  attachment.file_url?.map((url) => (
+                    <Grid item xs={12} md={3} key={attachment._id}>
+                      <Box
+                        component={Link}
+                        href={url}
+                        target="_blank"
+                        color="inherit"
+                        sx={{
+                          borderRadius: '10px',
+                          border: `1px solid ${theme.palette.divider}`,
+                          height: 65,
+                          display: 'flex',
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                          bgcolor: theme.palette.background.neutral,
+                        }}
+                      >
+                        <Iconify icon="solar:file-bold-duotone" width={50} />
+                      </Box>
+                    </Grid>
+                  ))}
+              </>
             )
         )}
       </Grid>

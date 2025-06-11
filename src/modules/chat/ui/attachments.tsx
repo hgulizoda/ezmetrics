@@ -55,10 +55,10 @@ export default function ChatRoomAttachments({ messages }: Props) {
             attachment.type !== 'audio' &&
             attachment.type !== 'gif' && (
               <Grid item xs={12} md={3} key={attachment._id}>
-                {attachment.type === 'image' && (
-                  <Link href={attachment.content} target="_blank" rel="noopener">
+                {attachment.type === 'image' && attachment.file_url?.map((url) => (
+                  <Link href={url} target="_blank" rel="noopener">
                     <img
-                      src={attachment.content}
+                      src={url}
                       alt="img"
                       height={65}
                       width="100%"
@@ -69,12 +69,12 @@ export default function ChatRoomAttachments({ messages }: Props) {
                       }}
                     />
                   </Link>
-                )}
+                ))}
 
-                {attachment.type === 'video' && (
+                {attachment.type === 'video' && attachment.file_url?.map((url) => (
                   <Box
                     component={Link}
-                    href={attachment.content}
+                    href={url}
                     target="_blank"
                     color="inherit"
                     sx={{
@@ -89,12 +89,12 @@ export default function ChatRoomAttachments({ messages }: Props) {
                   >
                     <Iconify icon="mingcute:video-fill" width={50} />
                   </Box>
-                )}
+                ))}
 
-                {attachment.type === 'file' && (
+                {attachment.type === 'file' && attachment.file_url?.map((url) => (
                   <Box
                     component={Link}
-                    href={attachment.content}
+                    href={url}
                     target="_blank"
                     color="inherit"
                     sx={{
@@ -109,7 +109,7 @@ export default function ChatRoomAttachments({ messages }: Props) {
                   >
                     <Iconify icon="solar:file-bold-duotone" width={50} />
                   </Box>
-                )}
+                ))}
               </Grid>
             )
         )}

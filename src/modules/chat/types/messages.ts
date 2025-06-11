@@ -9,5 +9,6 @@ export interface IMessageRes {
   status: 'sent' | 'read'; // extendable if needed
   type: 'text' | 'image' | 'video' | 'file' | 'audio' | 'gif'; // assuming possible types
   updated_at: string;
+  file_url?: string[];
   __v: number;
 }

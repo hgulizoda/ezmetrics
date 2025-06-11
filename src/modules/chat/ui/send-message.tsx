@@ -25,6 +25,8 @@ export const SendMessage = () => {
   const audioChunksRef = useRef<Blob[]>([]);
   const theme = useTheme();
 
+  const inputRef = useRef<HTMLInputElement>(null);
+
   const { emit } = useChatContext();
   const { uploadAsync, isPending } = useUploadImage();
   const { uploadAsync: uploadFile, isPending: isFiling } = useUploadImage();
@@ -32,6 +34,10 @@ export const SendMessage = () => {
   const handleEmojiClick = (emojiData: any) => {
     setNewMessage((prev) => prev + emojiData.emoji);
   };
+
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, []);
 
   const handleSendMessage = () => {
     if (newMessage.trim() === '') return;
@@ -163,6 +169,7 @@ export const SendMessage = () => {
         onKeyUp={handleKeyPress}
         onChange={(e) => setNewMessage(e.target.value)}
         placeholder="Type a message"
+        autoFocus
         startAdornment={
           <>
             <IconButton onClick={popover.onOpen} sx={{ p: '4px' }}>

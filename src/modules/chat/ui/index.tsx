@@ -31,7 +31,7 @@ export default function MainChatHome() {
         main: hasChat ? (
           <>
             <ChatArea />
-            <SendMessage />
+            <SendMessage key={hasChat} />
           </>
         ) : (
           <EmptyContentChat

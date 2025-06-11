@@ -120,21 +120,25 @@ export default function ChatArea() {
                         overflow: 'hidden',
                       }}
                     >
-                      <Link href={message.content} target="_blank">
-                        <Image
-                          alt="attachment"
-                          src={message.content}
-                          sx={{
-                            width: 200,
-                            height: 'auto',
+                      <Box display="flex" flexDirection="column">
+                        {message.file_url?.map((url) => (
+                          <Link href={url} target="_blank">
+                            <Image
+                              alt="attachment"
+                              src={url}
+                              sx={{
+                                width: 200,
+                                height: 'auto',
 
-                            cursor: 'pointer',
-                            objectFit: 'cover',
-                            aspectRatio: '16/11',
-                            '&:hover': { opacity: 0.9 },
-                          }}
-                        />
-                      </Link>
+                                cursor: 'pointer',
+                                objectFit: 'cover',
+                                aspectRatio: '16/11',
+                                '&:hover': { opacity: 0.9 },
+                              }}
+                            />
+                          </Link>
+                        ))}
+                      </Box>
                       <Box
                         display="flex"
                         alignItems="flex-end"
@@ -172,15 +176,25 @@ export default function ChatArea() {
                         overflow: 'hidden',
                       }}
                     >
-                      <img
-                        alt="attachment"
-                        src={message.content}
-                        style={{
-                          cursor: 'pointer',
-                          objectFit: 'cover',
-                          aspectRatio: '16/11',
-                        }}
-                      />
+                      <Box display="flex" flexDirection="column">
+                        {message.file_url?.map((url) => (
+                          <Link href={url} target="_blank">
+                            <Image
+                              alt="attachment"
+                              src={url}
+                              sx={{
+                                width: 200,
+                                height: 'auto',
+
+                                cursor: 'pointer',
+                                objectFit: 'cover',
+                                aspectRatio: '16/11',
+                                '&:hover': { opacity: 0.9 },
+                              }}
+                            />
+                          </Link>
+                        ))}
+                      </Box>
                       <Box
                         display="flex"
                         alignItems="flex-end"
@@ -218,15 +232,20 @@ export default function ChatArea() {
                         overflow: 'hidden',
                       }}
                     >
-                      <iframe
-                        width="200px"
-                        height="150px"
-                        src={message.content}
-                        title="Embedded Video"
-                        frameBorder="0"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowFullScreen
-                      />
+                      <Box display="flex" flexDirection="column">
+                        {message.file_url?.map((url) => (
+                          <Link href={url} target="_blank">
+                            <iframe
+                              width="200px"
+                              height="150px"
+                              src={url}
+                              title="Embedded Video"
+                              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                              allowFullScreen
+                            />
+                          </Link>
+                        ))}
+                      </Box>
                       <Box
                         display="flex"
                         alignItems="flex-end"
@@ -257,23 +276,27 @@ export default function ChatArea() {
 
                   {message.type === 'file' && (
                     <>
-                      <Box
-                        sx={{
-                          borderRadius: '10px',
-                          border: `1px solid ${theme.palette.divider}`,
-                          height: 65,
-                          width: 70,
-                          display: 'flex',
-                          justifyContent: 'center',
-                          alignItems: 'center',
-                          bgcolor: theme.palette.background.neutral,
-                        }}
-                        component={Link}
-                        href={message.content}
-                        target="_blank"
-                        color="inherit"
-                      >
-                        <Iconify icon="solar:file-bold-duotone" width={50} />
+                      <Box display="flex" flexDirection="column">
+                        {message.file_url?.map((url) => (
+                          <Box
+                            sx={{
+                              borderRadius: '10px',
+                              border: `1px solid ${theme.palette.divider}`,
+                              height: 65,
+                              width: 70,
+                              display: 'flex',
+                              justifyContent: 'center',
+                              alignItems: 'center',
+                              bgcolor: theme.palette.background.neutral,
+                            }}
+                            component={Link}
+                            href={url}
+                            target="_blank"
+                            color="inherit"
+                          >
+                            <Iconify icon="solar:file-bold-duotone" width={50} />
+                          </Box>
+                        ))}
                       </Box>
                       <Box
                         display="flex"

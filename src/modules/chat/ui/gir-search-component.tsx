@@ -9,7 +9,7 @@ import Scrollbar from 'src/components/scrollbar';
 
 import { useGetGifs } from '../hooks/useGetGifs';
 
-const GifSearchComponent = () => {
+const GifSearchComponent = ({ onClose }: { onClose?: () => void }) => {
   const { emit } = useChatContext();
   const [searchParams] = useSearchParams();
   const [searchTerm, setSearchTerm] = useState('');
@@ -22,9 +22,10 @@ const GifSearchComponent = () => {
   const handleGifClick = (url: string) => {
     emit('send_message', {
       room: searchParams.get('id'),
-      content: url,
+      file_url: [url],
       type: 'gif',
     });
+    onClose?.();
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLImageElement>, url: string) => {
@@ -48,6 +49,7 @@ const GifSearchComponent = () => {
         label="Search GIFs"
         variant="outlined"
         fullWidth
+        autoFocus
         value={searchTerm}
         onChange={handleSearchChange}
         sx={{ mb: 1 }}

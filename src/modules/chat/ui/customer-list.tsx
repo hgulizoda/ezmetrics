@@ -56,7 +56,7 @@ export default function CustomersList() {
         data?.data
           .filter((el: any) => searchExistingChat(el, searchContact))
           .map((user: ICustomerRes) => {
-            const isUserOnline = onlineUsers?.some((u) => u.user_id === user.user._id);
+            const isUserOnline = onlineUsers?.some((u) => u?.user_id === user?.user?._id);
             return {
               ...user,
               isOnline: isUserOnline,
@@ -237,7 +237,7 @@ export default function CustomersList() {
 }
 
 function searchExistingChat(profile: ICustomerRes, search: string) {
-  return `${profile.user.user_id} ${profile.profile?.first_name} ${profile.profile?.last_name}`.trim().toLowerCase().includes(search.trim().toLowerCase());
+  return `${profile.user?.user_id} ${profile.profile?.first_name} ${profile.profile?.last_name}`.trim().toLowerCase().includes(search.trim().toLowerCase());
 }
 
 function getOptionLabelFullName(label: string) {

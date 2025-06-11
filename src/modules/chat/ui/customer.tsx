@@ -36,7 +36,7 @@ export default function CustomerProfile() {
 
   useEffect(() => {
     const onlineUsers: IOnlineUsers[] = queryClient.getQueryData(['online_users']) || [];
-    setIsOnline(onlineUsers?.some((el) => el.user_id === singleUser?.user?._id));
+    setIsOnline(onlineUsers?.some((el) => el?.user_id === singleUser?.user?._id));
   }, [singleUser?.user?._id, chatId]);
   const renderInfo = (
     <Stack alignItems="center" sx={{ py: 5 }}>

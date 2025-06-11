@@ -23,7 +23,6 @@ import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 import { ConfirmDialog } from 'src/components/custome-dialog';
 
-import AudioPlayer from './audio';
 import { IMessageRes } from '../types/messages';
 import { useGetMessages } from '../hooks/useGetMessages';
 import useMessagesScroll from '../hooks/useScrollBottom';
@@ -74,7 +73,7 @@ export default function ChatArea() {
             >
               <Box sx={{ maxWidth: '70%' }} display="flex" gap={1}>
                 <Box>
-                  {message.type === 'text' && (
+                  {message.type === 'text' ? (
                     <Stack
                       sx={{
                         p: 1,
@@ -110,9 +109,7 @@ export default function ChatArea() {
                           ))}
                       </Box>
                     </Stack>
-                  )}
-
-                  {message.type === 'image' && (
+                  ) : (
                     <Box
                       sx={{
                         bgcolor: theme.palette.background.neutral,
@@ -122,23 +119,10 @@ export default function ChatArea() {
                     >
                       <Box display="flex" flexDirection="column">
                         {message.file_url?.map((url) => (
-                          <Link href={url} target="_blank">
-                            <Image
-                              alt="attachment"
-                              src={url}
-                              sx={{
-                                width: 200,
-                                height: 'auto',
-
-                                cursor: 'pointer',
-                                objectFit: 'cover',
-                                aspectRatio: '16/11',
-                                '&:hover': { opacity: 0.9 },
-                              }}
-                            />
-                          </Link>
+                          <FileRender url={url} />
                         ))}
                       </Box>
+                      <Typography p={1} variant="body1">{message.content}</Typography>
                       <Box
                         display="flex"
                         alignItems="flex-end"
@@ -168,7 +152,7 @@ export default function ChatArea() {
                     </Box>
                   )}
 
-                  {message.type === 'gif' && (
+                  {/* {message.type === 'gif' && (
                     <Box
                       sx={{
                         bgcolor: theme.palette.background.neutral,
@@ -242,7 +226,9 @@ export default function ChatArea() {
                               title="Embedded Video"
                               controls
                               autoPlay
-                            ><track kind="captions" srcLang="en" src="" /></video>
+                            >
+                              <track kind="captions" srcLang="en" src="" />
+                            </video>
                           </Link>
                         ))}
                       </Box>
@@ -324,38 +310,7 @@ export default function ChatArea() {
                           ))}
                       </Box>
                     </>
-                  )}
-
-                  {message.type === 'audio' && (
-                    <>
-                      <AudioPlayer audioUrl={message.content} />
-                      <Box
-                        display="flex"
-                        alignItems="flex-end"
-                        gap={1}
-                        justifyContent="flex-end"
-                        pr={1}
-                        pb={0.5}
-                      >
-                        <Typography
-                          variant="caption"
-                          sx={{
-                            display: 'block',
-                            color: 'text.secondary',
-                            textAlign: message.sender_type === 'user' ? 'left' : 'right',
-                          }}
-                        >
-                          {dayjs(message.created_at).format('LT')}
-                        </Typography>
-                        {message.sender_type === 'admin' &&
-                          (message.status === 'sent' ? (
-                            <Iconify icon="lucide:check" width={17} />
-                          ) : (
-                            <Iconify icon="solar:check-read-linear" />
-                          ))}
-                      </Box>
-                    </>
-                  )}
+                  )} */}
                   <Box display="flex" justifyContent="flex-end" mt="2px">
                     <IconButton sx={{ p: '4px' }}>
                       <Iconify icon="fluent:arrow-reply-16-filled" width={17} />
@@ -394,4 +349,96 @@ export default function ChatArea() {
       />
     </Scrollbar>
   );
+}
+
+function FileRender({ url }: { url: string }) {
+  const fileType = getFileType(url);
+  console.log(url)
+  const theme = useTheme();
+
+  switch (fileType) {
+    case 'image':
+      return (
+        <Link href={url} target="_blank">
+          <Image
+            alt="attachment"
+            src={url}
+            sx={{
+              width: 200,
+              height: 'auto',
+
+              cursor: 'pointer',
+              objectFit: 'cover',
+              aspectRatio: '16/11',
+              '&:hover': { opacity: 0.9 },
+            }}
+          />
+        </Link>
+      );
+    case 'video':
+      return (
+        <Link href={url} target="_blank">
+          <video width="200px" height="150px" src={url} title="Embedded Video" controls autoPlay>
+            <track kind="captions" srcLang="en" src="" />
+          </video>
+        </Link>
+      );
+    case 'gif':
+      return (
+        <Link href={url} target="_blank">
+          <Image
+            alt="attachment"
+            src={url}
+            sx={{
+              width: 200,
+              height: 'auto',
+
+              cursor: 'pointer',
+              objectFit: 'cover',
+              aspectRatio: '16/11',
+              '&:hover': { opacity: 0.9 },
+            }}
+          />
+        </Link>
+      );
+    default:
+      return (
+        <Box
+          sx={{
+            borderRadius: '10px',
+            border: `1px solid ${theme.palette.divider}`,
+            height: 65,
+            width: 70,
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            bgcolor: theme.palette.background.neutral,
+          }}
+          component={Link}
+          href={url}
+          target="_blank"
+          color="inherit"
+        >
+          <Iconify icon="solar:file-bold-duotone" width={50} />
+        </Box>
+      );
+  }
+}
+
+function getFileType(url: string) {
+  const imageExtensions = ['jpg', 'jpeg', 'png', 'webp'];
+  const videoExtensions = ['mp4', 'webm', 'ogg'];
+  const audioExtensions = ['mp3', 'wav', 'ogg'];
+  const gifExtensions = ['gif'];
+
+  const extension = url.toLowerCase().split('.').pop();
+
+  if (!extension) return 'file';
+
+  if (imageExtensions.includes(extension)) return 'image';
+  if (videoExtensions.includes(extension)) return 'video';
+  if (audioExtensions.includes(extension)) return 'audio';
+  if (gifExtensions.includes(extension)) return 'gif';
+
+  return 'file';
 }

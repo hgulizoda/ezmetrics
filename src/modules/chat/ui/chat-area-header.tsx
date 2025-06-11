@@ -38,7 +38,7 @@ export const ChatHeader = () => {
 
   useEffect(() => {
     const onlineUsers: IOnlineUsers[] = queryClient.getQueryData(['online_users']) || [];
-    setIsOnline(onlineUsers?.some((el) => el.user_id === singleUser?.user?._id));
+    setIsOnline(onlineUsers?.some((el) => el?.user_id === singleUser?.user?._id));
   }, [singleUser?.user?._id, chatId]);
   return (
     <Box width="100%" display="flex" justifyContent="space-between" alignItems="center">

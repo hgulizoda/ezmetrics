@@ -247,8 +247,9 @@ export const SendMessage = () => {
         anchorOrigin={{ horizontal: 'left', vertical: 'bottom' }}
         arrow="right-center"
       >
-        <GifSearchComponent />
+        <GifSearchComponent onClose={popoverGif.onClose} />
       </CustomPopover>
     </Box>
   );
 };
+

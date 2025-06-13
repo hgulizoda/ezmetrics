@@ -49,10 +49,16 @@ export default function ChatArea() {
   };
 
   useEffect(() => {
-    emit('mark_as_read', {
-      room_id: chatId,
-    });
-  }, [chatId, emit, searchParams]);
+    if (!chatId || !data?.data?.length) return;
+
+    const lastMessage = data.data[data.data.length - 1];
+
+    if (lastMessage?.sender_type !== 'admin' && lastMessage?.status !== 'read') {
+      emit('mark_as_read', {
+        room_id: chatId,
+      });
+    }
+  }, [data?.data.length, chatId, data?.data, emit]);
 
   if (isLoading)
     return (
@@ -98,7 +104,7 @@ export default function ChatArea() {
                             textAlign: message.sender_type === 'user' ? 'left' : 'right',
                           }}
                         >
-                          {dayjs(message.created_at).format('LT')}
+                          {dayjs(message.created_at).format('D MMM, h:mm A')}
                         </Typography>
 
                         {message.sender_type === 'admin' &&
@@ -118,11 +124,11 @@ export default function ChatArea() {
                       }}
                     >
                       <Box display="flex" flexDirection="column">
-                        {message.file_url?.map((url) => (
-                          <FileRender url={url} />
-                        ))}
+                        {message.file_url?.map((url) => <FileRender url={url} />)}
                       </Box>
-                      <Typography p={1} variant="body1">{message.content}</Typography>
+                      <Typography p={1} variant="body1">
+                        {message.content}
+                      </Typography>
                       <Box
                         display="flex"
                         alignItems="flex-end"
@@ -151,166 +157,6 @@ export default function ChatArea() {
                       </Box>
                     </Box>
                   )}
-
-                  {/* {message.type === 'gif' && (
-                    <Box
-                      sx={{
-                        bgcolor: theme.palette.background.neutral,
-                        borderRadius: 1.5,
-                        overflow: 'hidden',
-                      }}
-                    >
-                      <Box display="flex" flexDirection="column">
-                        {message.file_url?.map((url) => (
-                          <Link href={url} target="_blank">
-                            <Image
-                              alt="attachment"
-                              src={url}
-                              sx={{
-                                width: 200,
-                                height: 'auto',
-
-                                cursor: 'pointer',
-                                objectFit: 'cover',
-                                aspectRatio: '16/11',
-                                '&:hover': { opacity: 0.9 },
-                              }}
-                            />
-                          </Link>
-                        ))}
-                      </Box>
-                      <Box
-                        display="flex"
-                        alignItems="flex-end"
-                        gap={1}
-                        justifyContent="flex-end"
-                        pr={1}
-                        pb={0.5}
-                      >
-                        <Typography
-                          variant="caption"
-                          sx={{
-                            display: 'block',
-                            mt: 0.5,
-                            color: 'text.secondary',
-                            textAlign: message.sender_type === 'user' ? 'left' : 'right',
-                          }}
-                        >
-                          {dayjs(message.created_at).format('LT')}
-                        </Typography>
-                        {message.sender_type === 'admin' &&
-                          (message.status === 'sent' ? (
-                            <Iconify icon="lucide:check" width={17} />
-                          ) : (
-                            <Iconify icon="solar:check-read-linear" />
-                          ))}
-                      </Box>
-                    </Box>
-                  )}
-
-                  {message.type === 'video' && (
-                    <Box
-                      sx={{
-                        bgcolor: theme.palette.background.neutral,
-                        borderRadius: 1.5,
-                        overflow: 'hidden',
-                      }}
-                    >
-                      <Box display="flex" flexDirection="column">
-                        {message.file_url?.map((url) => (
-                          <Link href={url} target="_blank">
-                            <video
-                              width="200px"
-                              height="150px"
-                              src={url}
-                              title="Embedded Video"
-                              controls
-                              autoPlay
-                            >
-                              <track kind="captions" srcLang="en" src="" />
-                            </video>
-                          </Link>
-                        ))}
-                      </Box>
-                      <Box
-                        display="flex"
-                        alignItems="flex-end"
-                        gap={1}
-                        justifyContent="flex-end"
-                        pr={1}
-                        pb={0.5}
-                      >
-                        <Typography
-                          variant="caption"
-                          sx={{
-                            display: 'block',
-                            color: 'text.secondary',
-                            textAlign: message.sender_type === 'user' ? 'left' : 'right',
-                          }}
-                        >
-                          {dayjs(message.created_at).format('LT')}
-                        </Typography>
-                        {message.sender_type === 'admin' &&
-                          (message.status === 'sent' ? (
-                            <Iconify icon="lucide:check" width={17} />
-                          ) : (
-                            <Iconify icon="solar:check-read-linear" />
-                          ))}
-                      </Box>
-                    </Box>
-                  )}
-
-                  {message.type === 'file' && (
-                    <>
-                      <Box display="flex" flexDirection="column">
-                        {message.file_url?.map((url) => (
-                          <Box
-                            sx={{
-                              borderRadius: '10px',
-                              border: `1px solid ${theme.palette.divider}`,
-                              height: 65,
-                              width: 70,
-                              display: 'flex',
-                              justifyContent: 'center',
-                              alignItems: 'center',
-                              bgcolor: theme.palette.background.neutral,
-                            }}
-                            component={Link}
-                            href={url}
-                            target="_blank"
-                            color="inherit"
-                          >
-                            <Iconify icon="solar:file-bold-duotone" width={50} />
-                          </Box>
-                        ))}
-                      </Box>
-                      <Box
-                        display="flex"
-                        alignItems="flex-end"
-                        gap={1}
-                        justifyContent="flex-end"
-                        pr={1}
-                        pb={0.5}
-                      >
-                        <Typography
-                          variant="caption"
-                          sx={{
-                            display: 'block',
-                            color: 'text.secondary',
-                            textAlign: message.sender_type === 'user' ? 'left' : 'right',
-                          }}
-                        >
-                          {dayjs(message.created_at).format('LT')}
-                        </Typography>
-                        {message.sender_type === 'admin' &&
-                          (message.status === 'sent' ? (
-                            <Iconify icon="lucide:check" width={17} />
-                          ) : (
-                            <Iconify icon="solar:check-read-linear" />
-                          ))}
-                      </Box>
-                    </>
-                  )} */}
                   <Box display="flex" justifyContent="flex-end" mt="2px">
                     <IconButton sx={{ p: '4px' }}>
                       <Iconify icon="fluent:arrow-reply-16-filled" width={17} />
@@ -353,7 +199,7 @@ export default function ChatArea() {
 
 function FileRender({ url }: { url: string }) {
   const fileType = getFileType(url);
-  console.log(url)
+  console.log(url);
   const theme = useTheme();
 
   switch (fileType) {

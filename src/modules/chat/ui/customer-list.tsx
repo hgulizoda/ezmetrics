@@ -42,7 +42,7 @@ export default function CustomersList() {
 
   const debouncedSearch = useDebounce(search, 500);
 
-  const ref = useRef<HTMLDivElement >(null);
+  const ref = useRef<HTMLDivElement>(null);
 
   const { data: onlineUsers } = useQuery<IOnlineUsers[]>({
     queryKey: ['online_users'],
@@ -158,10 +158,11 @@ export default function CustomersList() {
                 primary={
                   <Box display="flex" width="100%" justifyContent="space-between">
                     <Typography variant="subtitle2">
-                      {customer?.profile?.first_name} {customer?.profile?.last_name} ({customer?.user?.user_id})
+                      {customer?.profile?.first_name} {customer?.profile?.last_name} (
+                      {customer?.user?.user_id})
                     </Typography>
                     <Typography variant="caption" color="text.secondary">
-                      {dayjs(customer.last_message?.created_at).format('LT')}
+                      {dayjs(customer.last_message?.created_at).format('D MMM, h:mm A')}
                     </Typography>
                   </Box>
                 }
@@ -201,7 +202,7 @@ export default function CustomersList() {
         onClose={popover.onClose}
         sx={{
           width: '300px',
-          height: '450px'
+          height: '450px',
         }}
       >
         <Autocomplete
@@ -211,12 +212,14 @@ export default function CustomersList() {
           openOnFocus
           ref={ref}
           loading={isPending}
-          options={
-            (users?.users?.slice().map((customer: IUser) => ({
+          options={(
+            users?.users?.slice().map((customer: IUser) => ({
               label: `${customer.customerId} — ${customer.fullName}`,
               value: customer?.id,
-            })) || []).sort((a, b) => getOptionLabelFullName(a.label).localeCompare(getOptionLabelFullName(b.label)))
-          }
+            })) || []
+          ).sort((a, b) =>
+            getOptionLabelFullName(a.label).localeCompare(getOptionLabelFullName(b.label))
+          )}
           filterOptions={(x) => x} // disable client-side filtering
           getOptionLabel={(option) => option.label} // make sure Autocomplete knows what to display
           inputValue={search}
@@ -229,7 +232,9 @@ export default function CustomersList() {
           onChange={createNewChat}
           noOptionsText={isPending ? 'Qidirilmoqda...' : 'Hech narsa topilmadi'}
           loadingText="Yuklanmoqda..."
-          renderInput={(params) => <TextField {...params} focused autoFocus placeholder="Mijozlar" />}
+          renderInput={(params) => (
+            <TextField {...params} focused autoFocus placeholder="Mijozlar" />
+          )}
         />
       </CustomPopover>
     </Box>
@@ -237,9 +242,12 @@ export default function CustomersList() {
 }
 
 function searchExistingChat(profile: ICustomerRes, search: string) {
-  return `${profile.user?.user_id} ${profile.profile?.first_name} ${profile.profile?.last_name}`.trim().toLowerCase().includes(search.trim().toLowerCase());
+  return `${profile.user?.user_id} ${profile.profile?.first_name} ${profile.profile?.last_name}`
+    .trim()
+    .toLowerCase()
+    .includes(search.trim().toLowerCase());
 }
 
 function getOptionLabelFullName(label: string) {
-  return label.split(" — ")[1];
+  return label.split(' — ')[1];
 }

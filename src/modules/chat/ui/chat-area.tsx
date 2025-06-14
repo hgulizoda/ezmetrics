@@ -93,7 +93,15 @@ export default function ChatArea() {
                         borderBottomRightRadius: message.sender_type === 'admin' ? '0px' : '12px',
                       }}
                     >
-                      <Typography variant="body1">{message.content}</Typography>
+                      <Typography
+                        variant="body1"
+                        sx={{
+                          whiteSpace: 'pre-wrap',
+                          wordBreak: 'break-word',
+                        }}
+                      >
+                        {message.content}
+                      </Typography>
                       <Box display="flex" alignItems="flex-end" gap={1} justifyContent="flex-end">
                         <Typography
                           variant="caption"
@@ -146,7 +154,7 @@ export default function ChatArea() {
                             textAlign: message.sender_type === 'user' ? 'left' : 'right',
                           }}
                         >
-                          {dayjs(message.created_at).format('LT')}
+                          {dayjs(message.created_at).format('D MMM, h:mm A')}
                         </Typography>
                         {message.sender_type === 'admin' &&
                           (message.status === 'sent' ? (

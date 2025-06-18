@@ -60,10 +60,10 @@ export const SendMessage = () => {
   };
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const {files} = e.target;
+    const { files } = e.target;
 
     if (!files?.length || !chatId) return;
-    
+
     try {
       const uploadedUrl = await Promise.all([...files].map((file) => uploadAsync({ file })));
       if (uploadedUrl) {
@@ -81,7 +81,7 @@ export const SendMessage = () => {
   };
 
   const handleDocChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const {files} = e.target;
+    const { files } = e.target;
 
     if (!files?.length || !chatId) return;
     try {
@@ -166,22 +166,23 @@ export const SendMessage = () => {
         id="chat-message-input"
         fullWidth
         value={newMessage}
+        multiline
         onKeyUp={handleKeyPress}
         onChange={(e) => setNewMessage(e.target.value)}
         placeholder="Type a message"
         autoFocus
         startAdornment={
-          <>
+          <Box display="flex" pr={2}>
             <IconButton onClick={popover.onOpen} sx={{ p: '4px' }}>
               <Iconify icon="eva:smiling-face-fill" />
             </IconButton>
             <IconButton onClick={popoverGif.onOpen} sx={{ p: '4px' }}>
               <Iconify icon="fluent:gif-20-filled" />
             </IconButton>
-          </>
+          </Box>
         }
         endAdornment={
-          <Stack direction="row" sx={{ flexShrink: 0 }}>
+          <Stack direction="row" sx={{ flexShrink: 0, pl: 2 }}>
             <IconButton onClick={handleMediaClick}>
               <Iconify icon={isPending ? 'line-md:uploading-loop' : 'solar:gallery-add-bold'} />
             </IconButton>
@@ -205,9 +206,13 @@ export const SendMessage = () => {
         }
         sx={{
           px: 1,
-          height: 56,
           flexShrink: 0,
           borderTop: `solid 1px ${theme.palette.divider}`,
+          display: 'flex',
+          alignItems: 'flex-end',
+          '.css-yubm5r-MuiInputBase-input': {
+            mb: '4px',
+          },
         }}
       />
 
@@ -252,4 +257,3 @@ export const SendMessage = () => {
     </Box>
   );
 };
-

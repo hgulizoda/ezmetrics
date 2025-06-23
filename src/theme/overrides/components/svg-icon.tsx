@@ -1,6 +1,6 @@
 // ----------------------------------------------------------------------
 
-export function svgIcon() {
+export function svgIcon(theme: any) {
   return {
     MuiSvgIcon: {
       styleOverrides: {

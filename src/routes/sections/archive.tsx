@@ -8,6 +8,7 @@ const Packages = lazy(() => import('src/pages/dashboard/archive/packages'));
 const ArchivedTruckDetails = lazy(
   () => import('src/modules/archive/ui/transport/details/ArchivedTruckDetails')
 );
+const ArchivedChatsRoot = lazy(() => import('src/pages/dashboard/archive/chats'));
 export const archiveRoutes = [
   {
     path: 'archive',
@@ -28,6 +29,10 @@ export const archiveRoutes = [
       {
         path: 'transports/:id',
         element: <ArchivedTruckDetails />,
+      },
+      {
+        path: 'chats',
+        element: <ArchivedChatsRoot />,
       },
     ],
   },

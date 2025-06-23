@@ -12,11 +12,7 @@ import { NAV, HEADER } from '../config-layout';
 
 // ----------------------------------------------------------------------
 
-type Props = {
-  onOpenNav?: VoidFunction;
-};
-
-export default function Header({ onOpenNav }: Props) {
+export default function Header() {
   const theme = useTheme();
 
   const settings = useSettingsContext();

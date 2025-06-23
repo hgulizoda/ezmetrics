@@ -37,7 +37,7 @@ export const useDeleteTransport = ({ rowSelected, params }: IProps) => {
       }
       return transport.delete(id);
     },
-    onSuccess: (res) => {
+    onSuccess: () => {
       enqueueSnackbar(t('mutate.deleted'), {
         variant: 'success',
         anchorOrigin: {
@@ -60,7 +60,7 @@ export const useUnArchiveTruck = (params: IFilterProps) => {
   const { t } = useTranslate('lang');
   const { isPending, mutateAsync } = useMutation({
     mutationFn: (id: string) => transport.unarchive(id),
-    onSuccess: (res) => {
+    onSuccess: () => {
       enqueueSnackbar(t('mutate.packageBacked'), {
         variant: 'success',
         anchorOrigin: {

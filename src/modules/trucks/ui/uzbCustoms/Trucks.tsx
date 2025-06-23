@@ -156,7 +156,7 @@ export const UZBTrucks = () => {
                 }}
                 variant="contained"
                 color="primary"
-                loading={isPending}
+                loading={isBacking}
               >
                 {t('actions.yes')}
               </LoadingButton>

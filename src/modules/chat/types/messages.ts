@@ -4,6 +4,7 @@ export interface IMessageRes {
   created_at: string; // ISO string format
   is_deleted: boolean;
   room: string;
+  reply_to: string;
   sender: string;
   sender_type: 'admin' | 'user'; // assuming only 'admin' or 'user' types exist
   status: 'sent' | 'read'; // extendable if needed

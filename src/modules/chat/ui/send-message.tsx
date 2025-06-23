@@ -2,7 +2,7 @@ import { useSearchParams } from 'react-router-dom';
 import { useRef, useState, useEffect } from 'react';
 import EmojiPicker, { Theme, EmojiStyle } from 'emoji-picker-react';
 
-import { Box, Stack, useTheme, InputBase, IconButton } from '@mui/material';
+import { Box, Stack, useTheme, InputBase, IconButton, Typography } from '@mui/material';
 
 import { useChatContext } from 'src/pages/dashboard/chat/chatContext';
 import { useUploadImage } from 'src/modules/package/hook/useUploadImage';
@@ -10,9 +10,15 @@ import { useUploadImage } from 'src/modules/package/hook/useUploadImage';
 import Iconify from 'src/components/iconify';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 
+import { IMessageRes } from '../types/messages';
 import GifSearchComponent from './gir-search-component';
 
-export const SendMessage = () => {
+interface SendMessageProps {
+  replyMessage: IMessageRes | null;
+  clearReply: () => void;
+}
+
+export const SendMessage = ({ replyMessage, clearReply }: SendMessageProps) => {
   const popover = usePopover();
   const popoverGif = usePopover();
   const [searchParams] = useSearchParams();
@@ -31,6 +37,7 @@ export const SendMessage = () => {
   const { uploadAsync, isPending } = useUploadImage();
   const { uploadAsync: uploadFile, isPending: isFiling } = useUploadImage();
   const { uploadAsync: uploadAudio, isPending: isAudioing } = useUploadImage();
+
   const handleEmojiClick = (emojiData: any) => {
     setNewMessage((prev) => prev + emojiData.emoji);
   };
@@ -40,21 +47,27 @@ export const SendMessage = () => {
   }, []);
 
   const handleSendMessage = () => {
-    if (newMessage.trim() === '') return;
-    emit('send_message', {
+    if (newMessage.trim() === '' && !replyMessage) return;
+
+    const messagePayload = {
       room: chatId,
       content: newMessage,
       type: 'text',
-    });
+      ...(replyMessage && { reply_to: replyMessage._id }),
+    };
+
+    emit('send_message', messagePayload);
     emit('mark_as_read', {
       room_id: chatId,
     });
     setNewMessage('');
+    clearReply();
   };
 
   const handleMediaClick = () => {
     imageInputRef.current?.click();
   };
+
   const handleDocClick = () => {
     fileInputRef.current?.click();
   };
@@ -71,7 +84,9 @@ export const SendMessage = () => {
           room: chatId,
           file_url: uploadedUrl.map((url) => url.url),
           type: files[0].type === 'video/mp4' ? 'video' : 'image',
+          ...(replyMessage && { reply_to: replyMessage._id }),
         });
+        clearReply();
       }
     } catch (err) {
       console.error('Upload failed:', err);
@@ -91,7 +106,9 @@ export const SendMessage = () => {
           room: chatId,
           file_url: uploadedUrl.map((url) => url.url),
           type: 'file',
+          ...(replyMessage && { reply_to: replyMessage._id }),
         });
+        clearReply();
       }
     } catch (err) {
       console.error('Upload failed:', err);
@@ -107,7 +124,7 @@ export const SendMessage = () => {
   }, [emit, chatId]);
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if (e.key === 'Enter' && e.ctrlKey && !e.shiftKey) {
       e.preventDefault();
       handleSendMessage();
     }
@@ -138,7 +155,9 @@ export const SendMessage = () => {
               room: chatId,
               file_url: uploadedUrl.url,
               type: 'audio',
+              ...(replyMessage && { reply_to: replyMessage._id }),
             });
+            clearReply();
           }
         } catch (err) {
           console.error('Audio upload failed:', err);
@@ -161,6 +180,31 @@ export const SendMessage = () => {
 
   return (
     <Box width="100%">
+      {replyMessage && (
+        <Box
+          sx={{
+            p: 1,
+            bgcolor: theme.palette.background.paper,
+            borderTop: `1px solid ${theme.palette.divider}`,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+          }}
+        >
+          <Box>
+            <Typography
+              variant="body2"
+              noWrap
+              sx={{ maxWidth: 300, overflow: 'hidden', textOverflow: 'ellipsis' }}
+            >
+              {replyMessage.content}
+            </Typography>
+          </Box>
+          <IconButton onClick={clearReply} size="small">
+            <Iconify icon="eva:close-fill" width={16} />
+          </IconButton>
+        </Box>
+      )}
       <InputBase
         name="chat-message"
         id="chat-message-input"

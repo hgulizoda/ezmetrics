@@ -3,7 +3,7 @@ import { useMemo, useContext, createContext } from 'react';
 const UserContext = createContext({
   user: null,
   loading: true,
-  setUser: (user: any) => {},
+  setUser: () => {},
 });
 
 export const useUserContext = () => useContext(UserContext);

@@ -94,7 +94,7 @@ export const CreateNewTruck = memo(({ open, onClose, onTruckCreate }: IDialogPro
             </Grid>
             <Grid item xs={3}>
               <RHFSelect name="id" label={t('transport.form.containerType')}>
-                {Object.entries(ContainerType).map(([key, value]) => (
+                {Object.entries(ContainerType).map(([_, value]) => (
                   <MenuItem value={value} key={generateRandomId(12)}>
                     {ContainerTypeLabels[value]}
                   </MenuItem>

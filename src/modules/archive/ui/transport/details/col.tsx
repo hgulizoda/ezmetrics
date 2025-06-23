@@ -28,7 +28,6 @@ export const baseColumns = ({
   t,
   shipmentLabels,
   tooltipLabels,
-  formatDate,
 }: Props): GridColDef<ITruckDetails>[] => [
   {
     headerName: t('packages.tableTitle.clientID'),

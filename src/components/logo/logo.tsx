@@ -13,20 +13,18 @@ export interface LogoProps extends BoxProps {
   disabledLink?: boolean;
 }
 
-const Logo = forwardRef<HTMLDivElement, LogoProps>(
-  ({ disabledLink = false, sx, ...other }, ref) => {
-    if (disabledLink) {
-      return <LogoMain />;
-    }
-
-    return (
-      <Link component={RouterLink} href="/" sx={{ display: 'contents' }}>
-        <Box width={189} height={26}>
-          <LogoMain />
-        </Box>
-      </Link>
-    );
+const Logo = forwardRef<HTMLDivElement, LogoProps>(({ disabledLink = false }) => {
+  if (disabledLink) {
+    return <LogoMain />;
   }
-);
+
+  return (
+    <Link component={RouterLink} href="/" sx={{ display: 'contents' }}>
+      <Box width={189} height={26}>
+        <LogoMain />
+      </Box>
+    </Link>
+  );
+});
 
 export default Logo;

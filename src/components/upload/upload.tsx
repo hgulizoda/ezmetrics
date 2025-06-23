@@ -34,7 +34,7 @@ export default function Upload({
   ...other
 }: UploadProps) {
   const { t } = useTranslate('lang');
-  const { getRootProps, getInputProps, isDragActive, isDragReject, fileRejections } = useDropzone({
+  const { getRootProps, getInputProps, isDragActive, isDragReject } = useDropzone({
     multiple,
     disabled,
     ...other,

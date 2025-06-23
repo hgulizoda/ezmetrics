@@ -14,7 +14,7 @@ export const priceTier = (item: IPriceRes): IPrice => ({
   nameEn: item.name_en ?? '',
   nameCn: item.name_cn ?? '',
   pricing:
-    item.pricing.map((priceItem, index) => ({
+    item.pricing.map((priceItem) => ({
       weightRange: priceItem.weight_range ?? '',
       unit: priceItem.unit ?? '',
       price: priceItem.price ?? 0,

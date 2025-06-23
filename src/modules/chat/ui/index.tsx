@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
 import { Stack } from '@mui/material';
@@ -11,10 +12,21 @@ import CustomerProfile from './customer';
 import CustomersList from './customer-list';
 import { SendMessage } from './send-message';
 import { ChatHeader } from './chat-area-header';
+import { IMessageRes } from '../types/messages';
 
 export default function MainChatHome() {
   const [searchParams] = useSearchParams();
   const hasChat = searchParams.get('id');
+
+  const [replyMessage, setReplyMessage] = useState<IMessageRes | null>(null);
+
+  const handleReplyMessage = (message: IMessageRes) => {
+    setReplyMessage(message);
+  };
+
+  const clearReply = () => {
+    setReplyMessage(null);
+  };
 
   const layout = (
     <Layout
@@ -30,8 +42,8 @@ export default function MainChatHome() {
         nav: <CustomersList />,
         main: hasChat ? (
           <>
-            <ChatArea />
-            <SendMessage key={hasChat} />
+            <ChatArea onReplyMessage={handleReplyMessage} />
+            <SendMessage key={hasChat} replyMessage={replyMessage} clearReply={clearReply} />
           </>
         ) : (
           <EmptyContentChat
@@ -49,5 +61,5 @@ export default function MainChatHome() {
     />
   );
 
-  return <Stack height={700}>{layout}</Stack>;
+  return <Stack height={670}>{layout}</Stack>;
 }

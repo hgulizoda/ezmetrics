@@ -8,7 +8,6 @@ import Typography from '@mui/material/Typography';
 import Image from '../image';
 import Iconify from '../iconify';
 import { UploadProps } from './types';
-import RejectionFiles from './errors-rejection-files';
 
 // ----------------------------------------------------------------------
 
@@ -20,7 +19,7 @@ export default function UploadAvatar({
   sx,
   ...other
 }: UploadProps) {
-  const { getRootProps, getInputProps, isDragActive, isDragReject, fileRejections } = useDropzone({
+  const { getRootProps, getInputProps, isDragActive, isDragReject } = useDropzone({
     multiple: false,
     disabled,
     accept: {

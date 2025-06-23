@@ -58,7 +58,7 @@ export const BannerDND = () => {
         <DndContext onDragEnd={handleDragEnd} onDragStart={handleDragStart}>
           <SortableContext items={imageItem}>
             <Grid container rowSpacing={1}>
-              {imageItem?.map((el, index) => (
+              {imageItem?.map((el) => (
                 <Grid item xs={12}>
                   <DNDItem {...el} key={el.id} />
                 </Grid>

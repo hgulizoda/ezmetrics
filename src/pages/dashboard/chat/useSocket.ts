@@ -26,6 +26,7 @@ export const useChatSocket = () => {
       socket.on('new_message', handleNewMessage);
       socket.on('send_message', handleNewMessage);
       socket.on('room_list', (data: ICustomerRes[]) => {
+        console.log(data);
         queryClient.setQueryData(['chat_lists'], () => ({ data: [...data] }));
       });
       socket.on('online_users', (data: IOnlineUsers[]) => {
@@ -41,7 +42,7 @@ export const useChatSocket = () => {
 
     return () => {};
   }, [user?._id]);
-  
+
   const emit = (event: string, payload: any) => {
     socketRef.current?.emit(event, payload);
   };

@@ -7,6 +7,7 @@ import { GridColDef, GridActionsCellItem } from '@mui/x-data-grid';
 
 import { paths } from 'src/routes/paths';
 
+import { fNumber } from 'src/utils/format-number';
 import { formatPhoneNumber } from 'src/utils/format-phone-number';
 
 import Iconify from '../../../components/iconify';
@@ -57,7 +58,7 @@ export const baseColumns = ({
     field: 'ball',
     headerName: t('bonus.table.ball'),
     flex: 1,
-    renderCell: ({ row }) => <Box>{row.ball}</Box>,
+    renderCell: ({ row }) => <Box>{fNumber(row.ball)}</Box>,
   },
   {
     field: 'status',
@@ -71,13 +72,13 @@ export const baseColumns = ({
     field: 'total_capacity',
     headerName: t('bonus.table.capacity'),
     flex: 1,
-    renderCell: ({ row }) => <Box>{row.total_capacity}</Box>,
+    renderCell: ({ row }) => <Box>{fNumber(row.total_capacity)}</Box>,
   },
   {
     field: 'total_weight',
     headerName: t('bonus.table.weight'),
     flex: 1,
-    renderCell: ({ row }) => <Box>{row.total_weight}</Box>,
+    renderCell: ({ row }) => <Box>{fNumber(row.total_weight)}</Box>,
   },
   {
     field: 'actions',

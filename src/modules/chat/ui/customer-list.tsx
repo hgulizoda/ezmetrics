@@ -168,7 +168,7 @@ export default function CustomersList() {
                       openChatDeletion.onTrue();
                     }}
                     sx={{
-                      color: (themes) => themes.palette.error.dark,
+                      color: 'error.main',
                     }}
                   >
                     <Iconify sx={{ mr: 1 }} icon="hugeicons:delete-02" />

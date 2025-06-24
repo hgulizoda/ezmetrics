@@ -32,6 +32,7 @@ import { formatLongNumber } from 'src/utils/format-number';
 import { useTranslate } from 'src/locales';
 
 import Label from 'src/components/label';
+import Image from 'src/components/image';
 import Iconify from 'src/components/iconify';
 import { NoData } from 'src/components/no-data copy/no-data';
 import { ErrorData } from 'src/components/error-data/error-data';
@@ -220,12 +221,12 @@ const UserPackages = () => {
                         openViewImage.onTrue();
                       }}
                     >
-                      <img
+                      <Image
                         srcSet={item}
                         src={item}
+                        ratio="1/1"
                         alt="J"
                         loading="lazy"
-                        width={1}
                         style={{
                           height: '100%',
                           borderRadius: 16,
@@ -274,7 +275,7 @@ const UserPackages = () => {
               <Iconify color="#000" width={20} icon="ic:round-close" />
             </IconButton>
           </Box>
-          <img src={viewImage} alt="order" />
+          <Image loading="lazy" src={viewImage} alt="order" />
         </DialogContent>
       </Dialog>
     </>

@@ -1,18 +1,10 @@
 import dayjs from 'dayjs';
-import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import RelativeTime from 'dayjs/plugin/relativeTime';
+import { useState, Dispatch, useEffect, SetStateAction } from 'react';
 
-import {
-  Box,
-  Stack,
-  Badge,
-  Avatar,
-  MenuItem,
-  MenuList,
-  IconButton,
-  ListItemText,
-} from '@mui/material';
+import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
+import { Box, Stack, Badge, Avatar, Tooltip, IconButton, ListItemText } from '@mui/material';
 
 import { queryClient } from 'src/query';
 
@@ -22,7 +14,11 @@ import CustomPopover, { usePopover } from 'src/components/custom-popover';
 import { ICustomerRes, IOnlineUsers } from '../types/chat';
 import { useGetChatLists } from '../hooks/useGetChatLists';
 
-export const ChatHeader = () => {
+interface Props {
+  setSearchChat: Dispatch<SetStateAction<Date | undefined>>;
+}
+
+export const ChatHeader = ({ setSearchChat }: Props) => {
   dayjs.extend(RelativeTime);
   const [searchParams] = useSearchParams();
   const [isOnline, setIsOnline] = useState<boolean>();
@@ -56,31 +52,19 @@ export const ChatHeader = () => {
         />
       </Stack>
       <Stack direction="row" flexGrow={1} justifyContent="flex-end">
-        <IconButton>
-          <Iconify icon="solar:phone-bold" />
-        </IconButton>
-
-        <IconButton>
-          <Iconify icon="solar:videocamera-record-bold" />
-        </IconButton>
-
-        <IconButton onClick={popover.onOpen}>
-          <Iconify icon="eva:more-vertical-fill" />
-        </IconButton>
+        <Tooltip title="Chat ichidan qidirish">
+          <IconButton onClick={popover.onOpen}>
+            <Iconify icon="solar:calendar-search-bold-duotone" />
+          </IconButton>
+        </Tooltip>
       </Stack>
-
       <CustomPopover open={popover.open} onClose={popover.onClose}>
-        <MenuList>
-          <MenuItem
-            onClick={() => {
-              popover.onClose();
-            }}
-            sx={{ color: 'error.main' }}
-          >
-            <Iconify icon="solar:trash-bin-trash-bold" />
-            Delete
-          </MenuItem>
-        </MenuList>
+        <DateCalendar
+          onChange={(e) => {
+            setSearchChat(e);
+            popover.onClose();
+          }}
+        />
       </CustomPopover>
     </Box>
   );

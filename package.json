@@ -70,6 +70,7 @@
     "jwt-decode": "^4.0.0",
     "lodash": "^4.17.21",
     "lucide": "^0.468.0",
+    "minimal-shared": "^1.0.15",
     "mui-nested-menu": "^3.4.0",
     "mui-one-time-password-input": "^2.0.3",
     "mui-tel-input": "^6.0.0",

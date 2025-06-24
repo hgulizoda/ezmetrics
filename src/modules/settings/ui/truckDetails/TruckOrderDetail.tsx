@@ -29,6 +29,8 @@ import { formatLongNumber } from 'src/utils/format-number';
 
 import { useTranslate } from 'src/locales';
 
+import Image from 'src/components/image';
+
 import Label from '../../../../components/label';
 import Iconify from '../../../../components/iconify';
 import { useGetTruckOrder } from '../../hooks/useTruckDetails';
@@ -221,11 +223,12 @@ export const TruckOrderDetail = ({ orderID, onClose }: Props) => {
                       openViewImage.onTrue();
                     }}
                   >
-                    <img
+                    <Image
                       srcSet={item}
                       src={item}
                       alt="J"
                       loading="lazy"
+                      ratio="1/1"
                       width={1}
                       style={{
                         height: '100%',
@@ -273,7 +276,7 @@ export const TruckOrderDetail = ({ orderID, onClose }: Props) => {
               <Iconify color="#000" width={20} icon="ic:round-close" />
             </IconButton>
           </Box>
-          <img src={viewImage} alt="order" />
+          <Image loading="lazy" src={viewImage} alt="order" />
         </DialogContent>
       </Dialog>
     </>

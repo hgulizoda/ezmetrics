@@ -4,6 +4,7 @@ import EmojiPicker, { Theme, EmojiStyle } from 'emoji-picker-react';
 
 import { Box, Stack, useTheme, InputBase, IconButton, Typography } from '@mui/material';
 
+import { queryClient } from 'src/query';
 import { useChatContext } from 'src/pages/dashboard/chat/chatContext';
 import { useUploadImage } from 'src/modules/package/hook/useUploadImage';
 
@@ -30,9 +31,7 @@ export const SendMessage = ({ replyMessage, clearReply }: SendMessageProps) => {
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
   const theme = useTheme();
-
   const inputRef = useRef<HTMLInputElement>(null);
-
   const { emit } = useChatContext();
   const { uploadAsync, isPending } = useUploadImage();
   const { uploadAsync: uploadFile, isPending: isFiling } = useUploadImage();
@@ -46,7 +45,7 @@ export const SendMessage = ({ replyMessage, clearReply }: SendMessageProps) => {
     inputRef.current?.focus();
   }, []);
 
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (newMessage.trim() === '' && !replyMessage) return;
 
     const messagePayload = {
@@ -56,12 +55,15 @@ export const SendMessage = ({ replyMessage, clearReply }: SendMessageProps) => {
       ...(replyMessage && { reply_to: replyMessage._id }),
     };
 
-    emit('send_message', messagePayload);
-    emit('mark_as_read', {
-      room_id: chatId,
-    });
-    setNewMessage('');
-    clearReply();
+    try {
+      await emit('send_message', messagePayload);
+      await emit('mark_as_read', { room_id: chatId });
+      queryClient.invalidateQueries({ queryKey: ['messages', chatId] });
+      setNewMessage('');
+      clearReply();
+    } catch (error) {
+      console.error('Failed to send message:', error);
+    }
   };
 
   const handleMediaClick = () => {
@@ -74,18 +76,18 @@ export const SendMessage = ({ replyMessage, clearReply }: SendMessageProps) => {
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const { files } = e.target;
-
     if (!files?.length || !chatId) return;
 
     try {
       const uploadedUrl = await Promise.all([...files].map((file) => uploadAsync({ file })));
       if (uploadedUrl) {
-        emit('send_message', {
+        await emit('send_message', {
           room: chatId,
           file_url: uploadedUrl.map((url) => url.url),
           type: files[0].type === 'video/mp4' ? 'video' : 'image',
           ...(replyMessage && { reply_to: replyMessage._id }),
         });
+        queryClient.invalidateQueries({ queryKey: ['messages', chatId] });
         clearReply();
       }
     } catch (err) {
@@ -97,17 +99,18 @@ export const SendMessage = ({ replyMessage, clearReply }: SendMessageProps) => {
 
   const handleDocChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const { files } = e.target;
-
     if (!files?.length || !chatId) return;
+
     try {
       const uploadedUrl = await Promise.all([...files].map((file) => uploadAsync({ file })));
       if (uploadedUrl) {
-        emit('send_message', {
+        await emit('send_message', {
           room: chatId,
           file_url: uploadedUrl.map((url) => url.url),
           type: 'file',
           ...(replyMessage && { reply_to: replyMessage._id }),
         });
+        queryClient.invalidateQueries({ queryKey: ['messages', chatId] });
         clearReply();
       }
     } catch (err) {
@@ -118,9 +121,7 @@ export const SendMessage = ({ replyMessage, clearReply }: SendMessageProps) => {
   };
 
   useEffect(() => {
-    emit('mark_as_read', {
-      room_id: chatId,
-    });
+    emit('mark_as_read', { room_id: chatId });
   }, [emit, chatId]);
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -151,12 +152,13 @@ export const SendMessage = ({ replyMessage, clearReply }: SendMessageProps) => {
         try {
           const uploadedUrl = await uploadAudio({ file: audioFile });
           if (uploadedUrl) {
-            emit('send_message', {
+            await emit('send_message', {
               room: chatId,
-              file_url: uploadedUrl.url,
+              file_url: [uploadedUrl.url],
               type: 'audio',
               ...(replyMessage && { reply_to: replyMessage._id }),
             });
+            queryClient.invalidateQueries({ queryKey: ['messages', chatId] });
             clearReply();
           }
         } catch (err) {
@@ -215,6 +217,7 @@ export const SendMessage = ({ replyMessage, clearReply }: SendMessageProps) => {
         onChange={(e) => setNewMessage(e.target.value)}
         placeholder="Type a message"
         autoFocus
+        inputRef={inputRef}
         startAdornment={
           <Box display="flex" pr={2}>
             <IconButton onClick={popover.onOpen} sx={{ p: '4px' }}>

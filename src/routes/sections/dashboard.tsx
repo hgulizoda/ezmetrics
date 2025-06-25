@@ -13,6 +13,7 @@ import { pricesRoutes } from './auto';
 import { archiveRoutes } from './archive';
 import { packagesRoutes } from './packages';
 import { settingsRoutes } from './settings';
+import { feedbacksRoutes } from './feedbacks';
 import ChatRoot from '../../pages/dashboard/chat';
 
 const BannerRoot = lazy(() => import('src/pages/dashboard/settings/Banner'));
@@ -87,6 +88,7 @@ export const dashboardRoutes = [
       ...settingsRoutes,
       ...archiveRoutes,
       ...pricesRoutes,
+      ...feedbacksRoutes,
     ],
   },
 ];

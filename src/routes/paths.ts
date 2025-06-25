@@ -59,5 +59,6 @@ export const paths = {
     notification: `${ROOTS.DASHBOARD}/notifications`,
     chat: `${ROOTS.DASHBOARD}/chat`,
     statistics: `${ROOTS.DASHBOARD}/statistics`,
+    feedbacks: `${ROOTS.DASHBOARD}/feedbacks`,
   },
 };

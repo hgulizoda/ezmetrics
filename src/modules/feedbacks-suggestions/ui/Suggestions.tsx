@@ -1,0 +1,144 @@
+import { useState } from 'react';
+
+import { LoadingButton } from '@mui/lab';
+import { DataGrid, gridClasses } from '@mui/x-data-grid';
+import {
+  Card,
+  Dialog,
+  Button,
+  Divider,
+  Container,
+  CardHeader,
+  Typography,
+  CardContent,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+} from '@mui/material';
+
+import { useBoolean } from 'src/hooks/use-boolean';
+
+import Label from 'src/components/label';
+import { ConfirmDialog } from 'src/components/custome-dialog';
+
+import { sugCol } from './sugCol';
+import { useGetSuggestions } from '../hooks/useGetSuggestions';
+import { useDeleteSuggestions } from '../hooks/useDeleteSuggestions';
+import { FeedbackItem, SuggestionEnum, SuggestionEnumLabels } from '../types/suggestions';
+
+export const Suggestions = () => {
+  const [paginationModel, setPaginationModel] = useState({
+    page: 0,
+    pageSize: 25,
+  });
+  const { data, isLoading } = useGetSuggestions({
+    params: {
+      page: paginationModel.page + 1,
+      limit: paginationModel.pageSize,
+    },
+  });
+  const [suggestions, setSuggestions] = useState<FeedbackItem>();
+  const [suggestionsId, setSuggestionsId] = useState<string>('');
+  const { isPending, mutateAsync } = useDeleteSuggestions(suggestionsId);
+  const openView = useBoolean();
+  const openDelete = useBoolean();
+
+  return (
+    <Container maxWidth="xl">
+      <Card>
+        <CardHeader title="Taklif va shikoyatlar" />
+        <CardContent
+          sx={{
+            px: 0,
+            ':last-child': { pb: 0 },
+          }}
+        >
+          <DataGrid
+            columns={sugCol({
+              onView: (item) => {
+                setSuggestions(item);
+                openView.onTrue();
+              },
+              onDelete(id) {
+                setSuggestionsId(id);
+                openDelete.onTrue();
+              },
+            })}
+            rows={data?.suggestions || []}
+            loading={isLoading}
+            getRowId={(row) => row.id || crypto.randomUUID()}
+            sx={{
+              [`& .${gridClasses.cell}`]: {
+                borderBottom: 'none',
+              },
+            }}
+            rowCount={data?.totalRecords ?? 0}
+            onPaginationModelChange={setPaginationModel}
+            initialState={{
+              pagination: { paginationModel },
+            }}
+          />
+        </CardContent>
+      </Card>
+
+      {suggestions && (
+        <Dialog open={openView.value} onClose={openView.onFalse} maxWidth="sm" fullWidth>
+          <DialogTitle
+            sx={{
+              display: 'flex',
+              justifyContent: 'space-between',
+            }}
+          >
+            <Typography variant="h5">{suggestions.fullName}</Typography>
+            <Label
+              color={
+                // eslint-disable-next-line no-nested-ternary
+                suggestions.type === SuggestionEnum.COMPLAINT
+                  ? 'error'
+                  : suggestions.type === SuggestionEnum.SUGGESTION
+                    ? 'success'
+                    : 'info'
+              }
+            >
+              {SuggestionEnumLabels[suggestions.type as SuggestionEnum]}
+            </Label>
+          </DialogTitle>
+          <Divider />
+          <DialogContent sx={{ pt: 2 }}>{suggestions.description}</DialogContent>
+          <DialogActions>
+            <Button variant="contained" color="primary" onClick={openView.onFalse}>
+              Yopish
+            </Button>
+          </DialogActions>
+        </Dialog>
+      )}
+
+      {suggestionsId && (
+        <ConfirmDialog
+          open={openDelete.value}
+          onClose={openDelete.onFalse}
+          title="O'chirish"
+          content="O'chirilga taklif yoki shikoyatlarni ortga qaytarib bo'lmaydi !"
+          action={
+            <>
+              <Button variant="outlined" color="inherit" onClick={openDelete.onFalse}>
+                Bekor qilish
+              </Button>
+              <LoadingButton
+                variant="contained"
+                color="error"
+                onClick={async () => {
+                  await mutateAsync();
+                  openDelete.onFalse();
+                }}
+                loading={isPending}
+              >
+                O&apos;chirish
+              </LoadingButton>
+            </>
+          }
+        />
+      )}
+    </Container>
+  );
+};

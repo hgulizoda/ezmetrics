@@ -104,6 +104,23 @@ export function useNavData() {
             roles: ['superadmin', 'admin'],
             icon: <Iconify icon="uil:statistics" width={24} />,
           },
+          {
+            title: 'Taklif, Shikoyatlar va Baholar',
+            path: paths.dashboard.feedbacks,
+            icon: <Iconify icon="fluent:person-feedback-20-regular" width={24} />,
+            children: [
+              {
+                title: 'Baholar',
+                path: `${paths.dashboard.feedbacks}/ratings`,
+                roles: ['superadmin', 'admin'],
+              },
+              {
+                title: 'Taklif va Shikoyatlar',
+                path: `${paths.dashboard.feedbacks}/suggestions`,
+                roles: ['superadmin', 'admin'],
+              },
+            ],
+          },
         ],
       },
     ],

@@ -88,3 +88,21 @@ export interface IMessage {
   __v: number;
   _id: string; // Unique identifier
 }
+
+export interface ArchivedMessage {
+  _id: string;
+  room: string;
+  sender_type: 'user' | 'admin';
+  sender: string;
+  type: 'text' | 'image' | 'video' | 'audio' | string;
+  content: string;
+  file_url: string[];
+  file_name: string | null;
+  status: 'read' | 'sent' | 'delivered' | string;
+  is_deleted: boolean;
+  reply_to: string | null;
+  created_at: string;
+  updated_at: string;
+  __v: number;
+  read_at: string;
+}

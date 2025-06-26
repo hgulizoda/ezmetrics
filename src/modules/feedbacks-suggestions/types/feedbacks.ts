@@ -1,3 +1,39 @@
+export interface IOrderStatusHistory {
+  status:
+    | 'in_china_warehouse'
+    | 'to_china_border'
+    | 'in_transit'
+    | 'to_uzb_customs'
+    | 'in_customs'
+    | 'delivered'; // Extend with all possible statuses
+  date: string; // ISO format
+}
+
+export interface IOrder {
+  _id: string;
+  description: string;
+  order_id: string;
+  status: IOrderStatusHistory['status'];
+  status_history: IOrderStatusHistory[];
+  status_updated_at: string;
+  order_capacity: number;
+  order_date: string;
+  order_type: 'full' | 'partial'; // Add other types if exist
+  order_weight: number;
+  images: string[]; // assuming images are URLs, adjust if needed
+  is_paid: boolean;
+  user: Record<string, unknown>; // or a proper IUser interface
+  truck: string | null;
+  container_number: string | null;
+  estimated_arrival_date: string | null;
+  is_archived: boolean;
+  transit_zone: 'kg' | 'uz' | 'cn'; // extend with valid zones
+  total_count: number;
+  total_places: number;
+  note: string;
+  created_at: string;
+}
+
 export interface ReviewItemRes {
   _id: string;
   rating: number;
@@ -19,6 +55,7 @@ export interface ReviewItemRes {
   negative_reasons: string[]; // e.g. ['damaged_goods']
   comment: string;
   created_at: string; // ISO date string
+  order: IOrder;
 }
 
 export interface ReviewItem {
@@ -28,18 +65,12 @@ export interface ReviewItem {
   userId: string;
   fullName: string;
   comment: string;
-  positiveReasons: string[];
-  negativeReasons: string[];
+  reasons: string[];
+  orderId: string;
+  orderName: string;
 }
 
-export enum PositiveReasonsStatus {
-  PROFESSIONALISM = 'professionalism',
-  AFFORDABLE_PRICE = 'affordable_price',
-  DAMAGE_FREE_DELIVERY = 'damage_free_delivery',
-  DELIVERY_SPEED = 'delivery_speed',
-}
-
-export enum NegativeReasonsStatus {
+export enum ReasonsStatus {
   DAMAGED_GOODS = 'damaged_goods',
   INSUFFICIENT_QUANTITY = 'insufficient_quantity',
   HIGH_PRICE = 'high_price',
@@ -47,21 +78,22 @@ export enum NegativeReasonsStatus {
   RUDE_STAFF = 'rude_staff',
   MEASUREMENT_ERROR = 'measurement_error',
   OTHER = 'other',
+  PROFESSIONALISM = 'professionalism',
+  AFFORDABLE_PRICE = 'affordable_price',
+  DAMAGE_FREE_DELIVERY = 'damage_free_delivery',
+  DELIVERY_SPEED = 'delivery_speed',
 }
 
-export const PositiveReasonLabels: Record<PositiveReasonsStatus, string> = {
-  [PositiveReasonsStatus.PROFESSIONALISM]: 'Professional yondashuv',
-  [PositiveReasonsStatus.AFFORDABLE_PRICE]: 'Maʼqul narx',
-  [PositiveReasonsStatus.DAMAGE_FREE_DELIVERY]: 'Shikast yetmagan yetkazib berish',
-  [PositiveReasonsStatus.DELIVERY_SPEED]: 'Tez yetkazib berish',
-};
-
-export const NegativeReasonLabels: Record<NegativeReasonsStatus, string> = {
-  [NegativeReasonsStatus.DAMAGED_GOODS]: 'Shikastlangan mahsulot',
-  [NegativeReasonsStatus.INSUFFICIENT_QUANTITY]: 'Yetarli miqdorda emas',
-  [NegativeReasonsStatus.HIGH_PRICE]: 'Narxi juda baland',
-  [NegativeReasonsStatus.LATE_DELIVERY]: 'Yetkazib berish kechikdi',
-  [NegativeReasonsStatus.RUDE_STAFF]: 'Xodimning qoʻpol munosabati',
-  [NegativeReasonsStatus.MEASUREMENT_ERROR]: 'Oʻlchovdagi xatolik',
-  [NegativeReasonsStatus.OTHER]: 'Boshqa',
+export const ReasonLabels: Record<ReasonsStatus, string> = {
+  [ReasonsStatus.PROFESSIONALISM]: 'Professionalizm',
+  [ReasonsStatus.AFFORDABLE_PRICE]: 'Hamyonbop narx',
+  [ReasonsStatus.DAMAGE_FREE_DELIVERY]: 'Beshikast yetkazish',
+  [ReasonsStatus.DELIVERY_SPEED]: 'Yetkazib berish tezligi',
+  [ReasonsStatus.DAMAGED_GOODS]: 'Yuklar shikastlangan',
+  [ReasonsStatus.INSUFFICIENT_QUANTITY]: 'Tovar soni kam',
+  [ReasonsStatus.HIGH_PRICE]: 'Yuqori narx',
+  [ReasonsStatus.LATE_DELIVERY]: 'Yuk o’z vaqtida yetkazib berilmadi',
+  [ReasonsStatus.RUDE_STAFF]: "Qo'pol hodimlar",
+  [ReasonsStatus.MEASUREMENT_ERROR]: "O'lchovdagi xatolik",
+  [ReasonsStatus.OTHER]: 'Boshqa',
 };

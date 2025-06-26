@@ -31,7 +31,7 @@ export const sugCol = ({ onView, onDelete }: Props): GridColDef<FeedbackItem>[] 
   },
 
   {
-    headerName: 'Turi',
+    headerName: 'Mavzu',
     field: 'type',
     flex: 1,
     renderCell: ({ row }) => (

@@ -1,4 +1,4 @@
-import { Rating } from '@mui/material';
+import { Button, Rating } from '@mui/material';
 import { GridColDef, GridActionsCellItem } from '@mui/x-data-grid';
 
 import { formatPhoneNumber } from 'src/utils/format-phone-number';
@@ -6,20 +6,15 @@ import { formatPhoneNumber } from 'src/utils/format-phone-number';
 import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 
-import {
-  ReviewItem,
-  PositiveReasonLabels,
-  NegativeReasonLabels,
-  PositiveReasonsStatus,
-  NegativeReasonsStatus,
-} from '../types/feedbacks';
+import { ReviewItem, ReasonLabels, ReasonsStatus } from '../types/feedbacks';
 
 interface Props {
   onView: (item: ReviewItem) => void;
   onDelete: (id: string) => void;
+  orderView: (id: string) => void;
 }
 
-export const feedcols = ({ onView, onDelete }: Props): GridColDef<ReviewItem>[] => [
+export const feedcols = ({ onView, onDelete, orderView }: Props): GridColDef<ReviewItem>[] => [
   {
     headerName: 'F.I.SH',
     field: 'fullName',
@@ -49,22 +44,19 @@ export const feedcols = ({ onView, onDelete }: Props): GridColDef<ReviewItem>[] 
     flex: 1,
   },
   {
-    headerName: 'Yaxshi sabablar',
-    field: 'positiveReasons',
+    headerName: 'Yuk',
+    field: 'order',
     flex: 1,
-    renderCell: ({ row }) =>
-      row.positiveReasons.map((el) => (
-        <Label color="success">{PositiveReasonLabels[el as PositiveReasonsStatus]}</Label>
-      )),
+    renderCell: ({ row }) => (
+      <Button onClick={() => orderView(row.orderId)}>{row.orderName}</Button>
+    ),
   },
   {
-    headerName: 'Yomon sabablar',
-    field: 'negativeReasons',
+    headerName: 'Sabablar',
+    field: 'reasons',
     flex: 1,
     renderCell: ({ row }) =>
-      row.negativeReasons.map((el) => (
-        <Label color="error">{NegativeReasonLabels[el as NegativeReasonsStatus]}</Label>
-      )),
+      row.reasons.map((el) => <Label color="default">{ReasonLabels[el as ReasonsStatus]}</Label>),
   },
   {
     field: 'id',

@@ -17,9 +17,16 @@ import GifSearchComponent from './gir-search-component';
 interface SendMessageProps {
   replyMessage: IMessageRes | null;
   clearReply: () => void;
+  editMessage?: IMessageRes | null;
+  setEditMessage?: (msg: IMessageRes | null) => void;
 }
 
-export const SendMessage = ({ replyMessage, clearReply }: SendMessageProps) => {
+export const SendMessage = ({
+  replyMessage,
+  clearReply,
+  editMessage,
+  setEditMessage,
+}: SendMessageProps) => {
   const popover = usePopover();
   const popoverGif = usePopover();
   const [searchParams] = useSearchParams();
@@ -45,8 +52,27 @@ export const SendMessage = ({ replyMessage, clearReply }: SendMessageProps) => {
     inputRef.current?.focus();
   }, []);
 
+  useEffect(() => {
+    if (editMessage) {
+      setNewMessage(editMessage.content);
+      inputRef.current?.focus();
+    }
+  }, [editMessage]);
+
   const handleSendMessage = async () => {
     if (newMessage.trim() === '' && !replyMessage) return;
+
+    if (editMessage && setEditMessage) {
+      await emit('update_message', {
+        message_id: editMessage._id,
+        content: newMessage,
+        room_id: chatId,
+      });
+      queryClient.invalidateQueries({ queryKey: ['messages', chatId] });
+      setEditMessage(null);
+      setNewMessage('');
+      return;
+    }
 
     const messagePayload = {
       room: chatId,
@@ -182,7 +208,7 @@ export const SendMessage = ({ replyMessage, clearReply }: SendMessageProps) => {
 
   return (
     <Box width="100%">
-      {replyMessage && (
+      {(replyMessage || editMessage) && (
         <Box
           sx={{
             p: 1,
@@ -194,17 +220,39 @@ export const SendMessage = ({ replyMessage, clearReply }: SendMessageProps) => {
           }}
         >
           <Box>
-            <Typography
-              variant="body2"
-              noWrap
-              sx={{ maxWidth: 300, overflow: 'hidden', textOverflow: 'ellipsis' }}
-            >
-              {replyMessage.content}
-            </Typography>
+            {editMessage ? (
+              <Typography
+                variant="body2"
+                noWrap
+                sx={{ maxWidth: 300, overflow: 'hidden', textOverflow: 'ellipsis' }}
+              >
+                Edit: {editMessage.content}
+              </Typography>
+            ) : (
+              <Typography
+                variant="body2"
+                noWrap
+                sx={{ maxWidth: 300, overflow: 'hidden', textOverflow: 'ellipsis' }}
+              >
+                {replyMessage?.content}
+              </Typography>
+            )}
           </Box>
-          <IconButton onClick={clearReply} size="small">
-            <Iconify icon="eva:close-fill" width={16} />
-          </IconButton>
+          {editMessage && setEditMessage ? (
+            <IconButton
+              onClick={() => {
+                setEditMessage(null);
+                setNewMessage('');
+              }}
+              size="small"
+            >
+              <Iconify icon="eva:close-fill" width={16} />
+            </IconButton>
+          ) : (
+            <IconButton onClick={clearReply} size="small">
+              <Iconify icon="eva:close-fill" width={16} />
+            </IconButton>
+          )}
         </Box>
       )}
       <InputBase
@@ -215,7 +263,7 @@ export const SendMessage = ({ replyMessage, clearReply }: SendMessageProps) => {
         multiline
         onKeyUp={handleKeyPress}
         onChange={(e) => setNewMessage(e.target.value)}
-        placeholder="Type a message"
+        placeholder={editMessage ? 'Edit message...' : 'Type a message'}
         autoFocus
         inputRef={inputRef}
         startAdornment={

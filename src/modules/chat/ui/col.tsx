@@ -9,9 +9,14 @@ import { ICustomerRes } from '../types/chat';
 interface Props {
   unArchive: (id: string) => void;
   onDelete: (id: string) => void;
+  viewMessages: (id: string) => void;
 }
 
-export const archiveChatColumn = ({ unArchive, onDelete }: Props): GridColDef<ICustomerRes>[] => [
+export const archiveChatColumn = ({
+  unArchive,
+  onDelete,
+  viewMessages,
+}: Props): GridColDef<ICustomerRes>[] => [
   {
     headerName: 'Mijoz ID',
     field: 'user_id',
@@ -49,11 +54,20 @@ export const archiveChatColumn = ({ unArchive, onDelete }: Props): GridColDef<IC
       <GridActionsCellItem
         showInMenu
         sx={{
-          color: (theme) => theme.palette.error.dark,
+          color: (theme) => theme.palette.error.main,
         }}
         label="O'chirish"
         icon={<Iconify icon="hugeicons:delete-02" />}
         onClick={() => onDelete(row._id)}
+      />,
+      <GridActionsCellItem
+        showInMenu
+        sx={{
+          color: (theme) => theme.palette.primary.main,
+        }}
+        label="Ko'rish"
+        icon={<Iconify icon="hugeicons:view" />}
+        onClick={() => viewMessages(row._id)}
       />,
     ],
   },

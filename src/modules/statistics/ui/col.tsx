@@ -1,5 +1,7 @@
 import { GridColDef } from '@mui/x-data-grid';
 
+import { fNumber } from 'src/utils/format-number';
+
 import { IStat } from '../types/Stats';
 
 export const column = (): GridColDef<IStat>[] => [
@@ -32,15 +34,18 @@ export const column = (): GridColDef<IStat>[] => [
     headerName: "Umumiy og'irlik",
     field: 'totalWeight',
     flex: 1,
+    renderCell: ({ row }) => fNumber(row.totalWeight),
   },
   {
     headerName: 'Umumiy hajm',
     field: 'totalCapacity',
     flex: 1,
+    renderCell: ({ row }) => fNumber(row.totalCapacity),
   },
   {
     headerName: 'Umumiy joy',
     field: 'totalPlaces',
     flex: 1,
+    renderCell: ({ row }) => fNumber(row.totalPlaces),
   },
 ];

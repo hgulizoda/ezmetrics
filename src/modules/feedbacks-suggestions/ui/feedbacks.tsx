@@ -20,22 +20,20 @@ import {
 
 import { useBoolean } from 'src/hooks/use-boolean';
 
+import { TruckOrderDetail } from 'src/modules/settings/ui/truckDetails/TruckOrderDetail';
+
 import Label from 'src/components/label';
 import { ConfirmDialog } from 'src/components/custome-dialog';
 
 import { feedcols } from './feedCol';
 import { useGetFeedbacks } from '../hooks/useGetFeedbacks';
 import { useDeleteFeedback } from '../hooks/useDeleteFeedback';
-import {
-  ReviewItem,
-  NegativeReasonLabels,
-  PositiveReasonLabels,
-  NegativeReasonsStatus,
-  PositiveReasonsStatus,
-} from '../types/feedbacks';
+import { ReviewItem, ReasonLabels, ReasonsStatus } from '../types/feedbacks';
 
 export const Feedbacks = () => {
   const [feedbacksId, setFeedbacksId] = useState<string>('');
+  const [orderID, setOrderID] = useState<string>('');
+  const viewOrder = useBoolean();
   const { isPending, mutateAsync } = useDeleteFeedback(feedbacksId);
   const [paginationModel, setPaginationModel] = useState({
     page: 0,
@@ -76,6 +74,10 @@ export const Feedbacks = () => {
                 setFeedbacks(item);
                 openView.onTrue();
               },
+              orderView(id) {
+                setOrderID(id);
+                viewOrder.onTrue();
+              },
             })}
             rows={data?.feedbacks || []}
             loading={isLoading}
@@ -103,33 +105,10 @@ export const Feedbacks = () => {
           <DialogContent sx={{ pt: 2 }}>
             <Typography>{feedbacks.comment}</Typography>
 
-            <Box my={2}>
-              <Typography mb={1} variant="subtitle2">
-                Yaxshi sabablar:
-              </Typography>
-              <Box display="flex" gap={0.5} flexWrap="wrap">
-                {feedbacks.positiveReasons.length > 0
-                  ? feedbacks.positiveReasons.map((el) => (
-                      <Label color="success">
-                        {PositiveReasonLabels[el as PositiveReasonsStatus]}
-                      </Label>
-                    ))
-                  : "Yo'q"}
-              </Box>
-            </Box>
-            <Box mt={2}>
-              <Typography mb={1} variant="subtitle2">
-                Yomon sabablar:
-              </Typography>
-              <Box display="flex" gap={0.5} flexWrap="wrap">
-                {feedbacks.negativeReasons.length > 0
-                  ? feedbacks.negativeReasons.map((el) => (
-                      <Label color="error">
-                        {NegativeReasonLabels[el as NegativeReasonsStatus]}
-                      </Label>
-                    ))
-                  : "Yo'q"}
-              </Box>
+            <Box my={2} gap={1} display="flex" flexWrap="wrap">
+              {feedbacks.reasons.map((el) => (
+                <Label>{ReasonLabels[el as ReasonsStatus]}</Label>
+              ))}
             </Box>
           </DialogContent>
           <DialogActions>
@@ -165,6 +144,18 @@ export const Feedbacks = () => {
             </>
           }
         />
+      )}
+
+      {orderID && (
+        <Dialog
+          open={viewOrder.value}
+          onClose={viewOrder.onFalse}
+          fullWidth
+          maxWidth="md"
+          scroll="body"
+        >
+          <TruckOrderDetail orderID={orderID} onClose={viewOrder.onFalse} />
+        </Dialog>
       )}
     </Container>
   );

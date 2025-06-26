@@ -19,7 +19,7 @@ export default function MainChatHome() {
   const hasChat = searchParams.get('id');
 
   const [replyMessage, setReplyMessage] = useState<IMessageRes | null>(null);
-
+  const [editMessage, setEditMessage] = useState<IMessageRes | null>(null);
   const [searchChat, setSearchChat] = useState<Date>();
 
   const handleReplyMessage = (message: IMessageRes) => {
@@ -44,8 +44,18 @@ export default function MainChatHome() {
         nav: <CustomersList />,
         main: hasChat ? (
           <>
-            <ChatArea onReplyMessage={handleReplyMessage} searchChat={searchChat} />
-            <SendMessage key={hasChat} replyMessage={replyMessage} clearReply={clearReply} />
+            <ChatArea
+              onReplyMessage={handleReplyMessage}
+              searchChat={searchChat}
+              setEditMessage={setEditMessage}
+            />
+            <SendMessage
+              key={hasChat}
+              replyMessage={replyMessage}
+              clearReply={clearReply}
+              editMessage={editMessage}
+              setEditMessage={setEditMessage}
+            />
           </>
         ) : (
           <EmptyContentChat

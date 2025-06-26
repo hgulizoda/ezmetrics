@@ -7,8 +7,9 @@ export const feedbacksAdapter = (item: ReviewItemRes): ReviewItem => ({
   userId: item.user?.user_id ?? '',
   fullName: `${item.profile?.first_name} ${item.profile?.last_name}`,
   comment: item.comment ?? '',
-  positiveReasons: item.positive_reasons ?? [],
-  negativeReasons: item.negative_reasons ?? [],
+  reasons: [...item.positive_reasons, ...item.negative_reasons],
+  orderId: item.order._id ?? '',
+  orderName: item.order.description ?? '',
 });
 
 export const feedbacksMapper = (data: ReviewItemRes[]) => data?.map(feedbacksAdapter) || [];

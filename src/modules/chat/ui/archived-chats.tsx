@@ -13,11 +13,13 @@ import Circular from 'src/components/loading-screen/circular-screen';
 import { archiveChatColumn } from './col';
 import { useDeleteChat } from '../hooks/useDeleteChat';
 import { useUnArchiveChat } from '../hooks/useUnArchiveChat';
+import { ArchivedMessagesDialog } from './archived-message-byId';
 import { useGetArchivedChats } from '../hooks/useGetArchivedChats';
 
 export const ArchivedChats = () => {
   const [chatId, setChatId] = useState<string>('');
   const navigate = useNavigate();
+  const openArchivedMessages = useBoolean();
   const { isDeletingChat, deleteChatAsync } = useDeleteChat(chatId);
   const { isUnArchivingChat, unArchiveChatAsync } = useUnArchiveChat(chatId);
   const [paginationModel, setPaginationModel] = useState({
@@ -52,6 +54,10 @@ export const ArchivedChats = () => {
           onDelete(id) {
             setChatId(id);
             openDeleteChat.onTrue();
+          },
+          viewMessages(id) {
+            setChatId(id);
+            openArchivedMessages.onTrue();
           },
         })}
         rows={data?.data}
@@ -118,6 +124,14 @@ export const ArchivedChats = () => {
               </LoadingButton>
             </>
           }
+        />
+      )}
+
+      {chatId && (
+        <ArchivedMessagesDialog
+          open={openArchivedMessages.value}
+          onClose={openArchivedMessages.onFalse}
+          chatId={chatId}
         />
       )}
     </>

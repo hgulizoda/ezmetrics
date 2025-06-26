@@ -23,8 +23,24 @@ export const useChatSocket = () => {
           return { data: [...old, data] };
         });
       };
+      const handleUpdateMessage = (data: any) => {
+        queryClient.setQueryData(
+          ['messages', data.room_id],
+          (oldData: { data: ICustomerRes[] }) => {
+            const old = oldData?.data || [];
+            const updated = old.map((msg) =>
+              msg._id === data.message_id ? { ...msg, ...data, _id: msg._id } : msg
+            );
+            return { data: updated };
+          }
+        );
+        // Fallback: force refetch
+        queryClient.invalidateQueries({ queryKey: ['messages', data.room_id] });
+      };
       socket.on('new_message', handleNewMessage);
       socket.on('send_message', handleNewMessage);
+      socket.on('reply_message', handleNewMessage);
+      socket.on('update_message', handleUpdateMessage);
       socket.on('room_list', (data: ICustomerRes[]) => {
         queryClient.setQueryData(['chat_lists'], () => ({ data: [...data] }));
       });

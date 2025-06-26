@@ -43,9 +43,10 @@ type MessageOrSeparator =
 interface ChatAreaProps {
   onReplyMessage: (message: IMessageRes) => void;
   searchChat: Date | undefined;
+  setEditMessage: (msg: IMessageRes | null) => void;
 }
 
-const ChatArea = memo(({ onReplyMessage, searchChat }: ChatAreaProps) => {
+const ChatArea = memo(({ onReplyMessage, searchChat, setEditMessage }: ChatAreaProps) => {
   const [selectedMessages, setSelectedMessages] = useState<string[]>([]);
   const [isMultiSelectMode, setIsMultiSelectMode] = useState(false);
   const [focusedMessageId, setFocusedMessageId] = useState<string | null>(null);
@@ -59,6 +60,8 @@ const ChatArea = memo(({ onReplyMessage, searchChat }: ChatAreaProps) => {
   const { emit } = useChatContext();
   const { messagesEndRef } = useMessagesScroll(data?.data || [], () => {});
   const scrollContainerRef = useRef<HTMLDivElement | null>(null);
+  const skipScrollRef = useRef(false);
+  const prevMessageCountRef = useRef<number>(0);
 
   const handleMessageSelect = (messageId: string) => {
     setSelectedMessages((prev) => {
@@ -94,6 +97,7 @@ const ChatArea = memo(({ onReplyMessage, searchChat }: ChatAreaProps) => {
     const distanceFromBottom =
       currentScrollHeight - currentScrollPosition - scrollContainer.clientHeight;
 
+    skipScrollRef.current = true;
     await Promise.all(
       selectedMessages.map((messageId) =>
         emit('delete_message', {
@@ -111,6 +115,7 @@ const ChatArea = memo(({ onReplyMessage, searchChat }: ChatAreaProps) => {
       const newScrollHeight = scrollContainer.scrollHeight;
       scrollContainer.scrollTop =
         newScrollHeight - scrollContainer.clientHeight - distanceFromBottom;
+      skipScrollRef.current = false;
     }, 100);
 
     handleCancelSelection();
@@ -126,6 +131,7 @@ const ChatArea = memo(({ onReplyMessage, searchChat }: ChatAreaProps) => {
     const distanceFromBottom =
       currentScrollHeight - currentScrollPosition - scrollContainer.clientHeight;
 
+    skipScrollRef.current = true;
     await emit('archive_messages', {
       message_ids: selectedMessages,
       room_id: chatId,
@@ -139,6 +145,7 @@ const ChatArea = memo(({ onReplyMessage, searchChat }: ChatAreaProps) => {
       const newScrollHeight = scrollContainer.scrollHeight;
       scrollContainer.scrollTop =
         newScrollHeight - scrollContainer.clientHeight - distanceFromBottom;
+      skipScrollRef.current = false;
     }, 100);
 
     handleCancelSelection();
@@ -186,37 +193,57 @@ const ChatArea = memo(({ onReplyMessage, searchChat }: ChatAreaProps) => {
       setNoMessagesForDate(true);
     }
   }, [searchChat, data?.data]);
+
+  useEffect(() => {
+    const messageCount = data?.data?.length || 0;
+    const prevCount = prevMessageCountRef.current;
+    // Only scroll to bottom if messages increased or chatId changed
+    if (
+      messagesEndRef.current &&
+      (messageCount > prevCount || prevCount === 0 || prevCount === undefined)
+    ) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'auto' });
+    }
+    prevMessageCountRef.current = messageCount;
+  }, [data?.data, chatId, messagesEndRef]);
+
   // @ts-ignore
   const messagesWithSeparators = useMemo<MessageOrSeparator[]>(() => {
     if (!data?.data) return [];
 
-    return data.data.reduce((acc: MessageOrSeparator[], message: IMessageRes, index: number) => {
-      if (message.is_deleted) return acc;
+    // Deduplicate messages by _id
+    const uniqueMessages = Array.from(new Map(data.data.map((msg) => [msg._id, msg])).values());
 
-      const messageDate = dayjs(message.created_at).tz('Asia/Tashkent').startOf('day');
-      const prevMessage = index > 0 ? data.data[index - 1] : null;
-      const prevMessageDate = prevMessage
-        ? dayjs(prevMessage.created_at).tz('Asia/Tashkent').startOf('day')
-        : null;
+    return uniqueMessages.reduce(
+      (acc: MessageOrSeparator[], message: IMessageRes, index: number) => {
+        if (message.is_deleted) return acc;
 
-      const needsSeparator = !prevMessage || !messageDate.isSame(prevMessageDate, 'day');
+        const messageDate = dayjs(message.created_at).tz('Asia/Tashkent').startOf('day');
+        const prevMessage = index > 0 ? uniqueMessages[index - 1] : null;
+        const prevMessageDate = prevMessage
+          ? dayjs(prevMessage.created_at).tz('Asia/Tashkent').startOf('day')
+          : null;
 
-      if (needsSeparator) {
+        const needsSeparator = !prevMessage || !messageDate.isSame(prevMessageDate, 'day');
+
+        if (needsSeparator) {
+          acc.push({
+            type: 'separator',
+            date: messageDate.format('D MMMM'),
+            key: `separator-${messageDate.format('YYYY-MM-DD')}`,
+          });
+        }
+
         acc.push({
-          type: 'separator',
-          date: messageDate.format('D MMMM'),
-          key: `separator-${messageDate.format('YYYY-MM-DD')}`,
+          type: 'message',
+          message,
+          key: message._id,
         });
-      }
 
-      acc.push({
-        type: 'message',
-        message,
-        key: message._id,
-      });
-
-      return acc;
-    }, []);
+        return acc;
+      },
+      []
+    );
   }, [data?.data]);
 
   if (isLoading) {
@@ -279,251 +306,261 @@ const ChatArea = memo(({ onReplyMessage, searchChat }: ChatAreaProps) => {
             </Typography>
           </Box>
         ) : (
-          messagesWithSeparators.map((item) =>
-            item.type === 'separator' ? (
-              <Box
-                key={item.key}
-                sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  my: 2,
-                  position: 'relative',
-                }}
-              >
+          <>
+            {messagesWithSeparators.map((item) =>
+              item.type === 'separator' ? (
                 <Box
+                  key={item.key}
                   sx={{
-                    flexGrow: 1,
-                    height: '1px',
-                    bgcolor: theme.palette.divider,
-                  }}
-                />
-                <Typography
-                  variant="caption"
-                  sx={{
-                    mx: 2,
-                    px: 2,
-                    py: 0.5,
-                    bgcolor: theme.palette.background.paper,
-                    color: theme.palette.text.secondary,
-                    borderRadius: 1,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    my: 2,
+                    position: 'relative',
                   }}
                 >
-                  {item.date}
-                </Typography>
-                <Box
+                  <Box
+                    sx={{
+                      flexGrow: 1,
+                      height: '1px',
+                      bgcolor: theme.palette.divider,
+                    }}
+                  />
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      mx: 2,
+                      px: 2,
+                      py: 0.5,
+                      bgcolor: theme.palette.background.paper,
+                      color: theme.palette.text.secondary,
+                      borderRadius: 1,
+                    }}
+                  >
+                    {item.date}
+                  </Typography>
+                  <Box
+                    sx={{
+                      flexGrow: 1,
+                      height: '1px',
+                      bgcolor: theme.palette.divider,
+                    }}
+                  />
+                </Box>
+              ) : (
+                <Stack
+                  key={item.key}
+                  direction="row"
+                  justifyContent={item.message.sender_type === 'user' ? 'unset' : 'flex-end'}
                   sx={{
-                    flexGrow: 1,
-                    height: '1px',
-                    bgcolor: theme.palette.divider,
+                    transition: 'background-color 1s ease-out',
+                    bgcolor:
+                      focusedMessageId === item.message._id
+                        ? theme.palette.primary.lighter
+                        : 'transparent',
+                    mb: 2,
+                    borderRadius: 2,
                   }}
-                />
-              </Box>
-            ) : (
-              <Stack
-                key={item.key}
-                direction="row"
-                justifyContent={item.message.sender_type === 'user' ? 'unset' : 'flex-end'}
-                sx={{
-                  transition: 'background-color 1s ease-out',
-                  bgcolor:
-                    focusedMessageId === item.message._id
-                      ? theme.palette.primary.lighter
-                      : 'transparent',
-                  mb: 2,
-                  borderRadius: 2,
-                }}
-                role="region"
-                aria-label={`Message from ${item.message.sender_type} at ${dayjs(item.message.created_at).format('D MMM, h:mm A')}`}
-              >
-                <Box sx={{ maxWidth: '70%' }} display="flex" gap={1}>
-                  <Box>
-                    {item.message.reply_to && (
-                      <Box
-                        sx={{
-                          p: 1,
-                          mb: 1,
-                          bgcolor: theme.palette.background.paper,
-                          borderRadius: 1,
-                          borderLeft: `3px solid ${theme.palette.primary.dark}`,
-                          cursor: 'pointer',
-                        }}
-                        onClick={() => {
-                          const replyToId =
-                            typeof item.message.reply_to === 'string'
-                              ? item.message.reply_to
-                              : item.message.reply_to._id;
-                          setFocusedMessageId(replyToId);
-                          const element = document.getElementById(`message-${replyToId}`);
-                          element?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                          setTimeout(() => setFocusedMessageId(null), 1000);
-                        }}
-                      >
-                        <Typography
-                          variant="body2"
-                          noWrap
-                          sx={{
-                            maxWidth: 200,
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                            fontStyle: !data?.data?.find(
-                              (m) =>
-                                m._id ===
-                                (typeof item.message.reply_to === 'string'
-                                  ? item.message.reply_to
-                                  : item.message.reply_to._id)
-                            )
-                              ? 'italic'
-                              : 'normal',
-                          }}
-                        >
-                          {typeof item.message.reply_to === 'string'
-                            ? data?.data?.find((m) => m._id === item.message.reply_to)?.content ||
-                              `Habar topilmadi yoki o'chirilgan`
-                            : item.message.reply_to.content || `Habar topilmadi yoki o'chirilgan`}
-                        </Typography>
-                      </Box>
-                    )}
-                    <Box id={`message-${item.message._id}`}>
-                      {item.message.type === 'text' ? (
-                        <Stack
+                  role="region"
+                  aria-label={`Message from ${item.message.sender_type} at ${dayjs(item.message.created_at).format('D MMM, h:mm A')}`}
+                >
+                  <Box sx={{ maxWidth: '70%' }} display="flex" gap={1}>
+                    <Box>
+                      {item.message.reply_to && (
+                        <Box
                           sx={{
                             p: 1,
-                            minWidth: 48,
-                            maxWidth: 320,
-                            typography: 'body2',
-                            bgcolor: selectedMessages.includes(item.message._id)
-                              ? theme.palette.action.selected
-                              : theme.palette.background.neutral,
-                            borderTopLeftRadius:
-                              item.message.sender_type === 'admin' ? '12px' : '0px',
-                            borderTopRightRadius: '12px',
-                            borderBottomLeftRadius: '12px',
-                            borderBottomRightRadius:
-                              item.message.sender_type === 'admin' ? '0px' : '12px',
+                            mb: 1,
+                            bgcolor: theme.palette.background.paper,
+                            borderRadius: 1,
+                            borderLeft: `3px solid ${theme.palette.primary.dark}`,
+                            cursor: 'pointer',
+                          }}
+                          onClick={() => {
+                            const replyToId =
+                              typeof item.message.reply_to === 'string'
+                                ? item.message.reply_to
+                                : item.message.reply_to._id;
+                            setFocusedMessageId(replyToId);
+                            const element = document.getElementById(`message-${replyToId}`);
+                            element?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            setTimeout(() => setFocusedMessageId(null), 1000);
                           }}
                         >
                           <Typography
-                            variant="body1"
+                            variant="body2"
+                            noWrap
                             sx={{
-                              whiteSpace: 'pre-wrap',
-                              wordBreak: 'break-word',
+                              maxWidth: 200,
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis',
+                              fontStyle: !data?.data?.find(
+                                (m) =>
+                                  m._id ===
+                                  (typeof item.message.reply_to === 'string'
+                                    ? item.message.reply_to
+                                    : item.message.reply_to._id)
+                              )
+                                ? 'italic'
+                                : 'normal',
                             }}
                           >
-                            {item.message.content}
+                            {typeof item.message.reply_to === 'string'
+                              ? data?.data?.find((m) => m._id === item.message.reply_to)?.content ||
+                                `Habar topilmadi yoki o'chirilgan`
+                              : item.message.reply_to.content || `Habar topilmadi yoki o'chirilgan`}
                           </Typography>
-                          <Box
-                            display="flex"
-                            alignItems="flex-end"
-                            gap={1}
-                            justifyContent="flex-end"
-                          >
-                            <Typography
-                              variant="caption"
-                              sx={{
-                                display: 'block',
-                                mt: 0.5,
-                                color: 'text.secondary',
-                                textAlign: item.message.sender_type === 'user' ? 'left' : 'right',
-                              }}
-                            >
-                              {dayjs(item.message.created_at)
-                                .tz('Asia/Tashkent')
-                                .format('D MMM, h:mm A')}
-                            </Typography>
-                            {item.message.sender_type === 'admin' &&
-                              (item.message.status === 'sent' ? (
-                                <Iconify icon="lucide:check" width={17} />
-                              ) : (
-                                <Iconify icon="solar:check-read-linear" />
-                              ))}
-                          </Box>
-                        </Stack>
-                      ) : (
-                        <Box
-                          sx={{
-                            bgcolor: selectedMessages.includes(item.message._id)
-                              ? theme.palette.action.selected
-                              : theme.palette.background.neutral,
-                            borderRadius: 1.5,
-                            overflow: 'hidden',
-                          }}
-                        >
-                          <Box display="flex" flexDirection="column">
-                            {item.message.file_url?.map((url) => (
-                              <FileRender key={url} url={url} />
-                            ))}
-                          </Box>
-                          <Typography p={1} variant="body1">
-                            {item.message.content}
-                          </Typography>
-                          <Box
-                            display="flex"
-                            alignItems="flex-end"
-                            gap={1}
-                            justifyContent="flex-end"
-                            pr={1}
-                            pb={0.5}
-                          >
-                            <Typography
-                              variant="caption"
-                              sx={{
-                                display: 'block',
-                                mt: 0.5,
-                                color: 'text.secondary',
-                                textAlign: item.message.sender_type === 'user' ? 'left' : 'right',
-                              }}
-                            >
-                              {dayjs(item.message.created_at)
-                                .tz('Asia/Tashkent')
-                                .format('D MMM, h:mm A')}
-                            </Typography>
-                            {item.message.sender_type === 'admin' &&
-                              (item.message.status === 'sent' ? (
-                                <Iconify icon="lucide:check" width={17} />
-                              ) : (
-                                <Iconify icon="solar:check-read-linear" />
-                              ))}
-                          </Box>
                         </Box>
                       )}
-                      <Box
-                        display="flex"
-                        justifyContent="flex-end"
-                        mt="2px"
-                        alignItems="center"
-                        gap={0.5}
-                      >
-                        <Checkbox
-                          checked={selectedMessages.includes(item.message._id)}
-                          onChange={() => handleMessageSelect(item.message._id)}
-                          aria-label={`Select message ${item.message._id}`}
-                          sx={{ p: '4px' }}
-                        />
-                        <IconButton
-                          sx={{ p: '4px' }}
-                          onClick={() => onReplyMessage(item.message)}
-                          aria-label="Reply to message"
+                      <Box id={`message-${item.message._id}`}>
+                        {item.message.type === 'text' && (
+                          <Stack
+                            sx={{
+                              p: 1,
+                              minWidth: 48,
+                              maxWidth: 320,
+                              typography: 'body2',
+                              bgcolor: selectedMessages.includes(item.message._id)
+                                ? theme.palette.action.selected
+                                : theme.palette.background.neutral,
+                              borderTopLeftRadius:
+                                item.message.sender_type === 'admin' ? '12px' : '0px',
+                              borderTopRightRadius: '12px',
+                              borderBottomLeftRadius: '12px',
+                              borderBottomRightRadius:
+                                item.message.sender_type === 'admin' ? '0px' : '12px',
+                            }}
+                          >
+                            <Typography
+                              variant="body1"
+                              sx={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}
+                            >
+                              {item.message.content}
+                            </Typography>
+                            <Box
+                              display="flex"
+                              alignItems="flex-end"
+                              gap={1}
+                              justifyContent="flex-end"
+                            >
+                              <Typography
+                                variant="caption"
+                                sx={{
+                                  display: 'block',
+                                  mt: 0.5,
+                                  color: 'text.secondary',
+                                  textAlign: item.message.sender_type === 'user' ? 'left' : 'right',
+                                }}
+                              >
+                                {dayjs(item.message.created_at)
+                                  .tz('Asia/Tashkent')
+                                  .format('D MMM, h:mm A')}
+                              </Typography>
+                              {item.message.sender_type === 'admin' &&
+                                (item.message.status === 'sent' ? (
+                                  <Iconify icon="lucide:check" width={17} />
+                                ) : (
+                                  <Iconify icon="solar:check-read-linear" />
+                                ))}
+                            </Box>
+                          </Stack>
+                        )}
+                        {item.message.type !== 'text' && (
+                          <Box
+                            sx={{
+                              bgcolor: selectedMessages.includes(item.message._id)
+                                ? theme.palette.action.selected
+                                : theme.palette.background.neutral,
+                              borderRadius: 1.5,
+                              overflow: 'hidden',
+                            }}
+                          >
+                            <Box display="flex" flexDirection="column">
+                              {item.message.file_url?.map((url) => (
+                                <FileRender key={url} url={url} />
+                              ))}
+                            </Box>
+                            <Typography p={1} variant="body1">
+                              {item.message.content}
+                            </Typography>
+                            <Box
+                              display="flex"
+                              alignItems="flex-end"
+                              gap={1}
+                              justifyContent="flex-end"
+                              pr={1}
+                              pb={0.5}
+                            >
+                              <Typography
+                                variant="caption"
+                                sx={{
+                                  display: 'block',
+                                  mt: 0.5,
+                                  color: 'text.secondary',
+                                  textAlign: item.message.sender_type === 'user' ? 'left' : 'right',
+                                }}
+                              >
+                                {dayjs(item.message.created_at)
+                                  .tz('Asia/Tashkent')
+                                  .format('D MMM, h:mm A')}
+                              </Typography>
+                              {item.message.sender_type === 'admin' &&
+                                (item.message.status === 'sent' ? (
+                                  <Iconify icon="lucide:check" width={17} />
+                                ) : (
+                                  <Iconify icon="solar:check-read-linear" />
+                                ))}
+                            </Box>
+                          </Box>
+                        )}
+                        <Box
+                          display="flex"
+                          justifyContent="flex-end"
+                          mt="2px"
+                          alignItems="center"
+                          gap={0.5}
                         >
-                          <Iconify icon="fluent:arrow-reply-16-filled" width={17} />
-                        </IconButton>
-                        <IconButton
-                          sx={{ p: '4px' }}
-                          onClick={() => {
-                            setSelectedMessages([item.message._id]);
-                            openDeleteMessages.onTrue();
-                          }}
-                          aria-label="Delete message"
-                        >
-                          <Iconify icon="tabler:trash-filled" width={17} />
-                        </IconButton>
+                          <Checkbox
+                            checked={selectedMessages.includes(item.message._id)}
+                            onChange={() => handleMessageSelect(item.message._id)}
+                            aria-label={`Select message ${item.message._id}`}
+                            sx={{ p: '4px' }}
+                          />
+                          <IconButton
+                            sx={{ p: '4px' }}
+                            onClick={() => onReplyMessage(item.message)}
+                            aria-label="Reply to message"
+                          >
+                            <Iconify icon="fluent:arrow-reply-16-filled" width={17} />
+                          </IconButton>
+                          <IconButton
+                            sx={{ p: '4px' }}
+                            onClick={() => {
+                              setSelectedMessages([item.message._id]);
+                              openDeleteMessages.onTrue();
+                            }}
+                            aria-label="Delete message"
+                          >
+                            <Iconify icon="tabler:trash-filled" width={17} />
+                          </IconButton>
+                          {item.message.sender_type === 'admin' && (
+                            <IconButton
+                              sx={{ p: '4px' }}
+                              onClick={() => setEditMessage(item.message)}
+                              aria-label="Edit message"
+                            >
+                              <Iconify icon="eva:edit-2-fill" width={17} />
+                            </IconButton>
+                          )}
+                        </Box>
                       </Box>
                     </Box>
                   </Box>
-                </Box>
-              </Stack>
-            )
-          )
+                </Stack>
+              )
+            )}
+            <div ref={messagesEndRef} />
+          </>
         )}
       </Scrollbar>
 

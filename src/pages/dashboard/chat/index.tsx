@@ -6,8 +6,6 @@ import AccountPopover from 'src/layouts/common/account-popover';
 import SettingsButton from 'src/layouts/common/settings-button';
 import { LanguagePopover } from 'src/layouts/common/language-popover';
 
-import { ChatProvider } from './chatProvider';
-
 export default function ChatRoot() {
   return (
     <Container maxWidth="xl">
@@ -31,9 +29,7 @@ export default function ChatRoot() {
           <AccountPopover />
         </Box>
       </Box>
-      <ChatProvider>
-        <MainChatHome />
-      </ChatProvider>
+      <MainChatHome />
     </Container>
   );
 }

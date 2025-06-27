@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
-import { useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { memo, useRef, useMemo, useState, useEffect } from 'react';
 
 import {
@@ -47,6 +47,7 @@ interface ChatAreaProps {
 }
 
 const ChatArea = memo(({ onReplyMessage, searchChat, setEditMessage }: ChatAreaProps) => {
+  const navigate = useNavigate();
   const [selectedMessages, setSelectedMessages] = useState<string[]>([]);
   const [isMultiSelectMode, setIsMultiSelectMode] = useState(false);
   const [focusedMessageId, setFocusedMessageId] = useState<string | null>(null);
@@ -62,6 +63,18 @@ const ChatArea = memo(({ onReplyMessage, searchChat, setEditMessage }: ChatAreaP
   const scrollContainerRef = useRef<HTMLDivElement | null>(null);
   const skipScrollRef = useRef(false);
   const prevMessageCountRef = useRef<number>(0);
+
+  useEffect(() => {
+    const handleEscPress = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        navigate(-1);
+      }
+    };
+    document.addEventListener('keydown', handleEscPress);
+    return () => {
+      document.removeEventListener('keydown', handleEscPress);
+    };
+  }, [navigate]);
 
   const handleMessageSelect = (messageId: string) => {
     setSelectedMessages((prev) => {

@@ -1,5 +1,6 @@
 import { Toaster } from 'sonner';
 import 'yet-another-react-lightbox/styles.css';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
 // ----------------------------------------------------------------------
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
@@ -16,6 +17,8 @@ import { AuthProvider } from 'src/auth/context/jwt';
 import ProgressBar from 'src/components/progress-bar';
 import { MotionLazy } from 'src/components/animate/motion-lazy';
 import { SettingsDrawer, SettingsProvider } from 'src/components/settings';
+
+import { ChatProvider } from './pages/dashboard/chat/chatProvider';
 
 // ----------------------------------------------------------------------
 
@@ -35,14 +38,16 @@ export default function App() {
           }}
         >
           <ThemeProvider>
-            <MotionLazy>
-              <SettingsDrawer />
-              <ProgressBar />
-              <Router />
-              <Toaster />
-            </MotionLazy>
+            <ChatProvider>
+              <MotionLazy>
+                <SettingsDrawer />
+                <ProgressBar />
+                <Router />
+                <Toaster />
+              </MotionLazy>
+            </ChatProvider>
           </ThemeProvider>
-          {/* <ReactQueryDevtools initialIsOpen={false} /> */}
+          <ReactQueryDevtools initialIsOpen={false} />
         </SettingsProvider>
       </LocalizationProvider>
     </AuthProvider>

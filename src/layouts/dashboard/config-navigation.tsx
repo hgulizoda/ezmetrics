@@ -1,14 +1,21 @@
-import { useMemo } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 
 import { paths, ROOTS } from 'src/routes/paths';
 
 import { useTranslate } from 'src/locales';
+import { useGetChatLists } from 'src/modules/chat/hooks/useGetChatLists';
 
+import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 // ----------------------------------------------------------------------
 
 export function useNavData() {
   const { t } = useTranslate('lang');
+  const { data } = useGetChatLists();
+  const [unreadCount, setUnreadCount] = useState(0);
+  useEffect(() => {
+    setUnreadCount(data?.data.filter((el: any) => el.unread_count_admin > 0).length);
+  }, [data?.data]);
   return useMemo(
     () => [
       {
@@ -97,6 +104,11 @@ export function useNavData() {
             path: paths.dashboard.chat,
             roles: ['superadmin', 'admin'],
             icon: <Iconify icon="hugeicons:bubble-chat-user" width={24} />,
+            info: (
+              <Label variant="filled" color="info">
+                {unreadCount}
+              </Label>
+            ),
           },
           {
             title: 'Statistics',
@@ -124,6 +136,6 @@ export function useNavData() {
         ],
       },
     ],
-    [t]
+    [t, unreadCount]
   );
 }

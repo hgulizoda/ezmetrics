@@ -46,6 +46,7 @@ export default function CustomersList() {
   const [chatId, setChatId] = useState<string>('');
   const navigate = useNavigate();
   const { data, isLoading } = useGetChatLists();
+
   const { isArchivingChat, archiveChatAsync } = useArchiveChat(chatId);
   const [search, setSearch] = useState<string>();
   const [autoOpen, setAutoOpen] = useState(false);

@@ -22,6 +22,8 @@ const NotificationTable = lazy(() => import('src/pages/dashboard/notification/no
 const NotificationFormRoot = lazy(
   () => import('src/pages/dashboard/notification/notificationForm')
 );
+const SingleBonusRoot = lazy(() => import('src/pages/dashboard/bonus/single'));
+const RemovedBonusRoot = lazy(() => import('src/pages/dashboard/bonus/removed'));
 const BonusPageRoot = lazy(() => import('src/pages/dashboard/bonus'));
 
 const Statistics = lazy(() => import('src/pages/dashboard/statistics'));
@@ -74,6 +76,14 @@ export const dashboardRoutes = [
       {
         element: <BonusPageRoot />,
         path: 'bonus',
+      },
+      {
+        element: <SingleBonusRoot />,
+        path: 'bonus/:id',
+      },
+      {
+        element: <RemovedBonusRoot />,
+        path: 'bonus/restore/:id',
       },
       {
         path: 'chat',

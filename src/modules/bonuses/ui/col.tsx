@@ -5,8 +5,6 @@ import { Box } from '@mui/material';
 import Chip from '@mui/material/Chip';
 import { GridColDef, GridActionsCellItem } from '@mui/x-data-grid';
 
-import { paths } from 'src/routes/paths';
-
 import { fNumber } from 'src/utils/format-number';
 import { formatPhoneNumber } from 'src/utils/format-phone-number';
 
@@ -18,19 +16,21 @@ interface Props {
   t: TFunction;
   handleUpdateStatus: (bonus_id: string, user_id: string) => Promise<void>;
   handleUnuseBonuse: (bonus_id: string, user_id: string) => Promise<void>;
+  onRestore: (id: string) => void;
 }
 
 export const baseColumns = ({
   t,
   handleUpdateStatus,
   handleUnuseBonuse,
+  onRestore,
 }: Props): GridColDef<IBonusesList>[] => [
   {
     field: 'fullName',
     headerName: t('users.table.fullName'),
     flex: 1,
     renderCell: ({ row }) => (
-      <Link to={`${paths.dashboard.users}/${row.user._id}`} style={{ color: 'inherit' }}>
+      <Link to={row._id} style={{ color: 'inherit' }}>
         {row.profile.first_name} {row.profile.last_name}
       </Link>
     ),
@@ -88,7 +88,14 @@ export const baseColumns = ({
     maxWidth: 60,
     getActions: ({ row }) => {
       if (row.status === 'inprogress') {
-        return [];
+        return [
+          <GridActionsCellItem
+            label="Ballni ortga qaytarish"
+            onClick={() => onRestore(row.id)}
+            showInMenu
+            icon={<Iconify icon="tabler:restore" />}
+          />,
+        ];
       }
       if (row.status === 'not_used') {
         return [
@@ -99,6 +106,12 @@ export const baseColumns = ({
             label={t('bonus.action.used')}
             onClick={() => handleUpdateStatus(row._id, row.user._id)}
           />,
+          <GridActionsCellItem
+            label="Ballni ortga qaytarish"
+            onClick={() => onRestore(row.id)}
+            showInMenu
+            icon={<Iconify icon="tabler:restore" />}
+          />,
         ];
       }
       return [
@@ -108,6 +121,12 @@ export const baseColumns = ({
           icon={<Iconify icon="material-symbols:close" />}
           label={t('bonus.action.not_used')}
           onClick={() => handleUnuseBonuse(row._id, row.user._id)}
+        />,
+        <GridActionsCellItem
+          label="Ballni ortga qaytarish"
+          onClick={() => onRestore(row.id)}
+          showInMenu
+          icon={<Iconify icon="tabler:restore" />}
         />,
       ];
     },

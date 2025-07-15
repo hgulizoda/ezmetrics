@@ -3,6 +3,10 @@ export interface IRemovedBonusesRes {
   order: {
     _id: string;
     description: string;
+    order_capacity: number;
+    order_weight: number;
+    total_count: number;
+    total_places: number;
   };
   user_bonus: string;
   given_ball: number;
@@ -13,10 +17,4 @@ export interface IRemovedBonusesRes {
   created_at: string;
   updated_at: string;
   __v: number;
-}
-
-export interface IRemovedBonuses {
-  id: string;
-  ball: number;
-  orderName: string;
 }

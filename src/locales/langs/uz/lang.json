@@ -54,6 +54,7 @@
     "title": "Bonuslar",
     "table": {
       "ball": "Ball",
+      "cancelled": "Bekor qilingan",
       "status": "Status",
       "capacity": "Hajmi (m³)",
       "weight": "Og'irligi (kg)",

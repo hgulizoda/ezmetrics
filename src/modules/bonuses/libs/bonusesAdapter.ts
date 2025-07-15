@@ -8,6 +8,7 @@ export const getBonuses = (item?: IBonusesList) => ({
   total_capacity: item?.total_capacity ?? 0,
   volume_limit: item?.volume_limit ?? 0,
   status: item?.status ?? BonusesStatus.NOT_USED,
+  removed_count: item?.removed_count ?? 0,
   user: {
     _id: item?.user._id ?? '',
     phone_number: item?.user.phone_number ?? '',

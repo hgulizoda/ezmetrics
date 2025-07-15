@@ -94,7 +94,7 @@ const BonusesProfileView = () => {
           <Box height={700} p={1} sx={{ width: '100%' }}>
             <DataGridCustom<IBonusesList>
               data={bonuses}
-              col={baseColumns({ t, handleUpdateStatus, handleUnuseBonuse, onRestore(_) {} })}
+              col={baseColumns({ t, handleUpdateStatus, handleUnuseBonuse })}
               loading={isLoading}
               rowCount={pagination.total_records}
               onPaginationModelChange={onPaginationChange}

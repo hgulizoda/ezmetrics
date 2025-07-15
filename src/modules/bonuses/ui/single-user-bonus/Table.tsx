@@ -3,9 +3,11 @@ import { useParams } from 'react-router';
 
 import { LoadingButton } from '@mui/lab';
 import { DataGrid, gridClasses, GridPaginationModel } from '@mui/x-data-grid';
-import { Box, Card, Button, Container, CardHeader, CardContent } from '@mui/material';
+import { Box, Card, Button, Dialog, Container, CardHeader, CardContent } from '@mui/material';
 
 import { useBoolean } from 'src/hooks/use-boolean';
+
+import { TruckOrderDetail } from 'src/modules/settings/ui/truckDetails/TruckOrderDetail';
 
 import { ConfirmDialog } from 'src/components/custome-dialog';
 import Circular from 'src/components/loading-screen/circular-screen';
@@ -15,6 +17,8 @@ import { useGetSingleUsers } from '../../services/useGetSingleUsers';
 import { useRemoveBonus } from '../../services/useRemoveSingeOrderBall';
 
 export const UsersBonusSingle = () => {
+  const [orderID, setOrderID] = useState<string>();
+  const viewOrder = useBoolean();
   const [orderBallId, setOrderBallId] = useState<string>();
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
     page: 0,
@@ -49,6 +53,10 @@ export const UsersBonusSingle = () => {
                 onRemove(id) {
                   setOrderBallId(id);
                   openRemove.onTrue();
+                },
+                onView(id) {
+                  setOrderID(id);
+                  viewOrder.onTrue();
                 },
               })}
               sx={{
@@ -94,6 +102,17 @@ export const UsersBonusSingle = () => {
             </>
           }
         />
+      )}
+      {orderID && (
+        <Dialog
+          open={viewOrder.value}
+          onClose={viewOrder.onFalse}
+          fullWidth
+          maxWidth="md"
+          scroll="body"
+        >
+          <TruckOrderDetail orderID={orderID} onClose={viewOrder.onFalse} />
+        </Dialog>
       )}
     </Container>
   );

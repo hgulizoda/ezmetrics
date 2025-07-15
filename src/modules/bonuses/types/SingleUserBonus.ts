@@ -56,4 +56,8 @@ export interface IOrderWithBonus {
   ball: number;
   id: string;
   orderName: string;
+  capacity: number;
+  count: number;
+  weight: number;
+  places: number;
 }

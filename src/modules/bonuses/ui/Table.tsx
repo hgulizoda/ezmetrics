@@ -212,9 +212,6 @@ const BonusesView = () => {
                 t,
                 handleUpdateStatus,
                 handleUnuseBonuse,
-                onRestore(id) {
-                  navigate(`/dashboard/bonus/restore/${id}`);
-                },
               })}
               loading={isLoading}
               rowCount={pagination.total_records}

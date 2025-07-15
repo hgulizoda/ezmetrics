@@ -13,6 +13,7 @@ export interface IBonusesList {
   total_capacity: number;
   volume_limit: number;
   status: BonusesStatus;
+  removed_count: number;
 }
 interface Profile {
   _id: string;

@@ -17,6 +17,7 @@ import { useGetSingleUsers } from '../../services/useGetSingleUsers';
 import { useRemoveBonus } from '../../services/useRemoveSingeOrderBall';
 
 export const UsersBonusSingle = () => {
+  const params = useParams() as { id: string; name: string };
   const [orderID, setOrderID] = useState<string>();
   const viewOrder = useBoolean();
   const [orderBallId, setOrderBallId] = useState<string>();
@@ -25,7 +26,6 @@ export const UsersBonusSingle = () => {
     pageSize: 100,
   });
   const openRemove = useBoolean();
-  const params = useParams() as { id: string };
   const { data, isLoading } = useGetSingleUsers({
     id: params.id,
     params: {
@@ -33,12 +33,13 @@ export const UsersBonusSingle = () => {
       limit: paginationModel.pageSize,
     },
   });
+
   const { isPending, mutateAsync } = useRemoveBonus();
   if (isLoading) return <Circular />;
   return (
     <Container maxWidth="xl">
       <Card>
-        <CardHeader title="Order ballarini olib tashlash" />
+        <CardHeader title={params.name} />
         <CardContent
           sx={{
             px: 0,

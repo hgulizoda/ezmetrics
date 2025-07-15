@@ -12,7 +12,7 @@ import { showErrorSnackbar } from '../../../utils/showErrorSnackbar';
 
 export const useGetProfileMe = (id: string) => {
   const { data, error, isLoading } = useQuery({
-    queryKey: ['profile'],
+    queryKey: ['profile', id],
     queryFn: () => profile.getProfile(id),
     select: (res) => getProfileAdapter(get(res, 'data')),
   });

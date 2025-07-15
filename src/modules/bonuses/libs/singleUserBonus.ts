@@ -9,6 +9,7 @@ export const singleBonusAdapter = (item: IOrderWithBonusRes): IOrderWithBonus =>
   capacity: item.order?.order_capacity ?? 0,
   count: item.order?.total_count ?? 0,
   places: item.order?.total_places ?? 0,
+  userId: item.user_bonus?.user ?? '',
 });
 
 export const singleBonusMapper = (data: IOrderWithBonusRes[]) =>

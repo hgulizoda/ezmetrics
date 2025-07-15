@@ -30,7 +30,10 @@ export const baseColumns = ({
     headerName: t('users.table.fullName'),
     flex: 1,
     renderCell: ({ row }) => (
-      <Link to={row._id} style={{ color: 'inherit' }}>
+      <Link
+        to={`${row._id}/${row.profile.first_name} ${row.profile.last_name}`}
+        style={{ color: 'inherit' }}
+      >
         {row.profile.first_name} {row.profile.last_name}
       </Link>
     ),
@@ -65,7 +68,9 @@ export const baseColumns = ({
     headerName: t('bonus.table.cancelled'),
     flex: 1,
     renderCell: ({ row }) => (
-      <Link to={`/dashboard/bonus/restore/${row._id}`}>
+      <Link
+        to={`/dashboard/bonus/restore/${row._id}/${row.profile.first_name} ${row.profile.last_name}`}
+      >
         <Label
           sx={{
             cursor: 'pointer',

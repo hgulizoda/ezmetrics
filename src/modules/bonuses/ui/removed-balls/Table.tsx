@@ -17,6 +17,7 @@ import { useRestoreBall } from '../../services/useRestoreBall';
 import { useGetRemovedBalls } from '../../services/useGetRemovedBalls';
 
 export const RemovedBalls = () => {
+  const params = useParams() as { id: string; name: string };
   const [orderID, setOrderID] = useState<string>();
   const viewOrder = useBoolean();
   const [orderBallId, setOrderBallId] = useState<string>();
@@ -25,7 +26,6 @@ export const RemovedBalls = () => {
     pageSize: 100,
   });
   const openRestore = useBoolean();
-  const params = useParams() as { id: string };
   const { data, isLoading } = useGetRemovedBalls({
     id: params.id,
     params: {
@@ -38,7 +38,7 @@ export const RemovedBalls = () => {
   return (
     <Container maxWidth="xl">
       <Card>
-        <CardHeader title="Order ballarini ortga qaytarish" />
+        <CardHeader title={params.name} />
         <CardContent
           sx={{
             px: 0,

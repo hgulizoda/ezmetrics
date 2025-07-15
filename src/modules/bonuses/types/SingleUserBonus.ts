@@ -60,4 +60,5 @@ export interface IOrderWithBonus {
   count: number;
   weight: number;
   places: number;
+  userId: string;
 }

@@ -79,11 +79,11 @@ export const dashboardRoutes = [
       },
       {
         element: <SingleBonusRoot />,
-        path: 'bonus/:id',
+        path: 'bonus/:id/:name',
       },
       {
         element: <RemovedBonusRoot />,
-        path: 'bonus/restore/:id',
+        path: 'bonus/restore/:id/:name',
       },
       {
         path: 'chat',

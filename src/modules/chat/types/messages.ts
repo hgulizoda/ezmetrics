@@ -27,5 +27,15 @@ export interface IMessageRes {
   type: 'text' | 'image' | 'video' | 'file' | 'audio' | 'gif'; // assuming possible types
   updated_at: string;
   file_url?: string[];
+  metadata?: {
+    id: string;
+    ball: number;
+    total_weight: number;
+    total_capacity: number;
+  };
+  ball: 80;
+  id: '68a307a7284b04820acaf3ff';
+  total_capacity: 50;
+  total_weight: 4.955947136563877;
   __v: number;
 }

@@ -7,6 +7,7 @@ import { memo, useRef, useMemo, useState, useEffect } from 'react';
 import {
   Box,
   Link,
+  Card,
   Stack,
   Button,
   AppBar,
@@ -15,12 +16,16 @@ import {
   useTheme,
   IconButton,
   Typography,
+  CardContent,
   CircularProgress,
 } from '@mui/material';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 
+import { fShortenNumber } from 'src/utils/format-number';
+
 import { queryClient } from 'src/query';
+import Coin from 'src/assets/icons/coin.png';
 import { useChatContext } from 'src/pages/dashboard/chat/chatContext';
 
 import Image from 'src/components/image';
@@ -431,7 +436,7 @@ const ChatArea = memo(({ onReplyMessage, searchChat, setEditMessage }: ChatAreaP
                             sx={{
                               p: 1,
                               minWidth: 48,
-                              maxWidth: 320,
+                              maxWidth: 450,
                               typography: 'body2',
                               bgcolor: selectedMessages.includes(item.message._id)
                                 ? theme.palette.action.selected
@@ -450,6 +455,57 @@ const ChatArea = memo(({ onReplyMessage, searchChat, setEditMessage }: ChatAreaP
                             >
                               {item.message.content}
                             </Typography>
+                            {item.message.metadata && (
+                              <Card
+                                sx={{
+                                  mt: 1,
+                                }}
+                              >
+                                <CardContent
+                                  sx={{
+                                    p: 1,
+                                  }}
+                                >
+                                  <Box
+                                    sx={{
+                                      display: 'flex',
+                                      gap: 2,
+                                      alignItems: 'start',
+                                    }}
+                                  >
+                                    <img src={Coin} width={40} height={40} alt="" />
+                                    <Box>
+                                      <Box display="flex" alignItems="center" gap={1}>
+                                        <Typography variant="subtitle1">Bonus ID:</Typography>
+                                        <Typography variant="subtitle1">
+                                          {item.message.metadata.id}
+                                        </Typography>
+                                      </Box>
+                                      <Box display="flex" alignItems="center" gap={1}>
+                                        <Typography variant="subtitle1">Ball:</Typography>
+                                        <Typography variant="subtitle1">
+                                          {item.message.metadata.ball} ball
+                                        </Typography>
+                                      </Box>
+                                      <Box display="flex" alignItems="center" gap={1}>
+                                        <Typography variant="subtitle2">Umumiy hajmi:</Typography>
+                                        <Typography variant="subtitle1">
+                                          {item.message.metadata.total_capacity} m³
+                                        </Typography>
+                                      </Box>
+                                      <Box display="flex" alignItems="center" gap={1}>
+                                        <Typography variant="subtitle2">
+                                          Umumiy og&apos;irlik:
+                                        </Typography>
+                                        <Typography variant="subtitle1">
+                                          {fShortenNumber(item.message.metadata.total_weight)} kg
+                                        </Typography>
+                                      </Box>
+                                    </Box>
+                                  </Box>
+                                </CardContent>
+                              </Card>
+                            )}
                             <Box
                               display="flex"
                               alignItems="flex-end"

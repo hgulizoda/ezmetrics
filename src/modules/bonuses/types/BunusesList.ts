@@ -32,3 +32,11 @@ interface User {
   profile: string;
   order_count: number;
 }
+
+export interface Bonus {
+  ball: number;
+  status: string;
+  total_capacity: number;
+  total_weight: number;
+  _id: string;
+}

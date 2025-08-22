@@ -19,9 +19,9 @@ export const bonusesAPI = {
       .then((res) => res.data),
   // get user Bonuses
 
-  getUserBonuses: (params: IFilters, id: string) =>
+  getUserBonuses: (id: string) =>
     axiosInstance
-      .get<IApiResponse<IBonusesList[]>>(`user-bonus/user_id/${id}`, { params })
+      .get<IApiResponse<IBonusesList[]>>(`user-bonus/user_id/${id}`)
       .then((res) => res.data),
   // get one  Bonuse
   getOne: (id: string) => axiosInstance.get<IApiResponse<IBonusesList>>(`/bonuses/${id}`),

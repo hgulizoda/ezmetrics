@@ -1,87 +1,35 @@
+import { useMemo, useState } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
 
-import { Box, Button } from '@mui/material';
+import { DataGrid, gridClasses } from '@mui/x-data-grid';
+import { Box, Card, TextField, CardHeader } from '@mui/material';
 
 import { baseColumns } from '../col';
 import { useBonusesFilter } from '../useFilter';
 import { useTranslate } from '../../../../locales';
-import { IBonusesList } from '../../types/BunusesList';
-import { useUnuseBouns } from '../../services/unUseBonus';
-import { useUpdateStatus } from '../../services/updateStatus';
 import { useGetUserBonuses } from '../../services/getUserBonus';
 import { ErrorData } from '../../../../components/error-data/error-data';
-import DataGridCustom from '../../../../components/data-grid-view/data-grid-custom';
 
 const BonusesProfileView = () => {
+  const [searchParams] = useSearchParams();
+  const [search, setSearch] = useState<string>(searchParams.get('bonusID') ?? '');
   const { t } = useTranslate('lang');
-  const { id } = useParams();
-
-  const [searchParams, setSearchParams] = useSearchParams();
+  const params = useParams();
 
   const { onPaginationChange, pagination: paginationInfo } = useBonusesFilter();
 
-  const { bonuses, pagination, isLoading } = useGetUserBonuses(
-    {
-      page: paginationInfo.page + 1,
-      limit: paginationInfo.pageSize,
-    },
-    id!
-  );
-  const { updateBunusStatus } = useUpdateStatus();
-  const { unuseBouns } = useUnuseBouns();
+  const { bonuses, pagination, isLoading } = useGetUserBonuses(params.id!);
 
-  const handleUpdateStatus = async (bonus_id: string, user_id: string) => {
-    await updateBunusStatus({ bonus_id, user_id });
-  };
-  const handleUnuseBonuse = async (bonus_id: string, user_id: string) => {
-    await unuseBouns({ bonus_id, user_id });
-  };
+  const filteredBonuses = useMemo(() => {
+    if (!search) return bonuses;
+    return bonuses.filter((e) => e._id === search);
+  }, [bonuses, search]);
 
   if (!bonuses) return <ErrorData />;
 
   return (
     <Box sx={{ height: '100%' }}>
       <Box position="relative">
-        <Box
-          position="absolute"
-          left={10}
-          top={25}
-          zIndex={999}
-          maxWidth={480}
-          gap={2}
-          display="flex"
-        >
-          <Button
-            variant={searchParams.get('status') === null ? 'contained' : 'outlined'}
-            onClick={() =>
-              setSearchParams((prev) => {
-                const parns = new URLSearchParams(prev);
-                parns.delete('status');
-                return parns;
-              })
-            }
-          >
-            {t('bonus.all')}
-          </Button>
-          <Button
-            variant={searchParams.get('status') === 'used' ? 'contained' : 'outlined'}
-            onClick={() => setSearchParams((prev) => ({ ...prev, status: 'used' }))}
-          >
-            {t('bonus.used')}
-          </Button>
-          <Button
-            variant={searchParams.get('status') === 'not_used' ? 'contained' : 'outlined'}
-            onClick={() => setSearchParams((prev) => ({ ...prev, status: 'not_used' }))}
-          >
-            {t('bonus.notUsed')}
-          </Button>
-          <Button
-            variant={searchParams.get('status') === 'inprogress' ? 'contained' : 'outlined'}
-            onClick={() => setSearchParams((prev) => ({ ...prev, status: 'inprogress' }))}
-          >
-            {t('bonus.enum.in_progress')}
-          </Button>
-        </Box>
         <Box
           sx={{
             borderRadius: '16px',
@@ -91,20 +39,39 @@ const BonusesProfileView = () => {
             width: '100%',
           }}
         >
-          <Box height={700} p={1} sx={{ width: '100%' }}>
-            <DataGridCustom<IBonusesList>
-              data={bonuses}
-              col={baseColumns({ t, handleUpdateStatus, handleUnuseBonuse })}
+          <Card>
+            <CardHeader
+              sx={{ pb: 2 }}
+              action={
+                <TextField
+                  size="small"
+                  fullWidth
+                  sx={{
+                    width: 300,
+                  }}
+                  onChange={(e) => setSearch(e.target.value)}
+                  label="ID"
+                  value={search}
+                  defaultValue={searchParams.get('bonusID') ?? ''}
+                />
+              }
+              title="User bonuses"
+            />
+            <DataGrid
+              rows={filteredBonuses}
+              columns={baseColumns({ t })}
               loading={isLoading}
               rowCount={pagination.total_records}
               onPaginationModelChange={onPaginationChange}
-              isSearch={false}
-              search=""
-              onSearchChange={() => {}}
               initialState={{ pagination: { paginationModel: paginationInfo } }}
-              hasTotal={false}
+              getRowId={(row) => row._id || crypto.randomUUID()}
+              sx={{
+                [`& .${gridClasses.cell}`]: {
+                  borderBottom: 'none',
+                },
+              }}
             />
-          </Box>
+          </Card>
         </Box>
       </Box>
     </Box>

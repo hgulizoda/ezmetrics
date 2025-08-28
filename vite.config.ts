@@ -10,7 +10,8 @@ export default defineConfig({
     drop: ['console', 'debugger'],
   },
   build: {
-    sourcemap: true,
+    minify: true,
+    sourcemap: false,
   },
   plugins: [
     react(),
@@ -37,9 +38,9 @@ export default defineConfig({
     ],
   },
   server: {
-    port: 8081,
+    port: 3000,
   },
   preview: {
-    port: 8081,
+    port: 3000,
   },
 });

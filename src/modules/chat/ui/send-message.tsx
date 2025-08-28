@@ -41,10 +41,8 @@ export const SendMessage = ({
   const inputRef = useRef<HTMLInputElement>(null);
   const { emit } = useChatContext();
   const { uploadAsync, isPending } = useUploadImage();
-  const { uploadAsync: uploadFile, isPending: isFiling } = useUploadImage();
-  const { uploadAsync: uploadAudio, isPending: isAudioing } = useUploadImage();
 
-  const handleEmojiClick = (emojiData: any) => {
+  const handleEmojiClick = (emojiData: { emoji: string }) => {
     setNewMessage((prev) => prev + emojiData.emoji);
   };
 
@@ -59,11 +57,11 @@ export const SendMessage = ({
     }
   }, [editMessage]);
 
-  const handleSendMessage = async () => {
+  const handleSendMessage = () => {
     if (newMessage.trim() === '' && !replyMessage) return;
 
     if (editMessage && setEditMessage) {
-      await emit('update_message', {
+      emit('update_message', {
         message_id: editMessage._id,
         content: newMessage,
         room_id: chatId,
@@ -82,8 +80,8 @@ export const SendMessage = ({
     };
 
     try {
-      await emit('send_message', messagePayload);
-      await emit('mark_as_read', { room_id: chatId });
+      emit('send_message', messagePayload);
+      emit('mark_as_read', { room_id: chatId });
       queryClient.invalidateQueries({ queryKey: ['messages', chatId] });
       setNewMessage('');
       clearReply();
@@ -105,11 +103,11 @@ export const SendMessage = ({
     if (!files?.length || !chatId) return;
 
     try {
-      const uploadedUrl = await Promise.all([...files].map((file) => uploadAsync({ file })));
-      if (uploadedUrl) {
-        await emit('send_message', {
+      const uploadedUrls = await Promise.all([...files].map((file) => uploadAsync({ file })));
+      if (uploadedUrls.length > 0) {
+        emit('send_message', {
           room: chatId,
-          file_url: uploadedUrl.map((url) => url.url),
+          file_url: uploadedUrls.map((url) => url.url),
           type: files[0].type === 'video/mp4' ? 'video' : 'image',
           ...(replyMessage && { reply_to: replyMessage._id }),
         });
@@ -128,11 +126,11 @@ export const SendMessage = ({
     if (!files?.length || !chatId) return;
 
     try {
-      const uploadedUrl = await Promise.all([...files].map((file) => uploadAsync({ file })));
-      if (uploadedUrl) {
-        await emit('send_message', {
+      const uploadedUrls = await Promise.all([...files].map((file) => uploadAsync({ file })));
+      if (uploadedUrls.length > 0) {
+        emit('send_message', {
           room: chatId,
-          file_url: uploadedUrl.map((url) => url.url),
+          file_url: uploadedUrls.map((url) => url.url),
           type: 'file',
           ...(replyMessage && { reply_to: replyMessage._id }),
         });
@@ -142,7 +140,7 @@ export const SendMessage = ({
     } catch (err) {
       console.error('Upload failed:', err);
     } finally {
-      if (imageInputRef.current) imageInputRef.current.value = '';
+      if (fileInputRef.current) fileInputRef.current.value = '';
     }
   };
 
@@ -176,9 +174,9 @@ export const SendMessage = ({
           type: 'audio/webm',
         });
         try {
-          const uploadedUrl = await uploadAudio({ file: audioFile });
+          const uploadedUrl = await uploadAsync({ file: audioFile });
           if (uploadedUrl) {
-            await emit('send_message', {
+            emit('send_message', {
               room: chatId,
               file_url: [uploadedUrl.url],
               type: 'audio',
@@ -282,13 +280,13 @@ export const SendMessage = ({
               <Iconify icon={isPending ? 'line-md:uploading-loop' : 'solar:gallery-add-bold'} />
             </IconButton>
             <IconButton onClick={handleDocClick}>
-              <Iconify icon={isFiling ? 'line-md:uploading-loop' : 'eva:attach-2-fill'} />
+              <Iconify icon={isPending ? 'line-md:uploading-loop' : 'eva:attach-2-fill'} />
             </IconButton>
             <IconButton onClick={isRecording ? stopRecording : startRecording}>
               <Iconify
                 icon={
                   // eslint-disable-next-line no-nested-ternary
-                  isAudioing
+                  isPending
                     ? 'line-md:uploading-loop'
                     : isRecording
                       ? 'solar:record-bold-duotone'

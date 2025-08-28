@@ -1,6 +1,4 @@
-// ----------------------------------------------------------------------
-
-export function select(theme: any) {
+export function select() {
   return {
     MuiSelect: {
       styleOverrides: {

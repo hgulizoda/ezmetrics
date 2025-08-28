@@ -1,0 +1,39 @@
+services:
+  # Production build
+  nexus-frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    ports:
+      - '80:80'
+    env_file:
+      - .env
+    environment:
+      - NODE_ENV=production
+    restart: unless-stopped
+    healthcheck:
+      test: ['CMD', 'wget', '--quiet', '--tries=1', '--spider', 'http://localhost/health']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - nexus_frontend_prod_network
+
+  nginx:
+    image: nginx:alpine
+    container_name: nexus_frontend_nginx_prod
+    ports:
+      - '9084:80'
+    volumes:
+      - ./nginx/nexus.conf:/etc/nginx/conf.d/nexus.conf
+    depends_on:
+      - nexus-frontend
+    restart: unless-stopped
+    networks:
+      - nexus_frontend_prod_network
+
+networks:
+  nexus_frontend_prod_network:
+    driver: bridge

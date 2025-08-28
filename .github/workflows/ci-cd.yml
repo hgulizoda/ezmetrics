@@ -2,7 +2,7 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [main, develop]
+    branches: [main, development]
   workflow_dispatch:
     inputs:
       environment:
@@ -51,7 +51,7 @@ jobs:
           cache-to: type=gha,mode=max
 
   build-dev:
-    if: github.ref == 'refs/heads/develop' || (github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'dev')
+    if: github.ref == 'refs/heads/development' || (github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'dev')
     runs-on: ubuntu-latest
     outputs:
       image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/frontend:dev

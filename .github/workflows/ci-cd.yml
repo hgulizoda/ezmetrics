@@ -183,50 +183,47 @@ jobs:
           echo "${{ env.SSH_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
           chmod 644 ~/.ssh/known_hosts
 
-          - name: Deploy to development server
-          run: |
-            # Create directory structure
-            ssh ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }} "mkdir -p ~/app/${{ env.PROJECT_NAME }}"
+      - name: Deploy to development server
+        run: |
+          ssh ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }} "mkdir -p ~/app/${{ env.PROJECT_NAME }}"
 
-            # Copy only necessary files for deployment
-            scp docker-compose.dev.yml ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }}:~/app/${{ env.PROJECT_NAME }}/
-            scp -r nginx/ ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }}:~/app/${{ env.PROJECT_NAME }}/
+          scp docker-compose.dev.yml ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }}:~/app/${{ env.PROJECT_NAME }}/
+          scp -r nginx/ ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }}:~/app/${{ env.PROJECT_NAME }}/
 
-            # Deploy using docker-compose
-            ssh ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }} << EOF
-              cd ~/app/${{ env.PROJECT_NAME }}
-              export DOCKER_USERNAME=${{ env.DOCKER_USERNAME }}
-              export PROJECT_NAME=${{ env.PROJECT_NAME }}
-              export DOCKER_TOKEN=${{ env.DOCKER_TOKEN }}
+          ssh ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }} << EOF
+            cd ~/app/${{ env.PROJECT_NAME }}
+            export DOCKER_USERNAME=${{ env.DOCKER_USERNAME }}
+            export PROJECT_NAME=${{ env.PROJECT_NAME }}
+            export DOCKER_TOKEN=${{ env.DOCKER_TOKEN }}
 
-              # Create .env file from environment variables
-              cat > .env << 'ENVEOF'
-              DOCKER_USERNAME=${{ env.DOCKER_USERNAME }}
-              PROJECT_NAME=${{ env.PROJECT_NAME }}
-              DOCKER_TOKEN=${{ env.DOCKER_TOKEN }}
-              NODE_ENV=development
-              VITE_APP_DOMAIN=nexus.sanjar.me
-              VITE_APP_DEV_DOMAIN=nexus-dev.sanjar.me
-              ENVEOF
+            # Create .env file from environment variables
+            cat > .env << 'ENVEOF'
+            DOCKER_USERNAME=${{ env.DOCKER_USERNAME }}
+            PROJECT_NAME=${{ env.PROJECT_NAME }}
+            DOCKER_TOKEN=${{ env.DOCKER_TOKEN }}
+            NODE_ENV=development
+            VITE_APP_DOMAIN=nexus.sanjar.me
+            VITE_APP_DEV_DOMAIN=nexus-dev.sanjar.me
+            ENVEOF
 
-              # Login to Docker Hub
-              echo "${{ env.DOCKER_TOKEN }}" | docker login -u ${{ env.DOCKER_USERNAME }} --password-stdin
+            # Login to Docker Hub
+            echo "${{ env.DOCKER_TOKEN }}" | docker login -u ${{ env.DOCKER_USERNAME }} --password-stdin
 
-              # Pull latest image
-              docker compose -f docker-compose.dev.yml pull
+            # Pull latest image
+            docker compose -f docker-compose.dev.yml pull
 
-              # Deploy with health check
-              docker compose -f docker-compose.dev.yml up -d --force-recreate
+            # Deploy with health check
+            docker compose -f docker-compose.dev.yml up -d --force-recreate
 
-              # Wait for container to be healthy
-              timeout 60 bash -c 'until docker compose -f docker-compose.dev.yml ps | grep -q "healthy"; do sleep 2; done' || echo "Health check timeout"
+            # Wait for container to be healthy
+            timeout 60 bash -c 'until docker compose -f docker-compose.dev.yml ps | grep -q "healthy"; do sleep 2; done' || echo "Health check timeout"
 
-              # Copy nginx configuration
-              sudo cp ./nginx/dev.nexus.conf /etc/nginx/conf.d/dev.nexus.conf
+            # Copy nginx configuration
+            sudo cp ./nginx/dev.nexus.conf /etc/nginx/conf.d/dev.nexus.conf
 
-              # Test nginx configuration
-              sudo nginx -t
+            # Test nginx configuration
+            sudo nginx -t
 
-              # Reload nginx
-              sudo systemctl reload nginx
-            EOF
+            # Reload nginx
+            sudo systemctl reload nginx
+          EOF

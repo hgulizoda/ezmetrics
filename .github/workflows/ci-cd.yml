@@ -17,8 +17,13 @@ on:
           - dev
 
 env:
-  REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
+  DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+  PROJECT_NAME: ${{ github.event.repository.name }}
+  DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
+  SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+  SSH_KNOWN_HOSTS: ${{ secrets.SSH_KNOWN_HOSTS }}
+  SERVER_USER: ${{ secrets.SERVER_USER }}
+  SERVER_HOST: ${{ secrets.SERVER_HOST }}
 
 jobs:
   # Build Stage
@@ -26,7 +31,7 @@ jobs:
     if: github.ref == 'refs/heads/main' || (github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'prod')
     runs-on: ubuntu-latest
     outputs:
-      image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/frontend:prod
+      image: docker.io/${{ env.DOCKER_USERNAME }}/${{ env.PROJECT_NAME }}:prod
 
     steps:
       - name: Checkout code
@@ -38,9 +43,9 @@ jobs:
       - name: Log in to Container Registry
         uses: docker/login-action@v3
         with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          registry: docker.io
+          username: ${{ env.DOCKER_USERNAME }}
+          password: ${{ env.DOCKER_TOKEN }}
 
       - name: Build and push production image
         uses: docker/build-push-action@v5
@@ -48,7 +53,7 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/frontend:prod
+          tags: docker.io/${{ env.DOCKER_USERNAME }}/${{ env.PROJECT_NAME }}:prod
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -56,7 +61,7 @@ jobs:
     if: github.ref == 'refs/heads/development' || (github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'dev')
     runs-on: ubuntu-latest
     outputs:
-      image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/frontend:dev
+      image: docker.io/${{ env.DOCKER_USERNAME }}/${{ env.PROJECT_NAME }}:dev
 
     steps:
       - name: Checkout code
@@ -68,9 +73,9 @@ jobs:
       - name: Log in to Container Registry
         uses: docker/login-action@v3
         with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          registry: docker.io
+          username: ${{ env.DOCKER_USERNAME }}
+          password: ${{ env.DOCKER_TOKEN }}
 
       - name: Build and push development image
         uses: docker/build-push-action@v5
@@ -78,13 +83,14 @@ jobs:
           context: .
           file: ./Dockerfile.dev
           push: true
-          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/frontend:dev
+          tags: docker.io/${{ env.DOCKER_USERNAME }}/${{ env.PROJECT_NAME }}:dev
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
   # Deploy Stage
   deploy-prod:
     needs: build-prod
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     environment: production
 
@@ -95,25 +101,27 @@ jobs:
       - name: Setup SSH
         uses: webfactory/ssh-agent@v0.8.0
         with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+          ssh-private-key: ${{ env.SSH_PRIVATE_KEY }}
 
       - name: Add known hosts
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
+          echo "${{ env.SSH_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
           chmod 644 ~/.ssh/known_hosts
 
       - name: Deploy to production server
         run: |
           # Create directory structure
-          ssh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "mkdir -p ~/app/swem/swem-frontend"
+          ssh ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }} "mkdir -p ~/app/${{ env.PROJECT_NAME }}"
 
           # Copy files to server
-          scp -r * ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:~/app/swem/swem-frontend/
+          scp -r * ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }}:~/app/${{ env.PROJECT_NAME }}
 
           # Deploy using docker-compose
-          ssh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << 'EOF'
-            cd ~/app/swem/swem-frontend
+          ssh ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }} << 'EOF'
+            cd ~/app/${{ env.PROJECT_NAME }}
+            export DOCKER_USERNAME=${{ env.DOCKER_USERNAME }}
+            export PROJECT_NAME=${{ env.PROJECT_NAME }}
             docker-compose -f docker-compose.prod.yml pull
             docker-compose -f docker-compose.prod.yml up -d --force-recreate
             
@@ -136,6 +144,7 @@ jobs:
 
   deploy-dev:
     needs: build-dev
+    if: github.event_name == 'push' && github.ref == 'refs/heads/development'
     runs-on: ubuntu-latest
     environment: development
 
@@ -146,25 +155,27 @@ jobs:
       - name: Setup SSH
         uses: webfactory/ssh-agent@v0.8.0
         with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+          ssh-private-key: ${{ env.SSH_PRIVATE_KEY }}
 
       - name: Add known hosts
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
+          echo "${{ env.SSH_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
           chmod 644 ~/.ssh/known_hosts
 
       - name: Deploy to development server
         run: |
           # Create directory structure
-          ssh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "mkdir -p ~/app/swem/swem-frontend"
+          ssh ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }} "mkdir -p ~/app/${{ env.PROJECT_NAME }}"
 
           # Copy files to server
-          scp -r * ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:~/app/swem/swem-frontend/
+          scp -r * ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }}:~/app/${{ env.PROJECT_NAME }}
 
           # Deploy using docker-compose
-          ssh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << 'EOF'
-            cd ~/app/swem/swem-frontend
+          ssh ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }} << 'EOF'
+            cd ~/app/${{ env.PROJECT_NAME }}
+            export DOCKER_USERNAME=${{ env.DOCKER_USERNAME }}
+            export PROJECT_NAME=${{ env.PROJECT_NAME }}
             docker-compose -f docker-compose.dev.yml pull
             docker-compose -f docker-compose.dev.yml up -d --force-recreate
             

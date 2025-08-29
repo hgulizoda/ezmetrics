@@ -119,7 +119,7 @@ jobs:
           scp -r nginx/ ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }}:~/app/${{ env.PROJECT_NAME }}/
 
           # Deploy using docker-compose
-          ssh ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }} << 'EOF'
+          ssh ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }} << EOF
             cd ~/app/${{ env.PROJECT_NAME }}
             export DOCKER_USERNAME=${{ env.DOCKER_USERNAME }}
             export PROJECT_NAME=${{ env.PROJECT_NAME }}
@@ -193,7 +193,7 @@ jobs:
           scp -r nginx/ ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }}:~/app/${{ env.PROJECT_NAME }}/
 
           # Deploy using docker-compose
-          ssh ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }} << 'EOF'
+          ssh ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }} << EOF
             cd ~/app/${{ env.PROJECT_NAME }}
             export DOCKER_USERNAME=${{ env.DOCKER_USERNAME }}
             export PROJECT_NAME=${{ env.PROJECT_NAME }}
@@ -206,32 +206,42 @@ jobs:
             VITE_APP_DOMAIN=nexus.sanjar.me
             VITE_APP_DEV_DOMAIN=nexus-dev.sanjar.me
             ENVEOF
-            
-            # Login to DockerHub if needed
-            echo "${{ env.DOCKER_TOKEN }}" | docker login -u ${{ env.DOCKER_USERNAME }} --password-stdin
-            
-            # Pull latest image
-            docker compose -f docker-compose.dev.yml pull
-            
-            # Deploy with health check
-            docker compose -f docker-compose.dev.yml up -d --force-recreate
-            
-            # Wait for container to be healthy
-            timeout 60 bash -c 'until docker compose -f docker-compose.dev.yml ps | grep -q "healthy"; do sleep 2; done' || echo "Health check timeout"
-            
-            # Copy nginx configuration
-            cp ./nginx/dev.nexus.conf /etc/nginx/conf.d/dev.nexus.conf
-            
-            # Test nginx configuration
-            nginx -t
-            
-            # Reload nginx
-            systemctl reload nginx
-            
-            # SSL certificate management
-            if [ ! -d "/etc/letsencrypt/live/nexus-dev.sanjar.me" ]; then
-              certbot --nginx -d nexus-dev.sanjar.me --non-interactive --agree-tos -m admin@sanjar.me
-            else
-              certbot renew --quiet
-            fi
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ env.DOCKER_USERNAME }}
+          password: ${{ env.DOCKER_TOKEN }}
+
+      - name: Pull latest image
+        run: |
+          docker compose -f docker-compose.dev.yml pull
+
+      - name: Deploy with health check
+        run: |
+          docker compose -f docker-compose.dev.yml up -d --force-recreate
+
+      - name: Wait for container to be healthy
+        run: |
+          timeout 60 bash -c 'until docker compose -f docker-compose.dev.yml ps | grep -q "healthy"; do sleep 2; done' || echo "Health check timeout"
+
+      - name: Copy nginx configuration
+        run: |
+          cp ./nginx/dev.nexus.conf /etc/nginx/conf.d/dev.nexus.conf
+
+      - name: Test nginx configuration
+        run: |
+          nginx -t
+
+      - name: Reload nginx
+        run: |
+          systemctl reload nginx
+
+      - name: SSL certificate management
+        run: |
+          if [ ! -d "/etc/letsencrypt/live/nexus-dev.sanjar.me" ]; then
+            certbot --nginx -d nexus-dev.sanjar.me --non-interactive --agree-tos -m admin@sanjar.me
+          else
+            certbot renew --quiet
+          fi
           EOF

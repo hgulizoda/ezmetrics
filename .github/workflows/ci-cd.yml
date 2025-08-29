@@ -126,13 +126,13 @@ jobs:
             export PROJECT_NAME=${{ env.PROJECT_NAME }}
             
             # Pull latest image
-            docker-compose -f docker-compose.prod.yml pull
+            docker compose -f docker-compose.prod.yml pull
             
             # Deploy with health check
-            docker-compose -f docker-compose.prod.yml up -d --force-recreate
+            docker compose -f docker-compose.prod.yml up -d --force-recreate
             
             # Wait for container to be healthy
-            timeout 60 bash -c 'until docker-compose -f docker-compose.prod.yml ps | grep -q "healthy"; do sleep 2; done' || echo "Health check timeout"
+            timeout 60 bash -c 'until docker compose -f docker-compose.prod.yml ps | grep -q "healthy"; do sleep 2; done' || echo "Health check timeout"
             
             # Copy nginx configuration
             cp ./nginx/nexus.conf /etc/nginx/conf.d/nexus.conf
@@ -189,13 +189,13 @@ jobs:
             export PROJECT_NAME=${{ env.PROJECT_NAME }}
             
             # Pull latest image
-            docker-compose -f docker-compose.dev.yml pull
+            docker compose -f docker-compose.dev.yml pull
             
             # Deploy with health check
-            docker-compose -f docker-compose.dev.yml up -d --force-recreate
+            docker compose -f docker-compose.dev.yml up -d --force-recreate
             
             # Wait for container to be healthy
-            timeout 60 bash -c 'until docker-compose -f docker-compose.dev.yml ps | grep -q "healthy"; do sleep 2; done' || echo "Health check timeout"
+            timeout 60 bash -c 'until docker compose -f docker-compose.dev.yml ps | grep -q "healthy"; do sleep 2; done' || echo "Health check timeout"
             
             # Copy nginx configuration
             cp ./nginx/dev.nexus.conf /etc/nginx/conf.d/dev.nexus.conf

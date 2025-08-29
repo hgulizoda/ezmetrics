@@ -8,7 +8,8 @@ yarn-error.log*
 dist
 build
 .next
-out
+.nuxt
+.vuepress/dist
 
 # Environment files (keep .env for production)
 .env.local
@@ -35,6 +36,23 @@ Dockerfile*
 docker-compose*
 .dockerignore
 
+# CI/CD
+.github
+.gitlab-ci.yml
+
+# Documentation
+README*.md
+*.md
+
+# Tests
+coverage
+.nyc_output
+test
+tests
+__tests__
+*.test.js
+*.spec.js
+
 # Logs
 logs
 *.log
@@ -44,16 +62,6 @@ pids
 *.pid
 *.seed
 *.pid.lock
-
-# Coverage directory used by tools like istanbul
-coverage
-*.lcov
-
-# nyc test coverage
-.nyc_output
-
-# Dependency directories
-jspm_packages/
 
 # Optional npm cache directory
 .npm
@@ -79,27 +87,6 @@ jspm_packages/
 # parcel-bundler cache (https://parceljs.org/)
 .cache
 .parcel-cache
-
-# next.js build output
-.next
-
-# nuxt.js build output
-.nuxt
-
-# vuepress build output
-.vuepress/dist
-
-# Serverless directories
-.serverless
-
-# FuseBox cache
-.fusebox/
-
-# DynamoDB Local files
-.dynamodb/
-
-# TernJS port file
-.tern-port
 
 # Stores VSCode versions used for testing VSCode extensions
 .vscode-test

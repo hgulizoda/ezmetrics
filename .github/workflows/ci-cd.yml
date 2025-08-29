@@ -117,13 +117,21 @@ jobs:
           # Copy only necessary files for deployment
           scp docker-compose.prod.yml ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }}:~/app/${{ env.PROJECT_NAME }}/
           scp -r nginx/ ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }}:~/app/${{ env.PROJECT_NAME }}/
-          scp .env ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }}:~/app/${{ env.PROJECT_NAME }}/ 2>/dev/null || echo "No .env file to copy"
 
           # Deploy using docker-compose
           ssh ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }} << 'EOF'
             cd ~/app/${{ env.PROJECT_NAME }}
             export DOCKER_USERNAME=${{ env.DOCKER_USERNAME }}
             export PROJECT_NAME=${{ env.PROJECT_NAME }}
+            
+            # Create .env file from environment variables
+            cat > .env << 'ENVEOF'
+            DOCKER_USERNAME=${{ env.DOCKER_USERNAME }}
+            PROJECT_NAME=${{ env.PROJECT_NAME }}
+            NODE_ENV=production
+            VITE_APP_DOMAIN=nexus.sanjar.me
+            VITE_APP_DEV_DOMAIN=nexus-dev.sanjar.me
+            ENVEOF
             
             # Login to DockerHub if needed
             echo "${{ env.DOCKER_TOKEN }}" | docker login -u ${{ env.DOCKER_USERNAME }} --password-stdin
@@ -183,13 +191,21 @@ jobs:
           # Copy only necessary files for deployment
           scp docker-compose.dev.yml ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }}:~/app/${{ env.PROJECT_NAME }}/
           scp -r nginx/ ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }}:~/app/${{ env.PROJECT_NAME }}/
-          scp .env ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }}:~/app/${{ env.PROJECT_NAME }}/ 2>/dev/null || echo "No .env file to copy"
 
           # Deploy using docker-compose
           ssh ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }} << 'EOF'
             cd ~/app/${{ env.PROJECT_NAME }}
             export DOCKER_USERNAME=${{ env.DOCKER_USERNAME }}
             export PROJECT_NAME=${{ env.PROJECT_NAME }}
+            
+            # Create .env file from environment variables
+            cat > .env << 'ENVEOF'
+            DOCKER_USERNAME=${{ env.DOCKER_USERNAME }}
+            PROJECT_NAME=${{ env.PROJECT_NAME }}
+            NODE_ENV=development
+            VITE_APP_DOMAIN=nexus.sanjar.me
+            VITE_APP_DEV_DOMAIN=nexus-dev.sanjar.me
+            ENVEOF
             
             # Login to DockerHub if needed
             echo "${{ env.DOCKER_TOKEN }}" | docker login -u ${{ env.DOCKER_USERNAME }} --password-stdin

@@ -125,6 +125,9 @@ jobs:
             export DOCKER_USERNAME=${{ env.DOCKER_USERNAME }}
             export PROJECT_NAME=${{ env.PROJECT_NAME }}
             
+            # Login to DockerHub if needed
+            echo "${{ env.DOCKER_TOKEN }}" | docker login -u ${{ env.DOCKER_USERNAME }} --password-stdin
+            
             # Pull latest image
             docker compose -f docker-compose.prod.yml pull
             
@@ -187,6 +190,9 @@ jobs:
             cd ~/app/${{ env.PROJECT_NAME }}
             export DOCKER_USERNAME=${{ env.DOCKER_USERNAME }}
             export PROJECT_NAME=${{ env.PROJECT_NAME }}
+            
+            # Login to DockerHub if needed
+            echo "${{ env.DOCKER_TOKEN }}" | docker login -u ${{ env.DOCKER_USERNAME }} --password-stdin
             
             # Pull latest image
             docker compose -f docker-compose.dev.yml pull

@@ -192,7 +192,7 @@ jobs:
           scp docker-compose.dev.yml ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }}:~/app/${{ env.PROJECT_NAME }}/
           scp -r nginx/ ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }}:~/app/${{ env.PROJECT_NAME }}/
 
-          # Deploy using docker-compose
+
           ssh ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }} << EOF
             cd ~/app/${{ env.PROJECT_NAME }}
             export DOCKER_USERNAME=${{ env.DOCKER_USERNAME }}
@@ -206,6 +206,10 @@ jobs:
             VITE_APP_DOMAIN=nexus.sanjar.me
             VITE_APP_DEV_DOMAIN=nexus-dev.sanjar.me
             ENVEOF
+
+      - name: Login to Docker Hub
+        run: |
+          echo "${{ env.DOCKER_TOKEN }}" | docker login -u ${{ env.DOCKER_USERNAME }} --password-stdin
 
       - name: Pull latest image
         run: |
@@ -230,12 +234,3 @@ jobs:
       - name: Reload nginx
         run: |
           systemctl reload nginx
-
-      # - name: SSL certificate management
-      #   run: |
-      #     if [ ! -d "/etc/letsencrypt/live/nexus-dev.sanjar.me" ]; then
-      #       certbot --nginx -d nexus-dev.sanjar.me --non-interactive --agree-tos -m admin@sanjar.me
-      #     else
-      #       certbot renew --quiet
-      #     fi
-      #     EOF

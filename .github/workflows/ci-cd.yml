@@ -207,12 +207,6 @@ jobs:
             VITE_APP_DEV_DOMAIN=nexus-dev.sanjar.me
             ENVEOF
 
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ env.DOCKER_USERNAME }}
-          password: ${{ env.DOCKER_TOKEN }}
-
       - name: Pull latest image
         run: |
           docker compose -f docker-compose.dev.yml pull
@@ -237,11 +231,11 @@ jobs:
         run: |
           systemctl reload nginx
 
-      - name: SSL certificate management
-        run: |
-          if [ ! -d "/etc/letsencrypt/live/nexus-dev.sanjar.me" ]; then
-            certbot --nginx -d nexus-dev.sanjar.me --non-interactive --agree-tos -m admin@sanjar.me
-          else
-            certbot renew --quiet
-          fi
-          EOF
+      # - name: SSL certificate management
+      #   run: |
+      #     if [ ! -d "/etc/letsencrypt/live/nexus-dev.sanjar.me" ]; then
+      #       certbot --nginx -d nexus-dev.sanjar.me --non-interactive --agree-tos -m admin@sanjar.me
+      #     else
+      #       certbot renew --quiet
+      #     fi
+      #     EOF

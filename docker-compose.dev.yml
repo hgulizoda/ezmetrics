@@ -1,19 +1,12 @@
 services:
   frontend_dev:
     container_name: nexus_frontend_dev
-    build:
-      context: .
-      dockerfile: Dockerfile.dev
+    image: docker.io/${DOCKER_USERNAME?error}/${PROJECT_NAME?error}:dev
     restart: always
     ports:
       - '3001:3000'
     env_file:
       - .env
-    environment:
-      - NODE_ENV=development
-    volumes:
-      - .:/app
-      - /app/node_modules
     networks:
       - nexus_frontend_dev_network
 
@@ -21,7 +14,7 @@ services:
     image: nginx:alpine
     container_name: nexus_frontend_nginx_dev
     ports:
-      - '3000:80'
+      - '9084:80'
     volumes:
       - ./nginx/dev.nexus.conf:/etc/nginx/conf.d/dev.nexus.conf
     depends_on:

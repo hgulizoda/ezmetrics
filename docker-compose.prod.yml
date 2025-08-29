@@ -1,10 +1,12 @@
 services:
   # Production build
-  nexus-frontend:
+  frontend_prod:
+    image: docker.io/${DOCKER_USERNAME?error}/${PROJECT_NAME?error}:prod
     build:
       context: .
       dockerfile: Dockerfile
       target: production
+    container_name: nexus_frontend_prod
     ports:
       - '80:80'
     env_file:
@@ -25,11 +27,11 @@ services:
     image: nginx:alpine
     container_name: nexus_frontend_nginx_prod
     ports:
-      - '9084:80'
+      - '9085:80'
     volumes:
       - ./nginx/nexus.conf:/etc/nginx/conf.d/nexus.conf
     depends_on:
-      - nexus-frontend
+      - frontend_prod
     restart: unless-stopped
     networks:
       - nexus_frontend_prod_network

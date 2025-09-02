@@ -251,6 +251,7 @@ jobs:
             else
               echo "🔄 Pulling latest changes..."
               cd ${{ env.PROJECT_NAME }}
+              git checkout development
               git fetch origin development
               git reset --hard origin/development
             fi

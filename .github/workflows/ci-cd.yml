@@ -246,6 +246,7 @@ jobs:
             if [ ! -d "${{ env.PROJECT_NAME }}" ]; then
               echo "📥 Cloning repository..."
               git clone ${{ env.GIT_REPO }}
+              cd ${{ env.PROJECT_NAME }}
               git checkout development
             else
               echo "🔄 Pulling latest changes..."

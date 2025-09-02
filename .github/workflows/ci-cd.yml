@@ -123,56 +123,92 @@ jobs:
             export PROJECT_NAME=${{ env.PROJECT_NAME }}
             export DOCKER_TOKEN=${{ env.DOCKER_TOKEN }}
 
-            # Install prerequisites
-            sudo apt-get update
+            echo "🚀 Starting production deployment process..."
+            echo "📍 Working directory: \$(pwd)"
+            echo "🔧 Project: \${PROJECT_NAME}"
+            echo "🌐 Domain: nexus.sanjar.me"
+            echo "🏭 Environment: Production"
 
-            # Install Docker
+            echo "📦 Updating package list..."
+            sudo apt-get update
+            echo "✅ Package list updated"
+
+            echo "🐳 Checking Docker installation..."
             if ! command -v docker &> /dev/null; then
+              echo "📥 Installing Docker..."
               sudo apt-get install -y docker.io
               sudo systemctl start docker
               sudo systemctl enable docker
-              sudo usermod -aG docker ${USER}
+              sudo usermod -aG docker \${USER}
+              echo "✅ Docker installed and started"
+            else
+              echo "✅ Docker already installed"
             fi
 
-            # Install Docker Compose V2
+            echo "🔧 Checking Docker Compose..."
             if ! docker compose version &> /dev/null; then
+              echo "📥 Installing Docker Compose V2..."
               sudo apt-get install -y docker-compose-plugin
+              echo "✅ Docker Compose V2 installed"
+            else
+              echo "✅ Docker Compose V2 already installed"
             fi
 
-            # Check and install Nginx
+            echo "🌐 Checking Nginx..."
             if ! command -v nginx &> /dev/null; then
+              echo "📥 Installing Nginx..."
               sudo apt-get install -y nginx
               sudo systemctl start nginx
               sudo systemctl enable nginx
-            fi
-
-            # Login to Docker Hub
-            echo "${{ env.DOCKER_TOKEN }}" | docker login -u ${{ env.DOCKER_USERNAME }} --password-stdin
-
-            # Pull latest image
-            docker compose -f docker-compose.prod.yml pull
-
-            # Deploy with force recreate (GitLab style)
-            docker compose -f docker-compose.prod.yml up -d --force-recreate
-
-            # Wait for container to be healthy
-            timeout 60 bash -c 'until docker compose -f docker-compose.prod.yml ps | grep -q "healthy"; do sleep 2; done' || echo "Health check timeout"
-
-            # Copy nginx configuration
-            sudo cp ./nginx/nexus.conf /etc/nginx/conf.d/nexus.conf
-            
-            # Test nginx configuration
-            sudo nginx -t
-
-            # Reload nginx
-            sudo systemctl reload nginx
-
-            # SSL certificate management
-            if [ ! -d "/etc/letsencrypt/live/nexus.sanjar.me" ]; then
-              certbot --nginx -d nexus.sanjar.me --non-interactive --agree-tos -m admin@sanjar.me
+              echo "✅ Nginx installed and started"
             else
-              certbot renew --quiet
+              echo "✅ Nginx already installed"
             fi
+
+            echo "🔑 Logging into Docker Hub..."
+            echo "${{ env.DOCKER_TOKEN }}" | docker login -u ${{ env.DOCKER_USERNAME }} --password-stdin
+            echo "✅ Docker Hub login successful"
+
+            echo "📥 Pulling latest Docker image..."
+            docker compose -f docker-compose.prod.yml pull
+            echo "✅ Docker image pulled successfully"
+
+            echo "🚀 Starting containers..."
+            docker compose -f docker-compose.prod.yml up -d --force-recreate
+            echo "✅ Containers started successfully"
+
+            echo "⏳ Waiting for containers to be healthy..."
+            timeout 60 bash -c 'until docker compose -f docker-compose.prod.yml ps | grep -q "healthy"; do sleep 2; done' || echo "⚠️ Health check timeout"
+            echo "✅ Health check completed"
+
+            echo "📋 Copying Nginx configuration..."
+            sudo cp ./nginx/nexus.conf /etc/nginx/conf.d/nexus.conf
+            echo "✅ Nginx configuration copied"
+            
+            echo "🧪 Testing Nginx configuration..."
+            sudo nginx -t
+            echo "✅ Nginx configuration test passed"
+
+            echo "🔄 Reloading Nginx..."
+            sudo systemctl reload nginx
+            echo "✅ Nginx reloaded successfully"
+
+            echo "🔒 Managing SSL certificates..."
+            if [ ! -d "/etc/letsencrypt/live/nexus.sanjar.me" ]; then
+              echo "📥 Obtaining new SSL certificate..."
+              sudo certbot --nginx -d nexus.sanjar.me --non-interactive --agree-tos -m admin@sanjar.me
+              echo "✅ New SSL certificate obtained"
+            else
+              echo "🔄 Renewing existing SSL certificate..."
+              sudo certbot renew --quiet
+              echo "✅ SSL certificate renewed"
+            fi
+
+            echo "🎉 Production deployment completed successfully!"
+            echo "📊 Container status:"
+            docker compose -f docker-compose.prod.yml ps
+            echo "🌐 Nginx status:"
+            sudo systemctl status nginx --no-pager -l
           EOF
 
   deploy-dev:
@@ -203,7 +239,7 @@ jobs:
           scp docker-compose.dev.yml ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }}:~/app/${{ env.PROJECT_NAME }}/
           scp -r nginx/ ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }}:~/app/${{ env.PROJECT_NAME }}/
 
-          ssh ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }} << 'EOF'
+          ssh ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }} << EOF
             cd ~/app/${{ env.PROJECT_NAME }}
             export DOCKER_USERNAME=${{ env.DOCKER_USERNAME }}
             export PROJECT_NAME=${{ env.PROJECT_NAME }}
@@ -211,56 +247,112 @@ jobs:
             export VITE_APP_DEV_DOMAIN=${VITE_APP_DEV_DOMAIN:-nexus-dev.sanjar.me}
             export SERVER_IP=${SERVER_IP:-87.228.82.110}
             
-            cat ${{ env.DEV_BACKEND_MAIN_ENV_FILE }} >> .env
+            echo "🚀 Starting development deployment process..."
+            echo "📍 Working directory: \$(pwd)"
+            echo "🔧 Project: \${PROJECT_NAME}"
+            echo "🌐 Domain: \${VITE_APP_DEV_DOMAIN}"
+            echo "🖥️ Server IP: \${SERVER_IP}"
+            
+            cat > .env << EOF
+            ${{ env.DEV_BACKEND_MAIN_ENV_FILE }}
+            EOF
+            echo "✅ .env file created successfully"
 
+            echo "📦 Updating package list..."
             sudo apt-get update
+            echo "✅ Package list updated"
 
+            echo "🐳 Checking Docker installation..."
             if ! command -v docker &> /dev/null; then
+              echo "📥 Installing Docker..."
               sudo apt-get install -y docker.io
               sudo systemctl start docker
               sudo systemctl enable docker
+              echo "✅ Docker installed and started"
+            else
+              echo "✅ Docker already installed"
             fi
 
+            echo "🔧 Checking Docker Compose..."
             if ! docker compose version &> /dev/null; then
+              echo "📥 Installing Docker Compose V2..."
               sudo apt-get install -y docker-compose-plugin
+              echo "✅ Docker Compose V2 installed"
+            else
+              echo "✅ Docker Compose V2 already installed"
             fi
 
-            if ! command -v certbot &> /dev/null; then
-              sudo apt-get install -y certbot python3-certbot-nginx
-            fi
-
+            echo "🔐 Checking sudo..."
             if ! command -v sudo &> /dev/null; then
+              echo "📥 Installing sudo..."
               sudo apt-get install -y sudo
+              echo "✅ sudo installed"
+            else
+              echo "✅ sudo already installed"
             fi
 
+            echo "🌐 Checking Nginx..."
             if ! command -v nginx &> /dev/null; then
+              echo "📥 Installing Nginx..."
               sudo apt-get install -y nginx
               sudo systemctl start nginx
               sudo systemctl enable nginx
-            fi
-
-            if ! command -v certbot &> /dev/null; then
-              sudo apt-get install -y certbot python3-certbot-nginx
-            fi
-
-            echo "${{ env.DOCKER_TOKEN }}" | docker login -u ${{ env.DOCKER_USERNAME }} --password-stdin
-
-            docker compose -f docker-compose.dev.yml pull
-
-            docker compose -f docker-compose.dev.yml up -d --force-recreate
-
-            timeout 60 bash -c 'until docker compose -f docker-compose.dev.yml ps | grep -q "healthy"; do sleep 2; done' || echo "Health check timeout"
-
-            sudo cp nginx/dev.nexus.conf /etc/nginx/conf.d/dev.nexus.conf
-
-            if [ ! -d "/etc/letsencrypt/live/nexus-dev.sanjar.me" ]; then
-              sudo certbot --nginx -d nexus-dev.sanjar.me --non-interactive --agree-tos -m sanjarbekweb@gmail.com --redirect
+              echo "✅ Nginx installed and started"
             else
-              sudo certbot renew --quiet
+              echo "✅ Nginx already installed"
             fi
 
+            echo "🔒 Checking Certbot..."
+            if ! command -v certbot &> /dev/null; then
+              echo "📥 Installing Certbot..."
+              sudo apt-get install -y certbot python3-certbot-nginx
+              echo "✅ Certbot installed"
+            else
+              echo "✅ Certbot already installed"
+            fi
+
+            echo "🔑 Logging into Docker Hub..."
+            echo "${{ env.DOCKER_TOKEN }}" | docker login -u ${{ env.DOCKER_USERNAME }} --password-stdin
+            echo "✅ Docker Hub login successful"
+
+            echo "📥 Pulling latest Docker image..."
+            docker compose -f docker-compose.dev.yml pull
+            echo "✅ Docker image pulled successfully"
+
+            echo "🚀 Starting containers..."
+            docker compose -f docker-compose.dev.yml up -d --force-recreate
+            echo "✅ Containers started successfully"
+
+            echo "⏳ Waiting for containers to be healthy..."
+            timeout 60 bash -c 'until docker compose -f docker-compose.dev.yml ps | grep -q "healthy"; do sleep 2; done' || echo "⚠️ Health check timeout"
+            echo "✅ Health check completed"
+
+            echo "📋 Copying Nginx configuration..."
+            sudo cp nginx/dev.nexus.conf /etc/nginx/conf.d/dev.nexus.conf
+            echo "✅ Nginx configuration copied"
+
+            echo "🔒 Managing SSL certificates..."
+            if [ ! -d "/etc/letsencrypt/live/nexus-dev.sanjar.me" ]; then
+              echo "📥 Obtaining new SSL certificate..."
+              sudo certbot --nginx -d nexus-dev.sanjar.me --non-interactive --agree-tos -m sanjarbekweb@gmail.com --redirect
+              echo "✅ New SSL certificate obtained"
+            else
+              echo "🔄 Renewing existing SSL certificate..."
+              sudo certbot renew --quiet
+              echo "✅ SSL certificate renewed"
+            fi
+
+            echo "🧪 Testing Nginx configuration..."
             sudo nginx -t
+            echo "✅ Nginx configuration test passed"
 
+            echo "🔄 Reloading Nginx..."
             sudo systemctl reload nginx
+            echo "✅ Nginx reloaded successfully"
 
+            echo "🎉 Development deployment completed successfully!"
+            echo "📊 Container status:"
+            docker compose -f docker-compose.dev.yml ps
+            echo "🌐 Nginx status:"
+            sudo systemctl status nginx --no-pager -l
           EOF

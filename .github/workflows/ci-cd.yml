@@ -243,13 +243,15 @@ jobs:
           ssh ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }} << SSHEOF
             mkdir -p ~/app/
             cd ~/app/
-            if [ ! -d ".git" ]; then
+            if [ ! -d "${{ env.PROJECT_NAME }}" ]; then
               echo "📥 Cloning repository..."
-              git clone -b development ${{ env.GIT_REPO }} .
+              git clone ${{ env.GIT_REPO }}
+              git checkout development
             else
               echo "🔄 Pulling latest changes..."
+              cd ${{ env.PROJECT_NAME }}
               git fetch origin development
-                git reset --hard origin/development
+              git reset --hard origin/development
             fi
             
             cd ~/app/${{ env.PROJECT_NAME }}

@@ -206,9 +206,6 @@ jobs:
             VITE_APP_DEV_DOMAIN=nexus-dev.sanjar.me
             ENVEOF
 
-             # Install prerequisites
-            sudo apt-get update
-
             # Check and install Docker
             if ! command -v docker &> /dev/null; then
               sudo apt-get install -y docker.io
@@ -222,26 +219,11 @@ jobs:
               sudo apt-get install -y docker-compose-plugin
             fi
 
-            # Check and install coreutils (for timeout, grep, cp)
-            if ! command -v timeout &> /dev/null || ! command -v grep &> /dev/null || ! command -v cp &> /dev/null; then
-              sudo apt-get install -y coreutils
-            fi
-
-            # Check and install sudo
-            if ! command -v sudo &> /dev/null; then
-              sudo apt-get install -y sudo
-            fi
-
             # Check and install Nginx
             if ! command -v nginx &> /dev/null; then
               sudo apt-get install -y nginx
               sudo systemctl start nginx
               sudo systemctl enable nginx
-            fi
-
-            # Check and install systemd (for systemctl)
-            if ! command -v systemctl &> /dev/null; then
-              sudo apt-get install -y systemd
             fi
 
             # Login to Docker Hub

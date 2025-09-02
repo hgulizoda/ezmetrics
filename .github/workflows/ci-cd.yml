@@ -25,6 +25,7 @@ env:
   SERVER_USER: ${{ secrets.SERVER_USER }}
   SERVER_HOST: ${{ secrets.SERVER_HOST }}
   DEV_BACKEND_MAIN_ENV_FILE: ${{ secrets.DEV_BACKEND_MAIN_ENV_FILE }}
+  GIT_REPO: git@github.com:${{ github.repository }}.git
 
 jobs:
   # Build Stage
@@ -234,18 +235,30 @@ jobs:
 
       - name: Deploy to development server
         run: |
-          ssh ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }} "mkdir -p ~/app/${{ env.PROJECT_NAME }}"
+          # ssh ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }} "mkdir -p ~/app/${{ env.PROJECT_NAME }}"
 
-          scp docker-compose.dev.yml ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }}:~/app/${{ env.PROJECT_NAME }}/
-          scp -r nginx/ ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }}:~/app/${{ env.PROJECT_NAME }}/
+          # scp docker-compose.dev.yml ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }}:~/app/${{ env.PROJECT_NAME }}/
+          # scp -r nginx/ ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }}:~/app/${{ env.PROJECT_NAME }}/
 
           ssh ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }} << SSHEOF
+            mkdir -p ~/app/
+            cd ~/app/
+            if [ ! -d ".git" ]; then
+              echo "📥 Cloning repository..."
+              git clone -b development ${{ env.GIT_REPO }} .
+            else
+              echo "🔄 Pulling latest changes..."
+              git fetch origin development
+                git reset --hard origin/development
+            fi
+            
             cd ~/app/${{ env.PROJECT_NAME }}
+
             export DOCKER_USERNAME=${{ env.DOCKER_USERNAME }}
             export PROJECT_NAME=${{ env.PROJECT_NAME }}
             export DOCKER_TOKEN=${{ env.DOCKER_TOKEN }}
-            export VITE_APP_DEV_DOMAIN=${VITE_APP_DEV_DOMAIN:-nexus-dev.sanjar.me}
-            export SERVER_IP=${SERVER_IP:-87.228.82.110}
+            export VITE_APP_DEV_DOMAIN=${VITE_APP_DEV_DOMAIN:nexus-dev.sanjar.me}
+            export SERVER_IP=${SERVER_IP:87.228.82.110}
             
             echo "🚀 Starting development deployment process..."
             echo "📍 Working directory: \$(pwd)"
@@ -255,20 +268,16 @@ jobs:
             
             echo "# Environment variables for development" > .env
             echo "NODE_ENV=development" >> .env
-            echo "DOCKER_USERNAME=\${{ env.DOCKER_USERNAME }}" >> .env
-            echo "PROJECT_NAME=\${{ env.PROJECT_NAME }}" >> .env
-            echo "DOCKER_TOKEN=\${{ env.DOCKER_TOKEN }}" >> .env
-            
-            echo "✅ .env file created successfully"
+            echo "DOCKER_USERNAME=${{ env.DOCKER_USERNAME }}" >> .env
+            echo "PROJECT_NAME=${{ env.PROJECT_NAME }}" >> .env
+            echo "DOCKER_TOKEN=${{ env.DOCKER_TOKEN }}" >> .env
 
-            echo "📦 Updating package list..."
-            sudo apt-get update
-            echo "✅ Package list updated"
+            echo "✅ .env file created successfully"
 
             echo "🐳 Checking Docker installation..."
             if ! command -v docker &> /dev/null; then
               echo "📥 Installing Docker..."
-              sudo apt-get install -y docker.io
+              sudo apt install -y docker.io
               sudo systemctl start docker
               sudo systemctl enable docker
               echo "✅ Docker installed and started"
@@ -279,25 +288,16 @@ jobs:
             echo "🔧 Checking Docker Compose..."
             if ! docker compose version &> /dev/null; then
               echo "📥 Installing Docker Compose V2..."
-              sudo apt-get install -y docker-compose-plugin
+              sudo apt install -y docker-compose-plugin
               echo "✅ Docker Compose V2 installed"
             else
               echo "✅ Docker Compose V2 already installed"
             fi
 
-            echo "🔐 Checking sudo..."
-            if ! command -v sudo &> /dev/null; then
-              echo "📥 Installing sudo..."
-              sudo apt-get install -y sudo
-              echo "✅ sudo installed"
-            else
-              echo "✅ sudo already installed"
-            fi
-
             echo "🌐 Checking Nginx..."
             if ! command -v nginx &> /dev/null; then
               echo "📥 Installing Nginx..."
-              sudo apt-get install -y nginx
+              sudo apt install -y nginx
               sudo systemctl start nginx
               sudo systemctl enable nginx
               echo "✅ Nginx installed and started"
@@ -308,7 +308,7 @@ jobs:
             echo "🔒 Checking Certbot..."
             if ! command -v certbot &> /dev/null; then
               echo "📥 Installing Certbot..."
-              sudo apt-get install -y certbot python3-certbot-nginx
+              sudo apt install -y certbot python3-certbot-nginx
               echo "✅ Certbot installed"
             else
               echo "✅ Certbot already installed"

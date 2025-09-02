@@ -20,22 +20,3 @@ services:
       timeout: 10s
       retries: 3
       start_period: 40s
-    networks:
-      - nexus_frontend_prod_network
-
-  nginx:
-    image: nginx:alpine
-    container_name: nexus_frontend_nginx_prod
-    ports:
-      - '9085:80'
-    volumes:
-      - ./nginx/nexus.conf:/etc/nginx/conf.d/nexus.conf
-    depends_on:
-      - frontend_prod
-    restart: unless-stopped
-    networks:
-      - nexus_frontend_prod_network
-
-networks:
-  nexus_frontend_prod_network:
-    driver: bridge

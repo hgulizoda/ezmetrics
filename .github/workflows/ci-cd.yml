@@ -111,49 +111,68 @@ jobs:
 
       - name: Deploy to production server
         run: |
-          # Create directory structure
           ssh ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }} "mkdir -p ~/app/${{ env.PROJECT_NAME }}"
 
-          # Copy only necessary files for deployment
           scp docker-compose.prod.yml ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }}:~/app/${{ env.PROJECT_NAME }}/
           scp -r nginx/ ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }}:~/app/${{ env.PROJECT_NAME }}/
 
-          # Deploy using docker-compose
-          ssh ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }} << EOF
+          ssh ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }} << 'EOF'
             cd ~/app/${{ env.PROJECT_NAME }}
             export DOCKER_USERNAME=${{ env.DOCKER_USERNAME }}
             export PROJECT_NAME=${{ env.PROJECT_NAME }}
-            
+            export DOCKER_TOKEN=${{ env.DOCKER_TOKEN }}
+
             # Create .env file from environment variables
             cat > .env << 'ENVEOF'
             DOCKER_USERNAME=${{ env.DOCKER_USERNAME }}
             PROJECT_NAME=${{ env.PROJECT_NAME }}
+            DOCKER_TOKEN=${{ env.DOCKER_TOKEN }}
             NODE_ENV=production
             VITE_APP_DOMAIN=nexus.sanjar.me
             VITE_APP_DEV_DOMAIN=nexus-dev.sanjar.me
             ENVEOF
-            
-            # Login to DockerHub if needed
+
+            # Check and install Docker
+            if ! command -v docker &> /dev/null; then
+              sudo apt-get install -y docker.io
+              sudo systemctl start docker
+              sudo systemctl enable docker
+              sudo usermod -aG docker \${USER}
+            fi
+
+            # Check and install Docker Compose V2
+            if ! docker compose version &> /dev/null; then
+              sudo apt-get install -y docker-compose-plugin
+            fi
+
+            # Check and install Nginx
+            if ! command -v nginx &> /dev/null; then
+              sudo apt-get install -y nginx
+              sudo systemctl start nginx
+              sudo systemctl enable nginx
+            fi
+
+            # Login to Docker Hub
             echo "${{ env.DOCKER_TOKEN }}" | docker login -u ${{ env.DOCKER_USERNAME }} --password-stdin
-            
+
             # Pull latest image
             docker compose -f docker-compose.prod.yml pull
-            
+
             # Deploy with health check
             docker compose -f docker-compose.prod.yml up -d --force-recreate
-            
+
             # Wait for container to be healthy
             timeout 60 bash -c 'until docker compose -f docker-compose.prod.yml ps | grep -q "healthy"; do sleep 2; done' || echo "Health check timeout"
-            
+
             # Copy nginx configuration
-            cp ./nginx/nexus.conf /etc/nginx/conf.d/nexus.conf
+            sudo cp ./nginx/nexus.conf /etc/nginx/conf.d/nexus.conf
             
             # Test nginx configuration
-            nginx -t
-            
+            sudo nginx -t
+
             # Reload nginx
-            systemctl reload nginx
-            
+            sudo systemctl reload nginx
+
             # SSL certificate management
             if [ ! -d "/etc/letsencrypt/live/nexus.sanjar.me" ]; then
               certbot --nginx -d nexus.sanjar.me --non-interactive --agree-tos -m admin@sanjar.me
@@ -190,7 +209,7 @@ jobs:
           scp docker-compose.dev.yml ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }}:~/app/${{ env.PROJECT_NAME }}/
           scp -r nginx/ ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }}:~/app/${{ env.PROJECT_NAME }}/
 
-          ssh ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }} << EOF
+          ssh ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }} << 'EOF'
             cd ~/app/${{ env.PROJECT_NAME }}
             export DOCKER_USERNAME=${{ env.DOCKER_USERNAME }}
             export PROJECT_NAME=${{ env.PROJECT_NAME }}
@@ -246,4 +265,11 @@ jobs:
 
             # Reload nginx
             sudo systemctl reload nginx
+
+            # SSL certificate management
+            if [ ! -d "/etc/letsencrypt/live/nexus-dev.sanjar.me" ]; then
+              certbot --nginx -d nexus-dev.sanjar.me --non-interactive --agree-tos -m sanjarbekweb@gmail.com
+            else
+              certbot renew --quiet
+            fi
           EOF

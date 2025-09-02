@@ -24,7 +24,6 @@ env:
   SSH_KNOWN_HOSTS: ${{ secrets.SSH_KNOWN_HOSTS }}
   SERVER_USER: ${{ secrets.SERVER_USER }}
   SERVER_HOST: ${{ secrets.SERVER_HOST }}
-  DEV_BACKEND_MAIN_ENV_FILE: ${{ secrets.DEV_BACKEND_MAIN_ENV_FILE }}
   GIT_REPO: git@github.com:${{ github.repository }}.git
 
 jobs:
@@ -331,8 +330,15 @@ jobs:
             echo "✅ Containers started successfully"
 
             echo "📋 Copying Nginx configuration..."
-            sudo cp nginx/dev.nexus.conf /etc/nginx/conf.d/dev.nexus.conf
-            echo "✅ Nginx configuration copied"
+            # check if dev.nexus.conf exists /etc/nginx/conf.d/dev.nexus.conf
+            if [ ! -f "/etc/nginx/conf.d/dev.nexus.conf" ]; then
+              echo "📥 Downloading Nginx configuration..."
+              sudo cp nginx/dev.nexus.conf /etc/nginx/conf.d/dev.nexus.conf
+              echo "✅ Nginx configuration copied successfully"
+            else
+              echo "✅ Nginx configuration already exists"
+            fi
+
 
             echo "🔒 Managing SSL certificates..."
             if [ ! -d "/etc/letsencrypt/live/nexus-dev.sanjar.me" ]; then

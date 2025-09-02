@@ -254,7 +254,11 @@ jobs:
             echo "🖥️ Server IP: \${SERVER_IP}"
             
             echo "# Environment variables for development" > .env
-            echo "salom=salom" >> .env
+            echo "NODE_ENV=development" >> .env
+            echo "DOCKER_USERNAME=\${{ env.DOCKER_USERNAME }}" >> .env
+            echo "PROJECT_NAME=\${{ env.PROJECT_NAME }}" >> .env
+            echo "DOCKER_TOKEN=\${{ env.DOCKER_TOKEN }}" >> .env
+            
             echo "✅ .env file created successfully"
 
             echo "📦 Updating package list..."
@@ -321,10 +325,6 @@ jobs:
             echo "🚀 Starting containers..."
             docker compose -f docker-compose.dev.yml up -d --force-recreate
             echo "✅ Containers started successfully"
-
-            echo "⏳ Waiting for containers to be healthy..."
-            timeout 60 bash -c 'until docker compose -f docker-compose.dev.yml ps | grep -q "healthy"; do sleep 2; done' || echo "⚠️ Health check timeout"
-            echo "✅ Health check completed"
 
             echo "📋 Copying Nginx configuration..."
             sudo cp nginx/dev.nexus.conf /etc/nginx/conf.d/dev.nexus.conf

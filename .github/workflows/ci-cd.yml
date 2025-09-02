@@ -117,7 +117,7 @@ jobs:
           scp docker-compose.prod.yml ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }}:~/app/${{ env.PROJECT_NAME }}/
           scp -r nginx/ ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }}:~/app/${{ env.PROJECT_NAME }}/
 
-          ssh ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }} << 'EOF'
+          ssh ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }} << 'PRODEOF'
             cd ~/app/${{ env.PROJECT_NAME }}
             export DOCKER_USERNAME=${{ env.DOCKER_USERNAME }}
             export PROJECT_NAME=${{ env.PROJECT_NAME }}
@@ -209,7 +209,7 @@ jobs:
             docker compose -f docker-compose.prod.yml ps
             echo "🌐 Nginx status:"
             sudo systemctl status nginx --no-pager -l
-          EOF
+          PRODEOF
 
   deploy-dev:
     needs: build-dev
@@ -239,7 +239,7 @@ jobs:
           scp docker-compose.dev.yml ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }}:~/app/${{ env.PROJECT_NAME }}/
           scp -r nginx/ ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }}:~/app/${{ env.PROJECT_NAME }}/
 
-          ssh ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }} << EOF
+          ssh ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }} << 'SSHEOF'
             cd ~/app/${{ env.PROJECT_NAME }}
             export DOCKER_USERNAME=${{ env.DOCKER_USERNAME }}
             export PROJECT_NAME=${{ env.PROJECT_NAME }}
@@ -253,9 +253,10 @@ jobs:
             echo "🌐 Domain: \${VITE_APP_DEV_DOMAIN}"
             echo "🖥️ Server IP: \${SERVER_IP}"
             
-            cat > .env << EOF
-            ${{ env.DEV_BACKEND_MAIN_ENV_FILE }}
-            EOF
+            cat > .env << 'ENVEOF'
+            # ${{ env.DEV_BACKEND_MAIN_ENV_FILE }}
+            salom=salom
+            ENVEOF
             echo "✅ .env file created successfully"
 
             echo "📦 Updating package list..."
@@ -355,4 +356,4 @@ jobs:
             docker compose -f docker-compose.dev.yml ps
             echo "🌐 Nginx status:"
             sudo systemctl status nginx --no-pager -l
-          EOF
+          SSHEOF

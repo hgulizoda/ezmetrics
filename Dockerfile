@@ -5,10 +5,10 @@ FROM node:20.10.0-alpine AS builder
 WORKDIR /app
 
 # Copy package files
-COPY package*.json ./
+COPY package.json ./
 
 # Install dependencies
-RUN npm i --legacy-peer-deps
+RUN yarn
 
 # Copy source code
 COPY . .
@@ -18,7 +18,7 @@ COPY .env* ./
 
 ENV NODE_OPTIONS=--max-old-space-size=4096
 # Build the application
-RUN npm run build
+RUN yarn build
 
 # Stage 2: Production stage
 FROM nginx:alpine AS production

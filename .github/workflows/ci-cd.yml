@@ -230,7 +230,6 @@ jobs:
 
       - name: Deploy to development server
         run: |
-          # ssh ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }} << SSHEOF
             mkdir -p ~/app/
             cd ~/app/
             if [ ! -d "${{ env.PROJECT_NAME }}" ]; then
@@ -258,11 +257,11 @@ jobs:
             echo "🌐 Domain: \${VITE_APP_DEV_DOMAIN}"
             echo "🖥️ Server IP: \${SERVER_IP}"
             
-            # echo "# Environment variables for development" > .env
-            # echo "NODE_ENV=development" >> .env
-            # echo "DOCKER_USERNAME=${{ env.DOCKER_USERNAME }}" >> .env
-            # echo "PROJECT_NAME=${{ env.PROJECT_NAME }}" >> .env
-            # echo "DOCKER_TOKEN=${{ env.DOCKER_TOKEN }}" >> .env
+            echo "# Environment variables for development" > .env
+            echo "NODE_ENV=development" >> .env
+            echo "DOCKER_USERNAME=${{ env.DOCKER_USERNAME }}" >> .env
+            echo "PROJECT_NAME=${{ env.PROJECT_NAME }}" >> .env
+            echo "DOCKER_TOKEN=${{ env.DOCKER_TOKEN }}" >> .env
 
             echo "✅ .env file created successfully"
 
@@ -355,4 +354,3 @@ jobs:
             docker compose -f docker-compose.dev.yml ps
             # echo "🌐 Nginx status:"
             # sudo systemctl status nginx --no-pager -l
-          # SSHEOF

@@ -230,7 +230,7 @@ jobs:
 
       - name: Deploy to development server
         run: |
-          ssh ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }} << SSHEOF
+          # ssh ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }} << SSHEOF
             mkdir -p ~/app/
             cd ~/app/
             if [ ! -d "${{ env.PROJECT_NAME }}" ]; then
@@ -355,4 +355,4 @@ jobs:
             docker compose -f docker-compose.dev.yml ps
             # echo "🌐 Nginx status:"
             # sudo systemctl status nginx --no-pager -l
-          SSHEOF
+          # SSHEOF

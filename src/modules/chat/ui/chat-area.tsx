@@ -12,40 +12,40 @@ import {
   Button,
   AppBar,
   Toolbar,
+  Divider,
+  Tooltip,
   Checkbox,
   useTheme,
   IconButton,
   Typography,
   CardContent,
-  CircularProgress,
-  Chip,
-  Divider,
-  Tooltip,
   tooltipClasses,
+  CircularProgress,
 } from '@mui/material';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 
 import { queryClient } from 'src/query';
+import { useTranslate } from 'src/locales';
 import Coin from 'src/assets/icons/coin.png';
 import { useChatContext } from 'src/pages/dashboard/chat/chatContext';
 
 import Image from 'src/components/image';
+import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 import { ConfirmDialog } from 'src/components/custome-dialog';
 
+import {
+  ShipmentTypeIcons,
+  useShipmentTypeLabels,
+  ShipmentTypeLabelsColors,
+  useShipmentTooltipTypeLabels,
+} from 'src/types/TableStatus';
+
 import { IMessageRes } from '../types/messages';
 import { useGetMessages } from '../hooks/useGetMessages';
 import useMessagesScroll from '../hooks/useScrollBottom';
-import {
-  ShipmentTypeIcons,
-  ShipmentTypeLabelsColors,
-  useShipmentTypeLabels,
-  useShipmentTooltipTypeLabels,
-} from 'src/types/TableStatus';
-import Label from 'src/components/label';
-import { useTranslate } from 'src/locales';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);

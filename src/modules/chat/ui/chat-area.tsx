@@ -12,24 +12,36 @@ import {
   Button,
   AppBar,
   Toolbar,
+  Divider,
+  Tooltip,
   Checkbox,
   useTheme,
   IconButton,
   Typography,
   CardContent,
+  tooltipClasses,
   CircularProgress,
 } from '@mui/material';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 
 import { queryClient } from 'src/query';
+import { useTranslate } from 'src/locales';
 import Coin from 'src/assets/icons/coin.png';
 import { useChatContext } from 'src/pages/dashboard/chat/chatContext';
 
 import Image from 'src/components/image';
+import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 import { ConfirmDialog } from 'src/components/custome-dialog';
+
+import {
+  ShipmentTypeIcons,
+  useShipmentTypeLabels,
+  ShipmentTypeLabelsColors,
+  useShipmentTooltipTypeLabels,
+} from 'src/types/TableStatus';
 
 import { IMessageRes } from '../types/messages';
 import { useGetMessages } from '../hooks/useGetMessages';
@@ -51,6 +63,7 @@ interface ChatAreaProps {
 
 const ChatArea = memo(({ onReplyMessage, searchChat, setEditMessage }: ChatAreaProps) => {
   const navigate = useNavigate();
+  const { t } = useTranslate('lang');
   const [selectedMessages, setSelectedMessages] = useState<string[]>([]);
   const [isMultiSelectMode, setIsMultiSelectMode] = useState(false);
   const [focusedMessageId, setFocusedMessageId] = useState<string | null>(null);
@@ -262,6 +275,9 @@ const ChatArea = memo(({ onReplyMessage, searchChat, setEditMessage }: ChatAreaP
     );
   }, [data?.data]);
 
+  const shipmentLabel = useShipmentTypeLabels();
+  const shipmentToolTip = useShipmentTooltipTypeLabels();
+
   if (isLoading) {
     return (
       <Box width="100%" height="100%" display="flex" justifyContent="center" alignItems="center">
@@ -453,6 +469,173 @@ const ChatArea = memo(({ onReplyMessage, searchChat, setEditMessage }: ChatAreaP
                             >
                               {item.message.content}
                             </Typography>
+                            {item.message.additional_info && (
+                              <Card
+                                sx={{
+                                  maxWidth: 400,
+                                  mx: 'auto',
+                                  borderRadius: 3,
+                                  boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
+                                  border: '1px solid #e0e0e0',
+                                }}
+                              >
+                                <CardContent>
+                                  <Box
+                                    sx={{
+                                      display: 'flex',
+                                      justifyContent: 'space-between',
+                                      alignItems: 'center',
+                                      mb: 2,
+                                    }}
+                                  >
+                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                      <Tooltip
+                                        title={shipmentToolTip[item.message.additional_info.status]}
+                                        arrow
+                                        placement="top"
+                                        slotProps={{
+                                          popper: {
+                                            sx: {
+                                              [`&.${tooltipClasses.popper}[data-popper-placement*="bottom"] .${tooltipClasses.tooltip}`]:
+                                                {
+                                                  marginTop: '0px',
+                                                },
+                                            },
+                                          },
+                                        }}
+                                      >
+                                        {ShipmentTypeIcons[item.message.additional_info.status] ===
+                                        '' ? (
+                                          <Label
+                                            color={
+                                              ShipmentTypeLabelsColors[
+                                                item.message.additional_info.status
+                                              ]
+                                            }
+                                          >
+                                            {shipmentLabel[item.message.additional_info.status]}
+                                          </Label>
+                                        ) : (
+                                          <Label
+                                            color={
+                                              ShipmentTypeLabelsColors[
+                                                item.message.additional_info.status
+                                              ]
+                                            }
+                                            endIcon={
+                                              <Iconify
+                                                icon={
+                                                  ShipmentTypeIcons[
+                                                    item.message.additional_info.status
+                                                  ]
+                                                }
+                                              />
+                                            }
+                                          >
+                                            {shipmentLabel[item.message.additional_info.status]}
+                                          </Label>
+                                        )}
+                                      </Tooltip>
+                                    </Box>
+                                  </Box>
+
+                                  <Typography
+                                    variant="h6"
+                                    sx={{
+                                      mb: 1,
+                                      fontWeight: 500,
+                                      lineHeight: 1.3,
+                                      maxWidth: 300,
+                                      overflow: 'hidden',
+                                      whiteSpace: 'wrap',
+                                    }}
+                                  >
+                                    {item?.message?.additional_info?.description}
+                                  </Typography>
+
+                                  {/* Product Details */}
+                                  <Box sx={{ mb: 1 }}>
+                                    <Box
+                                      sx={{
+                                        display: 'flex',
+                                        justifyContent: 'space-between',
+                                        mb: 0.5,
+                                      }}
+                                    >
+                                      <Typography variant="body2" color="text.secondary">
+                                        {t('packages.tableTitle.weight')}
+                                      </Typography>
+                                      <Typography variant="body2" fontWeight="medium">
+                                        {item?.message?.additional_info?.order_weight}
+                                      </Typography>
+                                    </Box>
+
+                                    <Box
+                                      sx={{
+                                        display: 'flex',
+                                        justifyContent: 'space-between',
+                                        mb: 0.5,
+                                      }}
+                                    >
+                                      <Typography variant="body2" color="text.secondary">
+                                        {t('packages.tableTitle.capacity')}
+                                      </Typography>
+                                      <Typography variant="body2" fontWeight="medium">
+                                        {item?.message?.additional_info?.order_capacity}
+                                      </Typography>
+                                    </Box>
+
+                                    <Box
+                                      sx={{
+                                        display: 'flex',
+                                        justifyContent: 'space-between',
+                                        mb: 0.5,
+                                      }}
+                                    >
+                                      <Typography variant="body2" color="text.secondary">
+                                        {t('packages.tableTitle.stockNumber')}
+                                      </Typography>
+                                      <Typography variant="body2" fontWeight="medium">
+                                        {item?.message?.additional_info?.total_count}
+                                      </Typography>
+                                    </Box>
+
+                                    <Box
+                                      sx={{
+                                        display: 'flex',
+                                        justifyContent: 'space-between',
+                                        mb: 0.5,
+                                      }}
+                                    >
+                                      <Typography variant="body2" color="text.secondary">
+                                        {t('packages.status.uzbCustoms')}
+                                      </Typography>
+                                      <Typography variant="body2" fontWeight="medium">
+                                        {item?.message?.additional_info?.transit_zone}
+                                      </Typography>
+                                    </Box>
+                                  </Box>
+
+                                  <Divider sx={{ my: 2 }} />
+
+                                  {/* Status */}
+                                  <Box>
+                                    <Typography
+                                      variant="body2"
+                                      color="text.secondary"
+                                      sx={{ mb: 0.5 }}
+                                    >
+                                      {t('packages.tableTitle.updatedDate')}
+                                    </Typography>
+                                    <Typography variant="body2" fontWeight="medium">
+                                      {dayjs(item.message.additional_info.status_updated_at)
+                                        .tz('Asia/Tashkent')
+                                        .format('D MMM, h:mm A')}
+                                    </Typography>
+                                  </Box>
+                                </CardContent>
+                              </Card>
+                            )}
                             {item.message.metadata && (
                               <Card
                                 sx={{
@@ -588,6 +771,7 @@ const ChatArea = memo(({ onReplyMessage, searchChat, setEditMessage }: ChatAreaP
                             </Box>
                           </Box>
                         )}
+
                         <Box
                           display="flex"
                           justifyContent="flex-end"

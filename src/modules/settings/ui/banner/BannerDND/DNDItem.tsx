@@ -46,7 +46,7 @@ export const DNDItem = ({ id, image, isOverlay = false }: IProps) => {
               loading="lazy"
               src={image.uz}
               alt="banner.uz"
-              width="45%"
+              width="33.33%"
               height="100%"
               style={{ borderRadius: '10px', overflow: 'hidden' }}
             />
@@ -54,7 +54,15 @@ export const DNDItem = ({ id, image, isOverlay = false }: IProps) => {
               loading="lazy"
               src={image.ru}
               alt="banner.ru"
-              width="45%"
+              width="33.33%"
+              height="100%"
+              style={{ borderRadius: '10px', overflow: 'hidden' }}
+            />
+            <img
+              loading="lazy"
+              src={image.en}
+              alt="banner.en"
+              width="33.33%"
               height="100%"
               style={{ borderRadius: '10px', overflow: 'hidden' }}
             />

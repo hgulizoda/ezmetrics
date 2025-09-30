@@ -4,6 +4,7 @@ export const bannerScheme = yup.object().shape({
   image_url: yup.object({
     uz: yup.mixed().required(),
     ru: yup.mixed().required(),
+    en: yup.mixed().required(),
   }),
 });
 

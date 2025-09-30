@@ -1,4 +1,4 @@
-import { OrderStatus } from "src/types/TableStatus";
+import { OrderStatus } from 'src/types/TableStatus';
 
 export interface IMessageRes {
   _id: string;

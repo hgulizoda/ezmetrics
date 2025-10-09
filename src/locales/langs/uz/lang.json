@@ -307,10 +307,13 @@
       "titleSecond": "Habarnoma taxrirlash",
       "titleUZ": "Habar nomi (UZ)",
       "titleRU": "Habar nomi (RU)",
+      "titleEN": "Habar nomi (EN)",
       "contentUZ": "Habar matni (UZ)",
       "contentRU": "Habar matni (RU)",
+      "contentEN": "Habar matni (EN)",
       "imageUZ": "Habarnoma rasmi (UZ)",
-      "imageRU": "Habarnoma rasmi (RU)"
+      "imageRU": "Habarnoma rasmi (RU)",
+      "imageEN": "Habarnoma rasmi (EN)"
     },
     "actions": {
       "delete": "O'chirish",

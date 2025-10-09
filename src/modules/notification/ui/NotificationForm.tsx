@@ -37,14 +37,17 @@ export const NotificationsForm = ({ notification }: Props) => {
       title: {
         uz: '',
         ru: '',
+        en: '',
       },
       body: {
         uz: '',
         ru: '',
+        en: '',
       },
       image: {
         uz: '',
         ru: '',
+        en: '',
       },
       type: 'main',
     },
@@ -65,6 +68,7 @@ export const NotificationsForm = ({ notification }: Props) => {
   const handleRemove = {
     imageUZ: () => form.setValue('image.uz', ''),
     imageRu: () => form.setValue('image.ru', ''),
+    imageEn: () => form.setValue('image.en', ''),
   };
   const formSubmit = async (value: NotificationFormType) => {
     const imageUrlUz =
@@ -111,30 +115,41 @@ export const NotificationsForm = ({ notification }: Props) => {
       </Box>
       <Box>
         <FormProvider methods={form} onSubmit={form.handleSubmit(formSubmit)}>
-          <Grid container spacing={2}>
-            <Grid item xs={6}>
+          <Grid container spacing={1.5}>
+            <Grid item xs={12} sm={6} md={4}>
               <RHFTextField name="title.uz" label={t('notification.form.titleUZ')} />
             </Grid>
-            <Grid item xs={6}>
+            <Grid item xs={12} sm={6} md={4}>
               <RHFTextField name="title.ru" label={t('notification.form.titleRU')} />
             </Grid>
-            <Grid item xs={6}>
-              <Typography variant="subtitle1">{t('notification.form.contentUZ')}</Typography>
+            <Grid item xs={12} sm={6} md={4}>
+              <RHFTextField name="title.en" label={t('notification.form.titleEN')} />
+            </Grid>
+            <Grid item xs={12} md={4}>
+              <Typography variant="subtitle2" mb={0.5}>{t('notification.form.contentUZ')}</Typography>
               <RHFEditor name="body.uz" />
             </Grid>
-            <Grid item xs={6}>
-              <Typography variant="subtitle1">{t('notification.form.contentRU')}</Typography>
+            <Grid item xs={12} md={4}>
+              <Typography variant="subtitle2" mb={0.5}>{t('notification.form.contentRU')}</Typography>
               <RHFEditor name="body.ru" />
             </Grid>
-            <Grid item xs={6}>
-              <Typography variant="subtitle1">{t('notification.form.imageUZ')}</Typography>
+            <Grid item xs={12} md={4}>
+              <Typography variant="subtitle2" mb={0.5}>{t('notification.form.contentEN')}</Typography>
+              <RHFEditor name="body.en" />
+            </Grid>
+            <Grid item xs={12} md={4}>
+              <Typography variant="subtitle2" mb={0.5}>{t('notification.form.imageUZ')}</Typography>
               <RHFUpload thumbnail name="image.uz" onDelete={handleRemove.imageUZ} />
             </Grid>
-            <Grid item xs={6}>
-              <Typography variant="subtitle1">{t('notification.form.imageRU')}</Typography>
+            <Grid item xs={12} md={4}>
+              <Typography variant="subtitle2" mb={0.5}>{t('notification.form.imageRU')}</Typography>
               <RHFUpload thumbnail name="image.ru" onDelete={handleRemove.imageRu} />
             </Grid>
-            <Grid item xs={12} display="flex" justifyContent="flex-end" gap={2}>
+            <Grid item xs={12} md={4}>
+              <Typography variant="subtitle2" mb={0.5}>{t('notification.form.imageEN')}</Typography>
+              <RHFUpload thumbnail name="image.en" onDelete={handleRemove.imageEn} />
+            </Grid>
+            <Grid item xs={12} display="flex" justifyContent="flex-end" gap={1.5}>
               <Button
                 onClick={() => {
                   form.reset();

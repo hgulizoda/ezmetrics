@@ -218,6 +218,7 @@ const BonusesView = () => {
               onSearchChange={onSearchChange}
               search={search}
               hasTotal={false}
+              getRowId={(row) => row._id || crypto.randomUUID()}
             />
           </Box>
         </Box>

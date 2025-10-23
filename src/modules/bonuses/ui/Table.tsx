@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
+import { useSearchParams } from 'react-router-dom';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import { LoadingButton } from '@mui/lab';
 import {
@@ -18,10 +18,10 @@ import {
 } from '@mui/material';
 
 import { baseColumns } from './col';
-import { Bonus } from '../types/BunusesList';
 import { useBonusesFilter } from './useFilter';
 import { useTranslate } from '../../../locales';
 import Iconify from '../../../components/iconify';
+import { IBonusesList } from '../types/BunusesList';
 import { useGetAllBonuses } from '../services/getAll';
 import { useUnuseBouns } from '../services/unUseBonus';
 import { useGetBonusLimit } from '../services/getLimit';
@@ -35,7 +35,6 @@ import FormProvider from '../../../components/hook-form/form-provider';
 import DataGridCustom from '../../../components/data-grid-view/data-grid-custom';
 
 const BonusesView = () => {
-  const navigate = useNavigate();
   const { t } = useTranslate('lang');
   const theme = useTheme();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -206,10 +205,12 @@ const BonusesView = () => {
           }}
         >
           <Box height={700} p={1} sx={{ width: '100%' }}>
-            <DataGridCustom<Bonus>
+            <DataGridCustom<IBonusesList>
               data={bonuses}
               col={baseColumns({
                 t,
+                handleUpdateStatus,
+                handleUnuseBonuse,
               })}
               loading={isLoading}
               rowCount={pagination.total_records}
@@ -218,7 +219,6 @@ const BonusesView = () => {
               onSearchChange={onSearchChange}
               search={search}
               hasTotal={false}
-              getRowId={(row) => row._id || crypto.randomUUID()}
             />
           </Box>
         </Box>

@@ -1,4 +1,6 @@
 import AppBar from '@mui/material/AppBar';
+import Toolbar from '@mui/material/Toolbar';
+import IconButton from '@mui/material/IconButton';
 import { useTheme } from '@mui/material/styles';
 
 import { useOffSetTop } from 'src/hooks/use-off-set-top';
@@ -6,13 +8,18 @@ import { useResponsive } from 'src/hooks/use-responsive';
 
 import { bgBlur } from 'src/theme/css';
 
+import Iconify from 'src/components/iconify';
 import { useSettingsContext } from 'src/components/settings';
 
 import { NAV, HEADER } from '../config-layout';
 
 // ----------------------------------------------------------------------
 
-export default function Header() {
+type Props = {
+  onOpenNav?: VoidFunction;
+};
+
+export default function Header({ onOpenNav }: Props) {
   const theme = useTheme();
 
   const settings = useSettingsContext();
@@ -26,6 +33,21 @@ export default function Header() {
   const offset = useOffSetTop(HEADER.H_DESKTOP);
 
   const offsetTop = offset && !isNavHorizontal;
+
+  const renderContent = (
+    <Toolbar
+      sx={{
+        height: 1,
+        px: { lg: 5 },
+      }}
+    >
+      {!lgUp && onOpenNav && (
+        <IconButton onClick={onOpenNav} sx={{ mr: 1 }}>
+          <Iconify icon="eva:menu-2-fill" />
+        </IconButton>
+      )}
+    </Toolbar>
+  );
 
   return (
     <AppBar
@@ -55,6 +77,8 @@ export default function Header() {
           }),
         }),
       }}
-    />
+    >
+      {renderContent}
+    </AppBar>
   );
 }

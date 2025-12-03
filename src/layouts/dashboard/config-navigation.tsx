@@ -117,17 +117,17 @@ export function useNavData() {
             icon: <Iconify icon="uil:statistics" width={24} />,
           },
           {
-            title: 'Taklif, Shikoyatlar va Baholar',
+            title: t('feedbacks.title'),
             path: paths.dashboard.feedbacks,
             icon: <Iconify icon="fluent:person-feedback-20-regular" width={24} />,
             children: [
               {
-                title: 'Baholar',
+                title: t('feedbacks.ratings'),
                 path: `${paths.dashboard.feedbacks}/ratings`,
                 roles: ['superadmin', 'admin'],
               },
               {
-                title: 'Taklif va Shikoyatlar',
+                title: t('feedbacks.suggestions'),
                 path: `${paths.dashboard.feedbacks}/suggestions`,
                 roles: ['superadmin', 'admin'],
               },

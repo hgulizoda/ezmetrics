@@ -26,6 +26,33 @@
       "lastSeen":"So'nggi faollik"
     }
   },
+  "feedbacks":{
+    "title": "Taklif  Shikoyatlar , Baholar",
+    "ratings": "Baholar",
+    "suggestions": "Taklif va Shikoyatlar",
+    "table": {
+      "fullName": "F.I.SH",
+      "userId": "ID",
+      "phone": "Telefon",
+      "rating": "Baho",
+      "comment": "Izohlar",
+      "order": "Yuk",
+      "reasons": "Sabablar",
+      "type": "Mavzu",
+      "description": "Ma`lumot",
+      "phoneNumber": "Telefon raqami"
+    },
+    "actions": {
+      "delete": "O'chirish",
+      "view": "Ko'rish",
+      "close": "Yopish"
+    },
+    "deleteConfirm": {
+      "title": "O'chirish",
+      "ratingContent": "O'chirilga reytingni ortga qaytarib bo'lmaydi !",
+      "suggestionContent": "O'chirilga taklif yoki shikoyatlarni ortga qaytarib bo'lmaydi !"
+    }
+  },
   "statistics": {
     "AllTitle":"Umumiy tahlillar",
     "title": "Tahlillar",

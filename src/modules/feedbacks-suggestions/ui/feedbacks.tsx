@@ -20,6 +20,7 @@ import {
 
 import { useBoolean } from 'src/hooks/use-boolean';
 
+import { useTranslate } from 'src/locales';
 import { TruckOrderDetail } from 'src/modules/settings/ui/truckDetails/TruckOrderDetail';
 
 import Label from 'src/components/label';
@@ -31,6 +32,7 @@ import { useDeleteFeedback } from '../hooks/useDeleteFeedback';
 import { ReviewItem, ReasonLabels, ReasonsStatus } from '../types/feedbacks';
 
 export const Feedbacks = () => {
+  const {t} = useTranslate('lang');
   const [feedbacksId, setFeedbacksId] = useState<string>('');
   const [orderID, setOrderID] = useState<string>('');
   const viewOrder = useBoolean();
@@ -52,7 +54,7 @@ export const Feedbacks = () => {
   return (
     <Container maxWidth="xl">
       <Card>
-        <CardHeader title="Reytinglar" />
+        <CardHeader title={t('feedbacks.ratings')} />
         <CardContent
           sx={{
             px: 0,
@@ -78,6 +80,7 @@ export const Feedbacks = () => {
                 setOrderID(id);
                 viewOrder.onTrue();
               },
+              t,
             })}
             rows={data?.feedbacks || []}
             loading={isLoading}
@@ -113,7 +116,7 @@ export const Feedbacks = () => {
           </DialogContent>
           <DialogActions>
             <Button variant="contained" color="primary" onClick={openView.onFalse}>
-              Yopish
+              {t('feedbacks.actions.close')}
             </Button>
           </DialogActions>
         </Dialog>
@@ -123,12 +126,12 @@ export const Feedbacks = () => {
         <ConfirmDialog
           open={openDelete.value}
           onClose={openDelete.onFalse}
-          title="O'chirish"
-          content="O'chirilga reytingni ortga qaytarib bo'lmaydi !"
+          title={t('feedbacks.deleteConfirm.title')}
+          content={t('feedbacks.deleteConfirm.ratingContent')}
           action={
             <>
               <Button variant="outlined" color="inherit" onClick={openDelete.onFalse}>
-                Bekor qilish
+                {t('actions.cancel')}
               </Button>
               <LoadingButton
                 variant="contained"
@@ -139,7 +142,7 @@ export const Feedbacks = () => {
                 }}
                 loading={isPending}
               >
-                O&apos;chirish
+                {t('actions.delete')}
               </LoadingButton>
             </>
           }

@@ -39,6 +39,33 @@
       "lastSeen": "Последняя активность"
     }
   },
+  "feedbacks":{
+    "title": "Предложения, Жалобы, Оценки",
+    "ratings": "Оценки",
+    "suggestions": "Предложения и Жалобы",
+    "table": {
+      "fullName": "Ф.И.О",
+      "userId": "ID",
+      "phone": "Телефон",
+      "rating": "Рейтинг",
+      "comment": "Комментарий",
+      "order": "Груз",
+      "reasons": "Причины",
+      "type": "Тема",
+      "description": "Информация",
+      "phoneNumber": "Номер телефона"
+    },
+    "actions": {
+      "delete": "Удалить",
+      "view": "Просмотр",
+      "close": "Закрыть"
+    },
+    "deleteConfirm": {
+      "title": "Удалить",
+      "ratingContent": "Удаленный рейтинг невозможно восстановить!",
+      "suggestionContent": "Удаленные предложения или жалобы невозможно восстановить!"
+    }
+  },
   "bonus": {
     "title": "Бонусы",
     "action": {

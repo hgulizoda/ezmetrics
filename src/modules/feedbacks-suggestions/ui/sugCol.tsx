@@ -10,28 +10,29 @@ import { FeedbackItem, SuggestionEnum, SuggestionEnumLabels } from '../types/sug
 interface Props {
   onView: (item: FeedbackItem) => void;
   onDelete: (id: string) => void;
+  t: (key: string) => string;
 }
 
-export const sugCol = ({ onView, onDelete }: Props): GridColDef<FeedbackItem>[] => [
+export const sugCol = ({ onView, onDelete, t }: Props): GridColDef<FeedbackItem>[] => [
   {
-    headerName: 'F.I.SH',
+    headerName: t('feedbacks.table.fullName'),
     field: 'fullName',
     flex: 1,
   },
   {
-    headerName: 'ID',
+    headerName: t('feedbacks.table.userId'),
     field: 'userId',
     flex: 1,
   },
   {
-    headerName: 'Telefon raqami',
+    headerName: t('feedbacks.table.phoneNumber'),
     field: 'phoneNumber',
     flex: 1,
     renderCell: ({ row }) => formatPhoneNumber(row.phoneNumber),
   },
 
   {
-    headerName: 'Mavzu',
+    headerName: t('feedbacks.table.type'),
     field: 'type',
     flex: 1,
     renderCell: ({ row }) => (
@@ -50,7 +51,7 @@ export const sugCol = ({ onView, onDelete }: Props): GridColDef<FeedbackItem>[] 
     ),
   },
   {
-    headerName: 'Ma`lumot',
+    headerName: t('feedbacks.table.description'),
     field: 'description',
     flex: 1,
   },
@@ -62,7 +63,7 @@ export const sugCol = ({ onView, onDelete }: Props): GridColDef<FeedbackItem>[] 
       <GridActionsCellItem
         showInMenu
         icon={<Iconify icon="hugeicons:delete-02" />}
-        label="O'chirish"
+        label={t('feedbacks.actions.delete')}
         onClick={() => onDelete(row.id)}
         sx={{
           color: 'error.main',
@@ -71,7 +72,7 @@ export const sugCol = ({ onView, onDelete }: Props): GridColDef<FeedbackItem>[] 
       <GridActionsCellItem
         showInMenu
         icon={<Iconify icon="hugeicons:view" width={25} />}
-        label="Ko'rish"
+        label={t('feedbacks.actions.view')}
         onClick={() => onView(row)}
         sx={{
           color: (theme) => theme.palette.info.dark,

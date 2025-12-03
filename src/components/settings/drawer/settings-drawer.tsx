@@ -142,7 +142,7 @@ export default function SettingsDrawer() {
   const renderPresets = (
     <div>
       <Typography variant="caption" component="div" sx={{ ...labelStyles }}>
-        Presets
+        Ilova ranglari
       </Typography>
 
       <PresetsOptions

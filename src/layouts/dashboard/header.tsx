@@ -39,6 +39,7 @@ export default function Header({ onOpenNav }: Props) {
       sx={{
         height: 1,
         px: { lg: 5 },
+        display: lgUp ? 'none' : 'flex',
       }}
     >
       {!lgUp && onOpenNav && (

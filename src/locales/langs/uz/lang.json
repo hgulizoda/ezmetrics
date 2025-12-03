@@ -13,6 +13,19 @@
     "not": "Yo'q",
     "clearAll": "Barchasini o`chirish"
   },
+  "settings": {
+    "title": "Sozlamalar",
+    "reset": "Qaytarish",
+    "mode": "Rejim",
+    "contrast": "Kontrast",
+    "direction": "Yo'nalish",
+    "layout": "Maket",
+    "stretch": "Cho'zish",
+    "stretchTooltip": "Faqat katta o'lchamlarda mavjud > 1600px (xl)",
+    "presets": "Ilova ranglari",
+    "fullscreen": "To'liq ekran rejimi",
+    "exitFullscreen": "To'liq ekrandan chiqish"
+  },
   "chat":{
     "title": "Xabarlar",
     "typeAMessage": "Xabar kiriting",

@@ -187,7 +187,7 @@
     "title": "Transport",
     "truck": "Jo'natmalar",
     "truckName": "Jo'natma turi",
-    "truckStatus": "Status",
+    "truckStatus": "Holat",
     "createdTime": "Jo'natma tuzilgan sana",
     "estimatedArrivalTime": "Taxminiy yetkazish sanasi",
     "form": {
@@ -334,8 +334,8 @@
   },
   "truckOrderDetails": {
     "title": "Buyurtma ID raqami",
-    "status": "Status",
-    "statusUpdated": "Status yangilangan sana",
+    "status": "Holat",
+    "statusUpdated": "Holat yangilangan sana",
     "packageCapacity": "Buyurtma hajmi",
     "orderedDate": "Buyurtma berilgan sanasi",
     "packageWeight": "Buyurtma og'irligi",
@@ -369,7 +369,7 @@
       },
       "card": {
         "title": "Foydalanuvchi ID raqami",
-        "status": "Status",
+        "status": "Holat",
         "update": "Taxminiy yetkazish sanasi",
         "created": "Buyurtma berilgan sana",
         "timeline": "Yetkazib berish bosqichi",

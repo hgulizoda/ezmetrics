@@ -13,7 +13,8 @@ export default function CompactLayout({ children }: Props) {
     <Container component="main">
       <Stack
         sx={{
-          py: 12,
+          py: { xs: 6, md: 12 },
+          px: { xs: 2, md: 0 },
           m: 'auto',
           maxWidth: 400,
           minHeight: '100vh',

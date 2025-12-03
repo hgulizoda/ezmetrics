@@ -40,9 +40,11 @@ export const ApplicantsLayout = () => {
       <Box
         sx={{
           display: 'flex',
+          flexDirection: { xs: 'column', sm: 'row' },
           justifyContent: 'space-between',
-          alignItems: 'center',
+          alignItems: { xs: 'flex-start', sm: 'center' },
           marginBottom: '24px',
+          gap: { xs: 2, sm: 0 },
           '.MuiOutlinedInput-notchedOutline': {
             borderColor: 'transparent',
           },
@@ -54,7 +56,7 @@ export const ApplicantsLayout = () => {
           },
         }}
       >
-        <Box sx={{ display: 'flex', width: '100%', alignItems: 'center', gap: 3 }}>
+        <Box sx={{ display: 'flex', width: { xs: '100%', sm: 'auto' }, alignItems: 'center', gap: 3 }}>
           <Typography variant="h4" component="h2" display="flex" gap={1}>
             {t('packages.title')}
             <Typography variant="h4" color={theme.palette.grey[400]}>
@@ -62,16 +64,16 @@ export const ApplicantsLayout = () => {
             </Typography>
           </Typography>
         </Box>
-        <Box display="flex" gap={2}>
+        <Box display="flex" gap={2} alignItems="center">
           <IconButton onClick={() => navigate('/dashboard/add-package')}>
             <Iconify icon="gravity-ui:plus" width={25} />
           </IconButton>
-        </Box>
 
-        <Box display="flex" ml={1} gap={1}>
-          <LanguagePopover data={allLangs} />
-          <SettingsButton />
-          <AccountPopover />
+          <Box display="flex" ml={{ xs: 0, sm: 1 }} gap={1}>
+            <LanguagePopover data={allLangs} />
+            <SettingsButton />
+            <AccountPopover />
+          </Box>
         </Box>
       </Box>
       <Box
@@ -87,6 +89,9 @@ export const ApplicantsLayout = () => {
             value={value}
             onChange={handleChangeSelect}
             aria-label="wrapped label tabs example"
+            variant="scrollable"
+            scrollButtons="auto"
+            allowScrollButtonsMobile
             sx={{
               justifyContent: 'space-between',
               boxShadow: (i) => `inset 0 -2px 0 0 ${alpha(i.palette.grey[500], 0.08)}`,

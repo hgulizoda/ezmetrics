@@ -7,6 +7,7 @@ import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 import { Box, Stack, Badge, Avatar, Tooltip, IconButton, ListItemText } from '@mui/material';
 
 import { queryClient } from 'src/query';
+import { useTranslate } from 'src/locales';
 
 import Iconify from 'src/components/iconify';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
@@ -20,6 +21,7 @@ interface Props {
 
 export const ChatHeader = ({ setSearchChat }: Props) => {
   dayjs.extend(RelativeTime);
+  const { currentLang } = useTranslate();
   const [searchParams] = useSearchParams();
   const [isOnline, setIsOnline] = useState<boolean>();
   const popover = usePopover();
@@ -48,7 +50,9 @@ export const ChatHeader = ({ setSearchChat }: Props) => {
 
         <ListItemText
           primary={`${singleUser?.profile?.first_name} ${singleUser?.profile?.last_name}`}
-          secondary={isOnline ? 'Online' : dayjs(singleUser?.user?.last_seen).fromNow()}
+          secondary={
+            isOnline ? 'Online' : dayjs(singleUser?.user?.last_seen).locale(currentLang.adapterLocale).fromNow()
+          }
         />
       </Stack>
       <Stack direction="row" flexGrow={1} justifyContent="flex-end">

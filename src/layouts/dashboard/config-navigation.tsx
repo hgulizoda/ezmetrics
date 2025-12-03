@@ -111,7 +111,7 @@ export function useNavData() {
             ),
           },
           {
-            title: 'Statistics',
+            title: 'Tahlillar',
             path: paths.dashboard.statistics,
             roles: ['superadmin', 'admin'],
             icon: <Iconify icon="uil:statistics" width={24} />,

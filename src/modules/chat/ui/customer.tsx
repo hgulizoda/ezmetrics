@@ -9,6 +9,7 @@ import { useBoolean } from 'src/hooks/use-boolean';
 import { formatPhoneNumber } from 'src/utils/format-phone-number';
 
 import { queryClient } from 'src/query';
+import { useTranslate } from 'src/locales';
 
 import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
@@ -24,6 +25,7 @@ export default function CustomerProfile() {
   const { data } = useGetMessages(chatId || '');
   const [isOnline, setIsOnline] = useState<boolean>();
   const collapse = useBoolean(true);
+  const { t, currentLang } = useTranslate('lang');
   const [singleUser, setSingleUser] = useState<ICustomerRes>();
   const { data: chats } = useGetChatLists();
   useEffect(() => {
@@ -69,7 +71,7 @@ export default function CustomerProfile() {
         >
           {isOnline
             ? 'Online'
-            : `Last Seen: ${dayjs(singleUser?.user?.last_seen).format('MMM D, h:mm A')}`}
+            : `${t('chat.information.lastSeen')}: ${dayjs(singleUser?.user?.last_seen).locale(currentLang.adapterLocale).format('MMM D, h:mm A')}`}
         </Typography>
       </Box>
     </Stack>
@@ -90,7 +92,7 @@ export default function CustomerProfile() {
       }}
     >
       <Box component="span" sx={{ flexGrow: 1 }}>
-        Information
+        {t('chat.information.title')}
       </Box>
       <Iconify
         width={16}

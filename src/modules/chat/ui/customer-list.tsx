@@ -28,6 +28,7 @@ import { useBoolean } from 'src/hooks/use-boolean';
 import { useDebounce } from 'src/hooks/use-debounce';
 
 import { IUser } from 'src/modules/user/types/User';
+import { useTranslate } from 'src/locales';
 import { useGetUsersList } from 'src/modules/user/hook/user';
 import AccountPopover from 'src/layouts/common/account-popover';
 import { ContextMenuWrapper } from 'src/layouts/context/ContextMenu';
@@ -43,6 +44,7 @@ import { useArchiveChat } from '../hooks/useArchiveChat';
 import { ICustomerRes, IOnlineUsers } from '../types/chat';
 
 export default function CustomersList() {
+  const { currentLang } = useTranslate();
   const [chatId, setChatId] = useState<string>('');
   const navigate = useNavigate();
   const { data, isLoading } = useGetChatLists();
@@ -213,7 +215,7 @@ export default function CustomersList() {
                         {customer?.user?.user_id})
                       </Typography>
                       <Typography variant="caption" color="text.secondary">
-                        {dayjs(customer.last_message?.created_at).format('D MMM, h:mm A')}
+                        {dayjs(customer.last_message?.created_at).locale(currentLang.adapterLocale).format('D MMM, h:mm A')}
                       </Typography>
                     </Box>
                   }

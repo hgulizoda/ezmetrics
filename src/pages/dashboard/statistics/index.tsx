@@ -20,7 +20,7 @@ export default function Page() {
         }}
       >
         <Typography variant="h4" component="h2" display="flex" gap={1}>
-          Umumiy statistika
+          Umumiy tahlillar
         </Typography>
         <Box display="flex" ml={1} gap={1}>
           <LanguagePopover data={allLangs} />

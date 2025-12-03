@@ -1,6 +1,8 @@
 /* eslint-disable perfectionist/sort-imports */
 
 import 'dayjs/locale/en';
+import 'dayjs/locale/ru';
+import 'dayjs/locale/uz';
 import 'dayjs/locale/vi';
 import 'dayjs/locale/fr';
 import 'dayjs/locale/zh-cn';

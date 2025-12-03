@@ -6,7 +6,7 @@ import { IStat } from '../types/Stats';
 
 export const column = (): GridColDef<IStat>[] => [
   {
-    headerName: 'F.I.O',
+    headerName: 'F.I.SH',
     field: 'fullName',
     flex: 1,
   },

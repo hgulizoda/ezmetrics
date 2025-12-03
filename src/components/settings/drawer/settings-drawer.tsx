@@ -59,7 +59,7 @@ export default function SettingsDrawer() {
   const renderMode = (
     <div>
       <Typography variant="caption" component="div" sx={{ ...labelStyles }}>
-        Mode
+        Rejim
       </Typography>
 
       <BaseOptions
@@ -74,7 +74,7 @@ export default function SettingsDrawer() {
   const renderContrast = (
     <div>
       <Typography variant="caption" component="div" sx={{ ...labelStyles }}>
-        Contrast
+        Kontrast
       </Typography>
 
       <BaseOptions
@@ -89,7 +89,7 @@ export default function SettingsDrawer() {
   const renderDirection = (
     <div>
       <Typography variant="caption" component="div" sx={{ ...labelStyles }}>
-        Direction
+        Yo&apos;nalish
       </Typography>
 
       <BaseOptions
@@ -104,7 +104,7 @@ export default function SettingsDrawer() {
   const renderLayout = (
     <div>
       <Typography variant="caption" component="div" sx={{ ...labelStyles }}>
-        Layout
+        Maket
       </Typography>
 
       <LayoutOptions
@@ -126,7 +126,7 @@ export default function SettingsDrawer() {
           alignItems: 'center',
         }}
       >
-        Stretch
+        Cho&apos;zish
         <Tooltip title="Only available at large resolutions > 1600px (xl)">
           <Iconify icon="eva:info-outline" width={16} sx={{ ml: 0.5 }} />
         </Tooltip>

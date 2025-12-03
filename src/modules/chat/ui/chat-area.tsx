@@ -63,7 +63,7 @@ interface ChatAreaProps {
 
 const ChatArea = memo(({ onReplyMessage, searchChat, setEditMessage }: ChatAreaProps) => {
   const navigate = useNavigate();
-  const { t } = useTranslate('lang');
+  const { t, currentLang } = useTranslate('lang');
   const [selectedMessages, setSelectedMessages] = useState<string[]>([]);
   const [isMultiSelectMode, setIsMultiSelectMode] = useState(false);
   const [focusedMessageId, setFocusedMessageId] = useState<string | null>(null);
@@ -394,7 +394,7 @@ const ChatArea = memo(({ onReplyMessage, searchChat, setEditMessage }: ChatAreaP
                     borderRadius: 2,
                   }}
                   role="region"
-                  aria-label={`Message from ${item.message.sender_type} at ${dayjs(item.message.created_at).format('D MMM, h:mm A')}`}
+                  aria-label={`Message from ${item.message.sender_type} at ${dayjs(item.message.created_at).locale(currentLang.adapterLocale).format('D MMM, h:mm A')}`}
                 >
                   <Box sx={{ maxWidth: '70%' }} display="flex" gap={1}>
                     <Box>

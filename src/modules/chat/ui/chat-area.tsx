@@ -49,7 +49,6 @@ import useMessagesScroll from '../hooks/useScrollBottom';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
-dayjs.locale('uz');
 
 type MessageOrSeparator =
   | { type: 'separator'; date: string; key: string }
@@ -258,7 +257,7 @@ const ChatArea = memo(({ onReplyMessage, searchChat, setEditMessage }: ChatAreaP
         if (needsSeparator) {
           acc.push({
             type: 'separator',
-            date: messageDate.format('D MMMM'),
+            date: messageDate.locale(currentLang.adapterLocale).format('D MMMM'),
             key: `separator-${messageDate.format('YYYY-MM-DD')}`,
           });
         }
@@ -273,7 +272,7 @@ const ChatArea = memo(({ onReplyMessage, searchChat, setEditMessage }: ChatAreaP
       },
       []
     );
-  }, [data?.data]);
+  }, [data?.data, currentLang.adapterLocale]);
 
   const shipmentLabel = useShipmentTypeLabels();
   const shipmentToolTip = useShipmentTooltipTypeLabels();
@@ -630,6 +629,7 @@ const ChatArea = memo(({ onReplyMessage, searchChat, setEditMessage }: ChatAreaP
                                     <Typography variant="body2" fontWeight="medium">
                                       {dayjs(item.message.additional_info.status_updated_at)
                                         .tz('Asia/Tashkent')
+                                        .locale(currentLang.adapterLocale)
                                         .format('D MMM, h:mm A')}
                                     </Typography>
                                   </Box>
@@ -712,6 +712,7 @@ const ChatArea = memo(({ onReplyMessage, searchChat, setEditMessage }: ChatAreaP
                               >
                                 {dayjs(item.message.created_at)
                                   .tz('Asia/Tashkent')
+                                  .locale(currentLang.adapterLocale)
                                   .format('D MMM, h:mm A')}
                               </Typography>
                               {item.message.sender_type === 'admin' &&
@@ -760,6 +761,7 @@ const ChatArea = memo(({ onReplyMessage, searchChat, setEditMessage }: ChatAreaP
                               >
                                 {dayjs(item.message.created_at)
                                   .tz('Asia/Tashkent')
+                                  .locale(currentLang.adapterLocale)
                                   .format('D MMM, h:mm A')}
                               </Typography>
                               {item.message.sender_type === 'admin' &&

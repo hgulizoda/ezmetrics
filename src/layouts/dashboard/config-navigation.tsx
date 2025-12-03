@@ -100,7 +100,7 @@ export function useNavData() {
             icon: <Iconify icon="tdesign:notification" width={24} />,
           },
           {
-            title: 'Chat',
+            title: t('chat.title'),
             path: paths.dashboard.chat,
             roles: ['superadmin', 'admin'],
             icon: <Iconify icon="hugeicons:bubble-chat-user" width={24} />,
@@ -111,7 +111,7 @@ export function useNavData() {
             ),
           },
           {
-            title: 'Tahlillar',
+            title: t('statistics.title'),
             path: paths.dashboard.statistics,
             roles: ['superadmin', 'admin'],
             icon: <Iconify icon="uil:statistics" width={24} />,

@@ -14,6 +14,7 @@
     "clearAll": "Barchasini o`chirish"
   },
   "chat":{
+    "title": "Xabarlar",
     "typeAMessage": "Xabar kiriting",
     "editMessage": "Xabarni tahrirlash",
     "attachments": {
@@ -23,6 +24,20 @@
     "information":{
       "title": "Ma'lumot",
       "lastSeen":"So'nggi faollik"
+    }
+  },
+  "statistics": {
+    "AllTitle":"Umumiy tahlillar",
+    "title": "Tahlillar",
+    "table": {
+      "fullName": "F.I.SH",
+      "userId": "Foydalanuvchi ID",
+      "phone": "Telefon",
+      "company": "Tashkilot",
+      "totalOrders": "Barcha buyurtmalar",
+      "totalWeight": "Umumiy og'irlik",
+      "totalCapacity": "Umumiy hajm",
+      "totalPlaces": "Umumiy joy"
     }
   },
   "users": {

@@ -13,6 +13,32 @@
     "not": "Нет",
     "clearAll": "Удалить все"
   },
+   "statistics": {
+    "AllTitle": "Общая аналитика",
+    "title": "Аналитика",
+    "table": {
+      "fullName": "Ф.И.О",
+      "userId": "ID пользователя",
+      "phone": "Телефон",
+      "company": "Организация",
+      "totalOrders": "Все заказы",
+      "totalWeight": "Общий вес",
+      "totalCapacity": "Общий объем",
+      "totalPlaces": "Общее место"
+    }
+  },
+ "chat":{
+    "title": "Чат",
+    "typeAMessage": "Введите сообщение",
+    "editMessage": "Редактировать сообщение",
+    "attachments": {
+      "title": "Вложения"
+    },
+    "information":{
+      "title": "Информация",
+      "lastSeen": "Последняя активность"
+    }
+  },
   "bonus": {
     "title": "Бонусы",
     "action": {

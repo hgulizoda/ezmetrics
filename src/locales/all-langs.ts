@@ -33,7 +33,7 @@ export const allLangs = [
     value: 'uz',
     label: "O'zbek",
     countryCode: 'UZ',
-    adapterLocale: 'uz',
+    adapterLocale: 'uz-latn',
     numberFormat: { code: 'uz-UZ', currency: 'UZS' },
     systemValue: {
       components: { ...enUSDate.components, ...uzUZDataGrid.components },

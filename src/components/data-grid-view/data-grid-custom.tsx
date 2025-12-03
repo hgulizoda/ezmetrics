@@ -45,6 +45,7 @@ interface IProps<T> extends Omit<React.ComponentProps<typeof DataGrid>, 'columns
   totals?: {
     total_capacity: number;
     total_weight: number;
+    average_weight?: number;
     counts?: number;
     places?: number;
   };
@@ -108,6 +109,13 @@ export default function DataGridCustom<T>({
               <Typography variant="subtitle2">
                 {fNumber(totals?.total_weight ?? 0) || 0} {t('profile.ordersTabs.card.kg')};
               </Typography>
+              -
+              {totals?.average_weight ? (
+                <Typography variant="subtitle2">
+                 ({totals?.average_weight?.toFixed(1) || 0} {t('profile.ordersTabs.card.kg')});
+                </Typography>
+              ): null}
+              
               {totals?.places && (
                 <Typography variant="subtitle2">
                   {t('profile.ordersTabs.card.places')}: {fPlaces};

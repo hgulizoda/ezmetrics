@@ -26,7 +26,7 @@
     "fullscreen": "Полноэкранный режим",
     "exitFullscreen": "Выход из полноэкранного режима"
   },
-   "statistics": {
+  "statistics": {
     "AllTitle": "Общая аналитика",
     "title": "Аналитика",
     "table": {
@@ -40,19 +40,30 @@
       "totalPlaces": "Общее место"
     }
   },
- "chat":{
+  "chat": {
     "title": "Чат",
     "typeAMessage": "Введите сообщение",
     "editMessage": "Редактировать сообщение",
+    "searchClient": "Поиск клиента...",
+    "startNewChat": "Начать новый чат",
+    "archivedChats": "Архивированные чаты",
+    "chatsNotFound": "Чаты не найдены",
+    "thisDayChatNoutFound": "Чаты за этот день не найдены",
+    "selectedChats": "Выбранный чат",
+    "greeting": {
+      "title": "Добрый день!",
+      "subtitle": "Выберите одного из пользователей, чтобы начать чат"
+    },
+    "chat": "Чат",
     "attachments": {
       "title": "Вложения"
     },
-    "information":{
+    "information": {
       "title": "Информация",
       "lastSeen": "Последняя активность"
     }
   },
-  "feedbacks":{
+  "feedbacks": {
     "title": "Предложения, Жалобы, Оценки",
     "ratings": "Оценки",
     "suggestions": "Предложения и Жалобы",

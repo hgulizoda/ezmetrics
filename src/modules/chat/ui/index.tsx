@@ -3,6 +3,8 @@ import { useSearchParams } from 'react-router-dom';
 
 import { Stack } from '@mui/material';
 
+import { useTranslate } from 'src/locales';
+
 import Scrollbar from 'src/components/scrollbar';
 
 import { Layout } from './layout';
@@ -17,7 +19,7 @@ import { IMessageRes } from '../types/messages';
 export default function MainChatHome() {
   const [searchParams] = useSearchParams();
   const hasChat = searchParams.get('id');
-
+  const { t } = useTranslate('lang');
   const [replyMessage, setReplyMessage] = useState<IMessageRes | null>(null);
   const [editMessage, setEditMessage] = useState<IMessageRes | null>(null);
   const [searchChat, setSearchChat] = useState<Date>();
@@ -59,8 +61,8 @@ export default function MainChatHome() {
           </>
         ) : (
           <EmptyContentChat
-            description="Chat boshlash uchun foydalanuvchilardan birini tanlang"
-            title="Hayrli kun!"
+            description={t('chat.greeting.subtitle')}
+            title={t('chat.greeting.title')}
           />
         ),
         details: hasChat ? (

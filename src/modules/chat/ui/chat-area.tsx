@@ -299,7 +299,11 @@ const ChatArea = memo(({ onReplyMessage, searchChat, setEditMessage }: ChatAreaP
       {isMultiSelectMode && selectedMessages.length > 0 && (
         <AppBar position="static" color="default" sx={{ zIndex: 10 }}>
           <Toolbar>
-            <Typography variant="subtitle1">{selectedMessages.length} ta habar tanlandi</Typography>
+            <Typography variant="subtitle1">
+              {t('chat.selectedChats')}
+              {': '}
+              {selectedMessages.length}
+            </Typography>
             <Box flexGrow={1} />
             <IconButton onClick={handleCancelSelection} aria-label="Cancel selection">
               <Iconify icon="material-symbols:cancel" />
@@ -333,7 +337,7 @@ const ChatArea = memo(({ onReplyMessage, searchChat, setEditMessage }: ChatAreaP
             }}
           >
             <Typography variant="body1" color="text.secondary">
-              {searchChat ? 'Bu kunda habar topilmadi' : 'Habarlar mavjud emas'}
+              {!searchChat ? t('chat.chatsNotFound') : t('chat.thisDayChatNoutFound')}
             </Typography>
           </Box>
         ) : (

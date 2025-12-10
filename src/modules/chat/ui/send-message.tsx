@@ -41,7 +41,7 @@ export const SendMessage = ({
   const theme = useTheme();
   const inputRef = useRef<HTMLInputElement>(null);
   const { emit } = useChatContext();
-  const {t} = useTranslate('lang');
+  const { t } = useTranslate('lang');
   const { uploadAsync, isPending } = useUploadImage();
   const { uploadAsync: uploadFile, isPending: isFiling } = useUploadImage();
   const { uploadAsync: uploadAudio, isPending: isAudioing } = useUploadImage();
@@ -308,7 +308,7 @@ export const SendMessage = ({
           display: 'flex',
           alignItems: 'flex-end',
           '.css-yubm5r-MuiInputBase-input': {
-            mb: '4px',
+            mb: '3px',
           },
         }}
       />

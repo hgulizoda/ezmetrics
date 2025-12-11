@@ -13,6 +13,9 @@
     "not": "Yo'q",
     "clearAll": "Barchasini o`chirish"
   },
+  "auth": {
+    "logout": "Platformadan chiqish"
+  },
   "settings": {
     "title": "Sozlamalar",
     "reset": "Qaytarish",
@@ -27,10 +30,11 @@
     "exitFullscreen": "To'liq ekrandan chiqish"
   },
   "chat": {
-    "title": "Xabarlar",
+    "title": "Chat",
     "typeAMessage": "Xabar kiriting",
     "editMessage": "Xabarni tahrirlash",
     "searchClient": "Mijozni qidirish...",
+    "searchInChat": "Chat ichidan qidirish",
     "startNewChat": "Yangi suhbatni boshlash",
     "archivedChats": "Arxivlangan suhbatlar",
     "chatsNotFound": "Suhbatlar topilmadi",
@@ -74,6 +78,24 @@
       "title": "O'chirish",
       "ratingContent": "O'chirilga reytingni ortga qaytarib bo'lmaydi !",
       "suggestionContent": "O'chirilga taklif yoki shikoyatlarni ortga qaytarib bo'lmaydi !"
+    },
+    "reasons": {
+      "professionalism": "Professionalizm",
+      "affordable_price": "Hamyonbop narx",
+      "damage_free_delivery": "Beshikast yetkazish",
+      "delivery_speed": "Yetkazib berish tezligi",
+      "damaged_goods": "Yuklar shikastlangan",
+      "insufficient_quantity": "Tovar soni kam",
+      "high_price": "Yuqori narx",
+      "late_delivery": "Yuk o'z vaqtida yetkazib berilmadi",
+      "rude_staff": "Qo'pol hodimlar",
+      "measurement_error": "O'lchovdagi xatolik",
+      "other": "Boshqa"
+    },
+    "types": {
+      "complaint": "Shikoyat",
+      "suggestion": "Taklif",
+      "other": "Boshqa"
     }
   },
   "statistics": {

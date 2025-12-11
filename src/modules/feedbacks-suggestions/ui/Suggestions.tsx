@@ -26,7 +26,7 @@ import { ConfirmDialog } from 'src/components/custome-dialog';
 import { sugCol } from './sugCol';
 import { useGetSuggestions } from '../hooks/useGetSuggestions';
 import { useDeleteSuggestions } from '../hooks/useDeleteSuggestions';
-import { FeedbackItem, SuggestionEnum, SuggestionEnumLabels } from '../types/suggestions';
+import { FeedbackItem, SuggestionEnum } from '../types/suggestions';
 
 export const Suggestions = () => {
   const {t} = useTranslate('lang');
@@ -104,7 +104,11 @@ export const Suggestions = () => {
                     : 'info'
               }
             >
-              {SuggestionEnumLabels[suggestions.type as SuggestionEnum]}
+              {suggestions.type === SuggestionEnum.COMPLAINT
+                ? t('feedbacks.types.complaint')
+                : suggestions.type === SuggestionEnum.SUGGESTION
+                  ? t('feedbacks.types.suggestion')
+                  : t('feedbacks.types.other')}
             </Label>
           </DialogTitle>
           <Divider />

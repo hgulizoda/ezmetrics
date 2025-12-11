@@ -29,7 +29,7 @@ import { ConfirmDialog } from 'src/components/custome-dialog';
 import { feedcols } from './feedCol';
 import { useGetFeedbacks } from '../hooks/useGetFeedbacks';
 import { useDeleteFeedback } from '../hooks/useDeleteFeedback';
-import { ReviewItem, ReasonLabels, ReasonsStatus } from '../types/feedbacks';
+import { ReviewItem } from '../types/feedbacks';
 
 export const Feedbacks = () => {
   const {t} = useTranslate('lang');
@@ -84,10 +84,10 @@ export const Feedbacks = () => {
             })}
             rows={data?.feedbacks || []}
             loading={isLoading}
+            getRowId={(row) => row.id || crypto.randomUUID()}
+            paginationMode="server"
             onPaginationModelChange={setPaginationModel}
-            initialState={{
-              pagination: { paginationModel },
-            }}
+            paginationModel={paginationModel}
             rowCount={data?.totalRecords ?? 0}
           />
         </CardContent>
@@ -110,7 +110,7 @@ export const Feedbacks = () => {
 
             <Box my={2} gap={1} display="flex" flexWrap="wrap">
               {feedbacks.reasons.map((el) => (
-                <Label>{ReasonLabels[el as ReasonsStatus]}</Label>
+                <Label key={el}>{t(`feedbacks.reasons.${el}`)}</Label>
               ))}
             </Box>
           </DialogContent>

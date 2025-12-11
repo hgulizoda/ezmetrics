@@ -126,7 +126,9 @@ export default function CustomerProfile() {
         <Iconify width={22} icon="solar:verified-check-bold" />
         <Typography variant="body2" noWrap>
           <Label color={singleUser?.user?.status === 'notverified' ? 'error' : 'success'}>
-            {singleUser?.user?.status === 'notverified' ? 'Tasdiqlanmagan' : 'Tasdiqlangan'}
+            {singleUser?.user?.status === 'notverified'
+              ? t('userStatus.notVerified')
+              : t('userStatus.verified')}
           </Label>
         </Typography>
       </Stack>

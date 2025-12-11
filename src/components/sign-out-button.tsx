@@ -6,6 +6,8 @@ import type { Theme, SxProps } from '@mui/material/styles';
 
 import { useRouter } from 'src/routes/hooks';
 
+import { useTranslate } from 'src/locales';
+
 import { useAuthContext } from 'src/auth/hooks';
 
 import Iconify from './iconify';
@@ -17,6 +19,7 @@ type Props = ButtonProps & {
 };
 
 export function SignOutButton({ ...other }: Props) {
+  const { t } = useTranslate('lang');
   const router = useRouter();
   const { logout } = useAuthContext();
   const handleLogout = async () => {
@@ -31,7 +34,7 @@ export function SignOutButton({ ...other }: Props) {
 
   return (
     <Button fullWidth variant="soft" size="large" onClick={handleLogout} {...other}>
-      Platformadan chiqish
+      {t('auth.logout')}
       <Iconify icon="material-symbols:logout-rounded" ml={1} />
     </Button>
   );

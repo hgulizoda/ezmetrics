@@ -1,6 +1,4 @@
-// ----------------------------------------------------------------------
-
-export function appBar(theme: any) {
+export function appBar() {
   return {
     MuiAppBar: {
       styleOverrides: {

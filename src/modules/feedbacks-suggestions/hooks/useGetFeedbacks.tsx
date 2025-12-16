@@ -15,10 +15,23 @@ export const useGetFeedbacks = ({ params }: Props) => {
   const { data, isLoading } = useQuery({
     queryKey: ['feedbacks', params],
     queryFn: () => feedbacks.getAll({ params }),
-    select: (res) => ({
-      feedbacks: feedbacksMapper(get(res, 'data', [])),
-      totalRecords: get(res, 'pagination.total_records'),
-    }),
+    select: (res) => {
+      try {
+        const rawData = get(res, 'data', []);
+        const mappedFeedbacks = feedbacksMapper(rawData);
+        
+        return {
+          feedbacks: mappedFeedbacks,
+          totalRecords: get(res, 'pagination.total_records', 0),
+        };
+      } catch (error) {
+        console.error('Error in useGetFeedbacks select:', error);
+        return {
+          feedbacks: [],
+          totalRecords: 0,
+        };
+      }
+    },
   });
 
   return { data, isLoading };

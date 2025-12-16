@@ -13,6 +13,9 @@
     "not": "Нет",
     "clearAll": "Удалить все"
   },
+  "auth": {
+    "logout": "Выйти из платформы"
+  },
   "settings": {
     "title": "Настройки",
     "reset": "Сбросить",
@@ -45,6 +48,7 @@
     "typeAMessage": "Введите сообщение",
     "editMessage": "Редактировать сообщение",
     "searchClient": "Поиск клиента...",
+    "searchInChat": "Поиск в чате",
     "startNewChat": "Начать новый чат",
     "archivedChats": "Архивированные чаты",
     "chatsNotFound": "Чаты не найдены",
@@ -88,6 +92,24 @@
       "title": "Удалить",
       "ratingContent": "Удаленный рейтинг невозможно восстановить!",
       "suggestionContent": "Удаленные предложения или жалобы невозможно восстановить!"
+    },
+    "reasons": {
+      "professionalism": "Профессионализм",
+      "affordable_price": "Доступная цена",
+      "damage_free_delivery": "Бесповрежденная доставка",
+      "delivery_speed": "Скорость доставки",
+      "damaged_goods": "Поврежденные товары",
+      "insufficient_quantity": "Недостаточное количество",
+      "high_price": "Высокая цена",
+      "late_delivery": "Доставка не вовремя",
+      "rude_staff": "Грубый персонал",
+      "measurement_error": "Ошибка измерения",
+      "other": "Другое"
+    },
+    "types": {
+      "complaint": "Жалоба",
+      "suggestion": "Предложение",
+      "other": "Другое"
     }
   },
   "bonus": {

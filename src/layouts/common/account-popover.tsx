@@ -11,6 +11,8 @@ import Typography from '@mui/material/Typography';
 
 import { useRouter } from 'src/routes/hooks';
 
+import { useTranslate } from 'src/locales';
+
 import { useGetAdminInfo } from 'src/hooks/use-get-admin';
 
 import { useFormatDate } from 'src/utils/iso-date';
@@ -27,6 +29,7 @@ import CustomPopover, { usePopover } from 'src/components/custom-popover';
 // ----------------------------------------------------------------------
 
 export default function AccountPopover() {
+  const { t } = useTranslate('lang');
   const { data, isLoading, error: fall } = useGetAdminInfo();
   const formatDate = useFormatDate();
   const router = useRouter();
@@ -112,7 +115,7 @@ export default function AccountPopover() {
           onClick={handleLogout}
           sx={{ m: 1, fontWeight: 'fontWeightBold', color: 'error.main' }}
         >
-          Platformadan chiqish
+          {t('auth.logout')}
         </MenuItem>
       </CustomPopover>
     </>

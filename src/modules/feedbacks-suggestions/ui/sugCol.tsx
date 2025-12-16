@@ -5,7 +5,7 @@ import { formatPhoneNumber } from 'src/utils/format-phone-number';
 import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 
-import { FeedbackItem, SuggestionEnum, SuggestionEnumLabels } from '../types/suggestions';
+import { FeedbackItem, SuggestionEnum } from '../types/suggestions';
 
 interface Props {
   onView: (item: FeedbackItem) => void;
@@ -35,20 +35,29 @@ export const sugCol = ({ onView, onDelete, t }: Props): GridColDef<FeedbackItem>
     headerName: t('feedbacks.table.type'),
     field: 'type',
     flex: 1,
-    renderCell: ({ row }) => (
-      <Label
-        color={
-          // eslint-disable-next-line no-nested-ternary
-          row.type === SuggestionEnum.COMPLAINT
-            ? 'error'
-            : row.type === SuggestionEnum.SUGGESTION
-              ? 'success'
-              : 'info'
-        }
-      >
-        {SuggestionEnumLabels[row.type as SuggestionEnum]}
-      </Label>
-    ),
+    renderCell: ({ row }) => {
+      const getTypeTranslation = (type: string) => {
+        if (type === SuggestionEnum.COMPLAINT) return t('feedbacks.types.complaint');
+        if (type === SuggestionEnum.SUGGESTION) return t('feedbacks.types.suggestion');
+        if (type === SuggestionEnum.OTHERS) return t('feedbacks.types.other');
+        return t('feedbacks.types.other');
+      };
+
+      return (
+        <Label
+          color={
+            // eslint-disable-next-line no-nested-ternary
+            row.type === SuggestionEnum.COMPLAINT
+              ? 'error'
+              : row.type === SuggestionEnum.SUGGESTION
+                ? 'success'
+                : 'info'
+          }
+        >
+          {getTypeTranslation(row.type)}
+        </Label>
+      );
+    },
   },
   {
     headerName: t('feedbacks.table.description'),

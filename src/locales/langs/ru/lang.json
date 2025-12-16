@@ -31,7 +31,7 @@
   },
   "statistics": {
     "AllTitle": "Общая аналитика",
-    "title": "Аналитика",
+    "title": "Статистика",
     "table": {
       "fullName": "Ф.И.О",
       "userId": "ID пользователя",

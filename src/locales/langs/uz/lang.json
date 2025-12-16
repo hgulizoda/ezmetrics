@@ -172,6 +172,20 @@
       "used": "Foydalanilgan",
       "not_used": "Foydalanilmagan",
       "in_progress": "Jarayonda"
+    },
+    "singleUser": {
+      "orderName": "Order nomi",
+      "places": "Qadoq",
+      "count": "Soni",
+      "removeSingle": "Order uchun berilgan ballni olib tashlash",
+      "removeMultiple": "Tanlangan orderlar uchun berilgan ballarni olib tashlash"
+    },
+    "removedBalls": {
+      "orderName": "Order nomi",
+      "restore": "Qaytarish",
+      "restoreTitle": "Ortga qaytarish",
+      "restoreContent": "Order uchun berilgan ballni ortga qaytarish",
+      "restoreButton": "Qaytarish"
     }
   },
   "packages": {

@@ -62,12 +62,12 @@ const BonusesProfileView = () => {
                     width: 300,
                   }}
                   onChange={(e) => setSearch(e.target.value)}
-                  label="ID"
+                  label={t('bonus.profile.searchId')}
                   value={search}
                   defaultValue={searchParams.get('bonusID') ?? ''}
                 />
               }
-              title="User bonuses"
+              title={t('bonus.profile.title')}
             />
             <DataGrid
               rows={filteredBonuses}

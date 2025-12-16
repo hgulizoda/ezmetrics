@@ -1,5 +1,5 @@
 /* eslint-disable no-nested-ternary */
-import { useState } from 'react';
+import { useRef, useMemo, useState } from 'react';
 
 import { LoadingButton } from '@mui/lab';
 import { DataGrid, gridClasses } from '@mui/x-data-grid';
@@ -47,6 +47,15 @@ export const Suggestions = () => {
   const openView = useBoolean();
   const openDelete = useBoolean();
 
+  const rowCountRef = useRef(data?.totalRecords || 0);
+
+  const rowCount = useMemo(() => {
+    if (data?.totalRecords !== undefined) {
+      rowCountRef.current = data?.totalRecords;
+    }
+    return rowCountRef.current;
+  }, [data?.totalRecords]);
+
   return (
     <Container maxWidth="xl">
       <Card>
@@ -77,7 +86,7 @@ export const Suggestions = () => {
                 borderBottom: 'none',
               },
             }}
-            rowCount={data?.totalRecords ?? 0}
+            rowCount={rowCount}
             onPaginationModelChange={setPaginationModel}
             initialState={{
               pagination: { paginationModel },

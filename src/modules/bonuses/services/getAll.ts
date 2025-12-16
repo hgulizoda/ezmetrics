@@ -13,9 +13,9 @@ export const useGetAllBonuses = (params: IFilters) => {
     () => ({
       bonuses: [],
       pagination: {
-        total_records: 5,
-        current_page: 1,
-        total_pages: 1,
+        total_records: 0,
+        current_page: 0,
+        total_pages: 0,
         next_page: null,
         prev_page: null,
       },
@@ -26,16 +26,9 @@ export const useGetAllBonuses = (params: IFilters) => {
     queryKey: ['bonuses', params],
     queryFn: () => bonusesAPI.getAll(params),
     // eslint-disable-next-line @typescript-eslint/no-shadow
-    select: (data: IApiResponse<IBonusesList[]>) => ({
-      // @ts-expect-error asd
-      bonuses: getBonusesAdapter(get(data, 'data', [])),
-      pagination: get(data, 'data.pagination', {
-        total_records: 5,
-        current_page: 1,
-        total_pages: 1,
-        next_page: null,
-        prev_page: null,
-      }),
+    select: (data: IApiResponse<IBonusesList>) => ({
+      bonuses: getBonusesAdapter(data.data),
+      pagination: get(data, 'pagination'),
     }),
   });
   return { ...data, isLoading };

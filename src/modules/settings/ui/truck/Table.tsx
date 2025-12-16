@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useMemo, useState } from 'react';
 
 import { LoadingButton } from '@mui/lab';
 import { Box, Button, useTheme, Container, Typography, IconButton } from '@mui/material';
@@ -90,6 +90,15 @@ export const TrucksTable = () => {
     archiveDialog.onFalse();
   };
 
+  const rowCountRef = useRef(data.pagination?.total_records || 0);
+
+  const rowCount = useMemo(() => {
+    if (data.pagination?.total_records !== undefined) {
+      rowCountRef.current = data.pagination?.total_records;
+    }
+    return rowCountRef.current;
+  }, [data.pagination?.total_records]);
+
   if (error) return <ErrorData />;
   return (
     <Container maxWidth={false} sx={{ height: '100%' }}>
@@ -154,6 +163,7 @@ export const TrucksTable = () => {
                 {t('actions.delete')}
               </Button>
             }
+            rowCount={rowCount}
           />
         </Box>
       </Box>

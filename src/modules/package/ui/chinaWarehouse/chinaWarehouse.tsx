@@ -1,5 +1,5 @@
-import { useState, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useRef, useMemo, useState } from 'react';
 
 import Dialog from '@mui/material/Dialog';
 import { Box, Button } from '@mui/material';
@@ -103,26 +103,25 @@ const ChinaWarehouseTable = () => {
   );
 
   // Calculate average weight for selected rows
-  const selectedAverageWeight = selectedRows.length > 0
-    ? selectedTotals.total_weight / selectedRows.length
-    : 0;
+  const selectedAverageWeight =
+    selectedRows.length > 0 ? selectedTotals.total_weight / selectedRows.length : 0;
 
   // Calculate average weight for all data
-  const allDataAverageWeight = data.orders.length > 0
-    ? data.totals.total_weight / data.orders.length
-    : 0;
+  const allDataAverageWeight =
+    data.orders.length > 0 ? data.totals.total_weight / data.orders.length : 0;
 
   // Use selected totals if rows are selected, otherwise use all data totals
   // Includes both total_weight (sum) and average_weight (average) separately
-  const displayTotals = rowSelectionModel.length > 0
-    ? {
-        ...selectedTotals,
-        average_weight: selectedAverageWeight
-      }
-    : {
-        ...data.totals,
-        average_weight: allDataAverageWeight
-      };
+  const displayTotals =
+    rowSelectionModel.length > 0
+      ? {
+          ...selectedTotals,
+          average_weight: selectedAverageWeight,
+        }
+      : {
+          ...data.totals,
+          average_weight: allDataAverageWeight,
+        };
 
   const openDeleteModal = (id: string) => {
     setOrderID(id);

@@ -22,19 +22,16 @@ export const useGetUserBonuses = (id: string) => {
   const { data = initData, isLoading } = useQuery({
     queryKey: ['bonuses_user', id],
     queryFn: () => bonusesAPI.getUserBonuses(id),
-    select: (datas: any) => {
-      console.log(datas.data);
-      return {
-        bonuses: getBonusesAdapter(get(datas, 'data', [])),
-        pagination: get(datas, 'data.pagination', {
-          total_records: 5,
-          current_page: 1,
-          total_pages: 1,
-          next_page: null,
-          prev_page: null,
-        }),
-      };
-    },
+    select: (datas: any) => ({
+      bonuses: getBonusesAdapter(get(datas, 'data', [])),
+      pagination: get(datas, 'data.pagination', {
+        total_records: 5,
+        current_page: 1,
+        total_pages: 1,
+        next_page: null,
+        prev_page: null,
+      }),
+    }),
   });
   return { ...data, isLoading };
 };

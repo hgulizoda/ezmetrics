@@ -17,7 +17,7 @@ export const useGetSuggestions = ({ params }: Props) => {
     queryFn: () => suggestions.getAll({ params }),
     select: (res) => ({
       suggestions: suggestionMapper(get(res, 'data', [])),
-      totalRecords: get(res, 'pagination.totalRecords'),
+      totalRecords: get(res, 'pagination.total_records'),
     }),
   });
 

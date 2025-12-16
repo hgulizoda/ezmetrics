@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useMemo, useState } from 'react';
 
 import { Box } from '@mui/material';
 import Dialog from '@mui/material/Dialog';
@@ -76,6 +76,15 @@ const TableAllPackages = () => {
     return acc;
   }, {} as ColumnVisibilityModel);
 
+  const rowCountRef = useRef(data.pagination?.total_records || 0);
+
+  const rowCount = useMemo(() => {
+    if (data.pagination?.total_records !== undefined) {
+      rowCountRef.current = data.pagination?.total_records;
+    }
+    return rowCountRef.current;
+  }, [data.pagination?.total_records]);
+
   const { columnVisibilityModel, handleColumnVisibilityModelChange } =
     usePersistedColumnVisibilityModel('allPackagesTableVisibility', initialVisibility);
 
@@ -93,7 +102,7 @@ const TableAllPackages = () => {
           pagination: { paginationModel: pagination },
         }}
         totals={data.totals}
-        rowCount={data.pagination?.total_records}
+        rowCount={rowCount}
         filterComponent={
           <AllTableFilter
             defaultValues={defaultFilter}

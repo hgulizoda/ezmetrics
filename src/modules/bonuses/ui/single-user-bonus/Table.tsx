@@ -39,6 +39,8 @@ export const UsersBonusSingle = () => {
     },
   });
 
+  console.log('data', data);
+
   const rowCountRef = useRef(data?.total_records || 0);
 
   const rowCount = useMemo(() => {

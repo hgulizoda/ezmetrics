@@ -150,7 +150,7 @@ export const TrucksTable = () => {
             })}
             search={search}
             onSearchChange={onSearchChange}
-            hasTotal={false}
+            hasTotal
             onPaginationModelChange={onPaginationChange}
             initialState={{ pagination: { paginationModel: pagination } }}
             checkBoxSelection
@@ -164,6 +164,12 @@ export const TrucksTable = () => {
               </Button>
             }
             rowCount={rowCount}
+            totals={{
+              total_capacity: data?.totals.total_capacity || 0,
+              total_weight: data?.totals.total_weight || 0,
+              counts: data?.totals.total_count || 0,
+              places: data?.totals.total_places || 0,
+            }}
           />
         </Box>
       </Box>

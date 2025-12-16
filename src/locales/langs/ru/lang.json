@@ -135,6 +135,24 @@
       "used": "Использован",
       "not_used": "Не использован",
       "in_progress": "В процессе"
+    },
+    "singleUser": {
+      "orderName": "Название заказа",
+      "places": "Упаковки",
+      "count": "Количество",
+      "removeSingle": "Удалить балл, выданный за заказ",
+      "removeMultiple": "Удалить баллы, выданные за выбранные заказы"
+    },
+    "removedBalls": {
+      "orderName": "Название заказа",
+      "restore": "Восстановить",
+      "restoreTitle": "Восстановление",
+      "restoreContent": "Восстановить балл, выданный за заказ",
+      "restoreButton": "Восстановить"
+    },
+    "profile": {
+      "title": "Бонусы пользователя",
+      "searchId": "ID"
     }
   },
   "users": {

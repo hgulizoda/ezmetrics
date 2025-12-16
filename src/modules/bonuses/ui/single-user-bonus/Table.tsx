@@ -96,6 +96,7 @@ export const UsersBonusSingle = () => {
                   setOrderID(id);
                   viewOrder.onTrue();
                 },
+                t,
               })}
               sx={{
                 [`& .${gridClasses.cell}`]: {
@@ -123,8 +124,8 @@ export const UsersBonusSingle = () => {
         <ConfirmDialog
           open={openRemove.value}
           onClose={openRemove.onFalse}
-          title="O'chirish"
-          content="Order uchun berilgan ballni olib tashlash"
+          title={t('actions.delete')}
+          content={t('bonus.singleUser.removeSingle')}
           action={
             <>
               <Button variant="outlined" color="inherit" onClick={openRemove.onFalse}>
@@ -150,8 +151,8 @@ export const UsersBonusSingle = () => {
         <ConfirmDialog
           open={isMultipleDelete.value}
           onClose={isMultipleDelete.onFalse}
-          title="O'chirish"
-          content="Tanlangan orderlar uchun berilgan ballarni olib tashlash"
+          title={t('actions.delete')}
+          content={t('bonus.singleUser.removeMultiple')}
           action={
             <>
               <Button variant="outlined" color="inherit" onClick={isMultipleDelete.onFalse}>

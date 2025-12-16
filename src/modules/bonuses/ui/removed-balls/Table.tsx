@@ -7,6 +7,7 @@ import { Card, Button, Dialog, Container, CardHeader, CardContent } from '@mui/m
 
 import { useBoolean } from 'src/hooks/use-boolean';
 
+import { useTranslate } from 'src/locales';
 import { TruckOrderDetail } from 'src/modules/settings/ui/truckDetails/TruckOrderDetail';
 
 import { ConfirmDialog } from 'src/components/custome-dialog';
@@ -17,6 +18,7 @@ import { useRestoreBall } from '../../services/useRestoreBall';
 import { useGetRemovedBalls } from '../../services/useGetRemovedBalls';
 
 export const RemovedBalls = () => {
+  const { t } = useTranslate('lang');
   const params = useParams() as { id: string; name: string };
   const [orderID, setOrderID] = useState<string>();
   const viewOrder = useBoolean();
@@ -55,6 +57,7 @@ export const RemovedBalls = () => {
                 setOrderID(id);
                 viewOrder.onTrue();
               },
+              t,
             })}
             sx={{
               [`& .${gridClasses.cell}`]: {
@@ -77,12 +80,12 @@ export const RemovedBalls = () => {
         <ConfirmDialog
           open={openRestore.value}
           onClose={openRestore.onFalse}
-          title="Ortga qaytarish"
-          content="Order uchun berilgan ballni ortga qaytarish"
+          title={t('bonus.removedBalls.restoreTitle')}
+          content={t('bonus.removedBalls.restoreContent')}
           action={
             <>
               <Button variant="outlined" color="inherit" onClick={openRestore.onFalse}>
-                Bekor qilish
+                {t('actions.cancel')}
               </Button>
               <LoadingButton
                 loading={isPending}
@@ -93,7 +96,7 @@ export const RemovedBalls = () => {
                 variant="contained"
                 color="primary"
               >
-                Qaytarish
+                {t('bonus.removedBalls.restoreButton')}
               </LoadingButton>
             </>
           }

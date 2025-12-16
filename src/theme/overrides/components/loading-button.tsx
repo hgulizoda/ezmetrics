@@ -1,8 +1,6 @@
 import { LoadingButtonProps, loadingButtonClasses } from '@mui/lab/LoadingButton';
 
-// ----------------------------------------------------------------------
-
-export function loadingButton(theme: any) {
+export function loadingButton() {
   return {
     MuiLoadingButton: {
       styleOverrides: {

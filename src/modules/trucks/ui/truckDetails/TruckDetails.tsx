@@ -28,7 +28,7 @@ import { useArchivePackage } from '../../../package/hook/useArchivePackage';
 import DataGridCustom from '../../../../components/data-grid-view/data-grid-custom';
 import { TruckOrderDetail } from '../../../settings/ui/truckDetails/TruckOrderDetail';
 
-export const TruckOrders = ({ status }: { status: string }) => {
+export const TruckOrders = () => {
   const location = useLocation();
   const shipmentLabels = useShipmentTypeLabels();
   const tooltipLabels = useShipmentTooltipTypeLabels();

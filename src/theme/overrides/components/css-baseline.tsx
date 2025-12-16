@@ -1,6 +1,4 @@
-// ----------------------------------------------------------------------
-
-export function cssBaseline(theme: any) {
+export function cssBaseline() {
   return {
     MuiCssBaseline: {
       styleOverrides: {

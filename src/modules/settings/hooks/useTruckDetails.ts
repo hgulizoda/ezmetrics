@@ -36,7 +36,7 @@ export const useGetTruckDetailsOrders = ({ id, params }: IProps) => {
     select: (res) => ({
       orders: truckDetailsAdapter(get(res, 'data.orders', [])),
       name: get(res, 'data.name'),
-      totals: get(res, 'data.totals'),
+      totals: get(res, 'data.totals') as any,
       containerNumber: get(res, 'data.container_number', '--'),
       arrivalDate: get(res, 'data.estimated_arrival_date', '--'),
       createdAt: get(res, 'data.created_at', ''),

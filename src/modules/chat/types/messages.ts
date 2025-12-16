@@ -1,9 +1,36 @@
+import { OrderStatus } from 'src/types/TableStatus';
+
 export interface IMessageRes {
   _id: string;
   content: string;
   created_at: string; // ISO string format
   is_deleted: boolean;
   room: string;
+  additional_info: {
+    _id: string;
+    description: string;
+    order_id: string;
+    status: OrderStatus;
+    status_history: Array<{
+      status: OrderStatus;
+      date: string;
+    }>;
+    status_updated_at: string;
+    order_capacity: number;
+    order_date: string;
+    order_type: string;
+    order_weight: number;
+    is_paid: boolean;
+    is_feedback_given: boolean;
+    truck: string | null;
+    container_number: string | null;
+    estimated_arrival_date: string | null;
+    transit_zone: string;
+    total_count: number;
+    total_places: number | null;
+    note: string | null;
+    created_at: string | null;
+  } | null;
   reply_to:
     | {
         _id: string;
@@ -34,8 +61,8 @@ export interface IMessageRes {
     total_capacity: number;
   };
   ball: 80;
-  id: '68a307a7284b04820acaf3ff';
-  total_capacity: 50;
-  total_weight: 4.955947136563877;
+  id: string;
+  total_capacity: number;
+  total_weight: number;
   __v: number;
 }

@@ -4,6 +4,8 @@ import ListItemButton from '@mui/material/ListItemButton';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 
+import { useTranslate } from 'src/locales';
+
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 
@@ -16,6 +18,7 @@ interface Props {
 export default function ChatRoomAttachments({ messages }: Props) {
   const collapse = useBoolean(true);
   const theme = useTheme();
+  const {t} = useTranslate('lang');
   const renderBtn = (
     <ListItemButton
       disabled={false}
@@ -32,7 +35,7 @@ export default function ChatRoomAttachments({ messages }: Props) {
       }}
     >
       <Box component="span" sx={{ flexGrow: 1 }}>
-        Attachments
+        {t('chat.attachments.title')}
       </Box>
       <Iconify
         width={16}

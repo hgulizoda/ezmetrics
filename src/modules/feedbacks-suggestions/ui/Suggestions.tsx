@@ -18,15 +18,18 @@ import {
 
 import { useBoolean } from 'src/hooks/use-boolean';
 
+import { useTranslate } from 'src/locales';
+
 import Label from 'src/components/label';
 import { ConfirmDialog } from 'src/components/custome-dialog';
 
 import { sugCol } from './sugCol';
 import { useGetSuggestions } from '../hooks/useGetSuggestions';
 import { useDeleteSuggestions } from '../hooks/useDeleteSuggestions';
-import { FeedbackItem, SuggestionEnum, SuggestionEnumLabels } from '../types/suggestions';
+import { FeedbackItem, SuggestionEnum } from '../types/suggestions';
 
 export const Suggestions = () => {
+  const {t} = useTranslate('lang');
   const [paginationModel, setPaginationModel] = useState({
     page: 0,
     pageSize: 25,
@@ -46,7 +49,7 @@ export const Suggestions = () => {
   return (
     <Container maxWidth="xl">
       <Card>
-        <CardHeader title="Taklif va shikoyatlar" />
+        <CardHeader title={t('feedbacks.suggestions')} />
         <CardContent
           sx={{
             px: 0,
@@ -63,6 +66,7 @@ export const Suggestions = () => {
                 setSuggestionsId(id);
                 openDelete.onTrue();
               },
+              t,
             })}
             rows={data?.suggestions || []}
             loading={isLoading}
@@ -100,14 +104,18 @@ export const Suggestions = () => {
                     : 'info'
               }
             >
-              {SuggestionEnumLabels[suggestions.type as SuggestionEnum]}
+              {suggestions.type === SuggestionEnum.COMPLAINT
+                ? t('feedbacks.types.complaint')
+                : suggestions.type === SuggestionEnum.SUGGESTION
+                  ? t('feedbacks.types.suggestion')
+                  : t('feedbacks.types.other')}
             </Label>
           </DialogTitle>
           <Divider />
           <DialogContent sx={{ pt: 2 }}>{suggestions.description}</DialogContent>
           <DialogActions>
             <Button variant="contained" color="primary" onClick={openView.onFalse}>
-              Yopish
+              {t('feedbacks.actions.close')}
             </Button>
           </DialogActions>
         </Dialog>
@@ -117,12 +125,12 @@ export const Suggestions = () => {
         <ConfirmDialog
           open={openDelete.value}
           onClose={openDelete.onFalse}
-          title="O'chirish"
-          content="O'chirilga taklif yoki shikoyatlarni ortga qaytarib bo'lmaydi !"
+          title={t('feedbacks.deleteConfirm.title')}
+          content={t('feedbacks.deleteConfirm.suggestionContent')}
           action={
             <>
               <Button variant="outlined" color="inherit" onClick={openDelete.onFalse}>
-                Bekor qilish
+                {t('actions.cancel')}
               </Button>
               <LoadingButton
                 variant="contained"
@@ -133,7 +141,7 @@ export const Suggestions = () => {
                 }}
                 loading={isPending}
               >
-                O&apos;chirish
+                {t('actions.delete')}
               </LoadingButton>
             </>
           }

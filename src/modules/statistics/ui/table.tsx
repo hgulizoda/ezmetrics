@@ -1,5 +1,6 @@
 import { Box } from '@mui/material';
 
+import { useTranslate } from 'src/locales';
 import { useAllTableFilter } from 'src/modules/package/ui/allPackages/useFilter';
 
 import { ErrorData } from 'src/components/error-data/error-data';
@@ -10,6 +11,7 @@ import { useGetStatistics } from '../hooks/useGetStatistics';
 
 const TableStatistics = () => {
   const { onPaginationChange, pagination, search, onSearchChange } = useAllTableFilter();
+  const {t} = useTranslate('lang');
   const { data, isLoading, error } = useGetStatistics({
     page: pagination.page + 1,
     limit: pagination.pageSize,
@@ -20,7 +22,7 @@ const TableStatistics = () => {
     <Box height={700}>
       <DataGridCustom
         data={data?.list || []}
-        col={column()}
+        col={column(t)}
         loading={isLoading}
         hasTotal={false}
         checkBoxSelection={false}

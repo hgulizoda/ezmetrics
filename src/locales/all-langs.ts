@@ -1,7 +1,10 @@
+// data grid (MUI)
+import { ruRU as ruRUDataGrid } from '@mui/x-data-grid/locales';
 // date pickers (MUI)
 import { enUS as enUSDate, ruRU as ruRUDate } from '@mui/x-date-pickers/locales';
-// data grid (MUI)
-import { enUS as enUSDataGrid, ruRU as ruRUDataGrid } from '@mui/x-data-grid/locales';
+
+// custom Uzbek locale for DataGrid
+import { uzUZDataGrid } from './uz-datagrid-locale';
 
 // ----------------------------------------------------------------------
 
@@ -30,10 +33,10 @@ export const allLangs = [
     value: 'uz',
     label: "O'zbek",
     countryCode: 'UZ',
-    adapterLocale: 'uz',
+    adapterLocale: 'uz-latn',
     numberFormat: { code: 'uz-UZ', currency: 'UZS' },
     systemValue: {
-      components: { ...enUSDate.components, ...enUSDataGrid.components },
+      components: { ...enUSDate.components, ...uzUZDataGrid.components },
     },
   },
   // {

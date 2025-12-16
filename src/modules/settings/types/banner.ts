@@ -2,6 +2,7 @@ export interface IBannerPost {
   image_url: {
     uz: string;
     ru: string;
+    en: string;
   };
 }
 
@@ -10,6 +11,7 @@ export interface IBannerRes {
   image_url: {
     uz: string;
     ru: string;
+    en: string;
   };
   order: number;
 }
@@ -19,6 +21,7 @@ export interface IBanner {
   image: {
     uz: string;
     ru: string;
+    en: string;
   };
   order: number;
 }

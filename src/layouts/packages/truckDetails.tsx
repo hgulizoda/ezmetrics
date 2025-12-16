@@ -30,26 +30,36 @@ export const PackageTruckDetails = () => {
       <Box
         sx={{
           display: 'flex',
+          flexDirection: { xs: 'column', md: 'row' },
           width: '100%',
-          alignItems: 'center',
+          alignItems: { xs: 'flex-start', md: 'center' },
           mb: 2,
-          gap: 1,
+          gap: { xs: 2, md: 1 },
         }}
       >
-        <IconButton size="small" onClick={() => navigate(-1)}>
-          <Iconify icon="weui:back-filled" />
-        </IconButton>
-        <Box display="flex" alignItems="center" gap={0.5}>
-          <Typography variant="subtitle2">
-            {isLoading ? '...' : data?.name.toUpperCase()}
-          </Typography>
-          -
-          <Typography variant="subtitle2" color="textSecondary">
-            ({data?.orders.length})
-          </Typography>
+        <Box display="flex" alignItems="center" gap={1}>
+          <IconButton size="small" onClick={() => navigate(-1)}>
+            <Iconify icon="weui:back-filled" />
+          </IconButton>
+          <Box display="flex" alignItems="center" gap={0.5}>
+            <Typography variant="subtitle2">
+              {isLoading ? '...' : data?.name.toUpperCase()}
+            </Typography>
+            -
+            <Typography variant="subtitle2" color="textSecondary">
+              ({data?.orders.length})
+            </Typography>
+          </Box>
         </Box>
         {data && (
-          <Box display="flex" gap={0.5}>
+          <Box
+            display="flex"
+            flexWrap="wrap"
+            gap={0.5}
+            sx={{
+              pl: { xs: 0, md: 2 },
+            }}
+          >
             <Box
               sx={{
                 display: 'flex',
@@ -62,7 +72,7 @@ export const PackageTruckDetails = () => {
               </Typography>
               <Typography variant="subtitle2">{data.containerNumber}</Typography>
             </Box>
-            <Iconify icon="tabler:separator" />
+            <Iconify icon="tabler:separator" sx={{ display: { xs: 'none', sm: 'block' } }} />
             <Box
               sx={{
                 display: 'flex',
@@ -75,7 +85,7 @@ export const PackageTruckDetails = () => {
               </Typography>
               <Typography variant="subtitle2">{formatDate(data.createdAt)}</Typography>
             </Box>
-            <Iconify icon="tabler:separator" />
+            <Iconify icon="tabler:separator" sx={{ display: { xs: 'none', sm: 'block' } }} />
             <Box
               sx={{
                 display: 'flex',
@@ -88,7 +98,7 @@ export const PackageTruckDetails = () => {
               </Typography>
               <Typography variant="subtitle2">{formatDate(data.estimatedArrivalDate)}</Typography>
             </Box>
-            <Iconify icon="tabler:separator" />
+            <Iconify icon="tabler:separator" sx={{ display: { xs: 'none', sm: 'block' } }} />
             <Box
               sx={{
                 display: 'flex',
@@ -114,7 +124,7 @@ export const PackageTruckDetails = () => {
           overflow: 'hidden',
         }}
       >
-        <Box height={700}>
+        <Box height={{ xs: 500, md: 700 }}>
           <Suspense fallback="...">
             <Outlet />
           </Suspense>

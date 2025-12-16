@@ -87,6 +87,43 @@ const ChinaWarehouseTable = () => {
     showModal.onTrue();
   };
   const sortedOrders = getMatchingObjects<IChinaWarehouse>(data.orders, rowSelectionModel);
+
+  // Get full selected rows for totals calculation
+  const selectedRows = data.orders.filter((order) => rowSelectionModel.includes(order.id));
+
+  // Calculate totals for selected rows
+  const selectedTotals = selectedRows.reduce(
+    (acc, order) => ({
+      total_capacity: acc.total_capacity + (order.packageCapacity || 0),
+      total_weight: acc.total_weight + (order.packageWeight || 0),
+      counts: acc.counts + (order.totalCount || 0),
+      places: acc.places + (order.totalPlaces || 0),
+    }),
+    { total_capacity: 0, total_weight: 0, counts: 0, places: 0 }
+  );
+
+  // Calculate average weight for selected rows
+  const selectedAverageWeight = selectedRows.length > 0
+    ? selectedTotals.total_weight / selectedRows.length
+    : 0;
+
+  // Calculate average weight for all data
+  const allDataAverageWeight = data.orders.length > 0
+    ? data.totals.total_weight / data.orders.length
+    : 0;
+
+  // Use selected totals if rows are selected, otherwise use all data totals
+  // Includes both total_weight (sum) and average_weight (average) separately
+  const displayTotals = rowSelectionModel.length > 0
+    ? {
+        ...selectedTotals,
+        average_weight: selectedAverageWeight
+      }
+    : {
+        ...data.totals,
+        average_weight: allDataAverageWeight
+      };
+
   const openDeleteModal = (id: string) => {
     setOrderID(id);
     deletePackage.onTrue();
@@ -147,7 +184,7 @@ const ChinaWarehouseTable = () => {
         checkBoxSelection
         onPaginationModelChange={onPaginationChange}
         initialState={{ pagination: { paginationModel: pagination } }}
-        totals={data.totals}
+        totals={displayTotals}
         rowCount={data.pagination?.total_records}
         filterComponent={
           <ChinaWarehouseFilter

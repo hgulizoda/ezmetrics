@@ -5,6 +5,7 @@ const getBanner = (item: IBannerRes): IBanner => ({
   image: {
     uz: item.image_url.uz ?? '',
     ru: item.image_url.ru ?? '',
+    en: item.image_url.en ?? '',
   },
   order: item.order,
 });

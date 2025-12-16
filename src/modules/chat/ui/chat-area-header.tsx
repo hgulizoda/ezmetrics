@@ -4,9 +4,14 @@ import RelativeTime from 'dayjs/plugin/relativeTime';
 import { useState, Dispatch, useEffect, SetStateAction } from 'react';
 
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { Box, Stack, Badge, Avatar, Tooltip, IconButton, ListItemText } from '@mui/material';
 
+import { ru, enUS } from 'date-fns/locale';
+
 import { queryClient } from 'src/query';
+import { useTranslate } from 'src/locales';
 
 import Iconify from 'src/components/iconify';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
@@ -20,12 +25,18 @@ interface Props {
 
 export const ChatHeader = ({ setSearchChat }: Props) => {
   dayjs.extend(RelativeTime);
+  const { currentLang, t } = useTranslate('lang');
   const [searchParams] = useSearchParams();
   const [isOnline, setIsOnline] = useState<boolean>();
   const popover = usePopover();
   const chatId = searchParams.get('id');
   const [singleUser, setSingleUser] = useState<ICustomerRes>();
   const { data: chats } = useGetChatLists();
+
+  const getLocale = () => {
+    if (currentLang.value === 'ru') return ru;
+    return enUS;
+  };
   useEffect(() => {
     if (chats && chats.data) {
       setSingleUser(chats.data.find((el: any) => el._id === chatId));
@@ -48,23 +59,29 @@ export const ChatHeader = ({ setSearchChat }: Props) => {
 
         <ListItemText
           primary={`${singleUser?.profile?.first_name} ${singleUser?.profile?.last_name}`}
-          secondary={isOnline ? 'Online' : dayjs(singleUser?.user?.last_seen).fromNow()}
+          secondary={
+            isOnline
+              ? 'Online'
+              : dayjs(singleUser?.user?.last_seen).locale(currentLang.adapterLocale).fromNow()
+          }
         />
       </Stack>
       <Stack direction="row" flexGrow={1} justifyContent="flex-end">
-        <Tooltip title="Chat ichidan qidirish">
+        <Tooltip title={t('chat.searchInChat')}>
           <IconButton onClick={popover.onOpen}>
             <Iconify icon="solar:calendar-search-bold-duotone" />
           </IconButton>
         </Tooltip>
       </Stack>
       <CustomPopover open={popover.open} onClose={popover.onClose}>
-        <DateCalendar
-          onChange={(e) => {
-            setSearchChat(e);
-            popover.onClose();
-          }}
-        />
+        <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={getLocale()}>
+          <DateCalendar
+            onChange={(e) => {
+              setSearchChat(e);
+              popover.onClose();
+            }}
+          />
+        </LocalizationProvider>
       </CustomPopover>
     </Box>
   );

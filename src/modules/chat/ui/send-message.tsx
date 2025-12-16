@@ -5,6 +5,7 @@ import EmojiPicker, { Theme, EmojiStyle } from 'emoji-picker-react';
 import { Box, Stack, useTheme, InputBase, IconButton, Typography } from '@mui/material';
 
 import { queryClient } from 'src/query';
+import { useTranslate } from 'src/locales';
 import { useChatContext } from 'src/pages/dashboard/chat/chatContext';
 import { useUploadImage } from 'src/modules/package/hook/useUploadImage';
 
@@ -40,6 +41,7 @@ export const SendMessage = ({
   const theme = useTheme();
   const inputRef = useRef<HTMLInputElement>(null);
   const { emit } = useChatContext();
+  const { t } = useTranslate('lang');
   const { uploadAsync, isPending } = useUploadImage();
 
   const handleEmojiClick = (emojiData: { emoji: string }) => {
@@ -261,7 +263,7 @@ export const SendMessage = ({
         multiline
         onKeyUp={handleKeyPress}
         onChange={(e) => setNewMessage(e.target.value)}
-        placeholder={editMessage ? 'Edit message...' : 'Type a message'}
+        placeholder={editMessage ? `${t('chat.editMessage')}...` : `${t('chat.typeAMessage')}`}
         autoFocus
         inputRef={inputRef}
         startAdornment={
@@ -304,7 +306,7 @@ export const SendMessage = ({
           display: 'flex',
           alignItems: 'flex-end',
           '.css-yubm5r-MuiInputBase-input': {
-            mb: '4px',
+            mb: '3px',
           },
         }}
       />

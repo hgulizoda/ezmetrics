@@ -27,6 +27,7 @@ import {
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useDebounce } from 'src/hooks/use-debounce';
 
+import { useTranslate } from 'src/locales';
 import { IUser } from 'src/modules/user/types/User';
 import { useGetUsersList } from 'src/modules/user/hook/user';
 import AccountPopover from 'src/layouts/common/account-popover';
@@ -43,6 +44,8 @@ import { useArchiveChat } from '../hooks/useArchiveChat';
 import { ICustomerRes, IOnlineUsers } from '../types/chat';
 
 export default function CustomersList() {
+  const { t } = useTranslate('lang');
+  const { currentLang } = useTranslate();
   const [chatId, setChatId] = useState<string>('');
   const navigate = useNavigate();
   const { data, isLoading } = useGetChatLists();
@@ -121,12 +124,12 @@ export default function CustomersList() {
         <AccountPopover />
 
         <Box>
-          <Tooltip title="Yangi chat boshlash">
+          <Tooltip title={t('chat.startNewChat')}>
             <IconButton onClick={handlePopoverOpen}>
               <Iconify icon="hugeicons:add-male" width={25} />
             </IconButton>
           </Tooltip>
-          <Tooltip title="Arxivlangan chatlar">
+          <Tooltip title={t('chat.archivedChats')}>
             <IconButton onClick={() => navigate('/dashboard/archive/chats')}>
               <Iconify icon="hugeicons:archive-02" width={25} />
             </IconButton>
@@ -137,7 +140,7 @@ export default function CustomersList() {
       <Box px={2} mb={2}>
         <TextField
           fullWidth
-          placeholder="Mijozni qidirish"
+          placeholder={t('chat.searchClient')}
           onChange={(e) => setSearchContact(e.target.value)}
           InputProps={{
             startAdornment: (
@@ -213,7 +216,9 @@ export default function CustomersList() {
                         {customer?.user?.user_id})
                       </Typography>
                       <Typography variant="caption" color="text.secondary">
-                        {dayjs(customer.last_message?.created_at).format('D MMM, h:mm A')}
+                        {dayjs(customer.last_message?.created_at)
+                          .locale(currentLang.adapterLocale)
+                          .format('D MMM, h:mm A')}
                       </Typography>
                     </Box>
                   }

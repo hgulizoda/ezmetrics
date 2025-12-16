@@ -6,45 +6,46 @@ import { formatPhoneNumber } from 'src/utils/format-phone-number';
 import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 
-import { ReviewItem, ReasonLabels, ReasonsStatus } from '../types/feedbacks';
+import { ReviewItem, ReasonsStatus } from '../types/feedbacks';
 
 interface Props {
   onView: (item: ReviewItem) => void;
   onDelete: (id: string) => void;
   orderView: (id: string) => void;
+  t: (key: string) => string;
 }
 
-export const feedcols = ({ onView, onDelete, orderView }: Props): GridColDef<ReviewItem>[] => [
+export const feedcols = ({ onView, onDelete, orderView, t }: Props): GridColDef<ReviewItem>[] => [
   {
-    headerName: 'F.I.SH',
+    headerName: t('feedbacks.table.fullName'),
     field: 'fullName',
     flex: 1,
   },
   {
-    headerName: 'ID',
+    headerName: t('feedbacks.table.userId'),
     field: 'userId',
     width: 100,
   },
   {
-    headerName: 'Telefon',
+    headerName: t('feedbacks.table.phone'),
     field: 'phoneNumber',
     flex: 1,
     renderCell: ({ row }) => formatPhoneNumber(row.phoneNumber),
   },
   {
-    headerName: 'Reyting',
+    headerName: t('feedbacks.table.rating'),
     field: 'rating',
     flex: 1,
     renderCell: ({ row }) => <Rating name="read-only" value={row.rating} readOnly />,
   },
 
   {
-    headerName: 'Komentariya',
+    headerName: t('feedbacks.table.comment'),
     field: 'comment',
     flex: 1,
   },
   {
-    headerName: 'Yuk',
+    headerName: t('feedbacks.table.order'),
     field: 'order',
     flex: 1,
     renderCell: ({ row }) => (
@@ -52,11 +53,15 @@ export const feedcols = ({ onView, onDelete, orderView }: Props): GridColDef<Rev
     ),
   },
   {
-    headerName: 'Sabablar',
+    headerName: t('feedbacks.table.reasons'),
     field: 'reasons',
     flex: 1,
     renderCell: ({ row }) =>
-      row.reasons.map((el) => <Label color="default">{ReasonLabels[el as ReasonsStatus]}</Label>),
+      row.reasons.map((el) => (
+        <Label key={el} color="default">
+          {t(`feedbacks.reasons.${el}`)}
+        </Label>
+      )),
   },
   {
     field: 'id',
@@ -66,7 +71,7 @@ export const feedcols = ({ onView, onDelete, orderView }: Props): GridColDef<Rev
       <GridActionsCellItem
         showInMenu
         icon={<Iconify icon="hugeicons:delete-02" />}
-        label="O'chirish"
+        label={t('feedbacks.actions.delete')}
         onClick={() => onDelete(row.id)}
         sx={{
           color: 'error.main',
@@ -75,7 +80,7 @@ export const feedcols = ({ onView, onDelete, orderView }: Props): GridColDef<Rev
       <GridActionsCellItem
         showInMenu
         icon={<Iconify icon="hugeicons:view" width={25} />}
-        label="Ko'rish"
+        label={t('feedbacks.actions.view')}
         onClick={() => onView(row)}
         sx={{
           color: (theme) => theme.palette.info.dark,

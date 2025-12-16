@@ -1,12 +1,16 @@
 /* eslint-disable perfectionist/sort-imports */
 
 import 'dayjs/locale/en';
+import 'dayjs/locale/ru';
 import 'dayjs/locale/vi';
 import 'dayjs/locale/fr';
 import 'dayjs/locale/zh-cn';
 import 'dayjs/locale/ar-sa';
 
 import dayjs from 'dayjs';
+
+// Custom Uzbek Latin locale
+import './dayjs-uz-latn';
 
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider as Provider } from '@mui/x-date-pickers/LocalizationProvider';

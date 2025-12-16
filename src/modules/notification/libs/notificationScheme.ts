@@ -3,6 +3,7 @@ import * as yup from 'yup';
 const contentSchema = yup.object({
   uz: yup.string().required('Uzbek title is required'),
   ru: yup.string().required('Russian title is required'),
+  en: yup.string().required('English title is required'),
 });
 
 export const notificationScheme = yup.object({
@@ -11,6 +12,7 @@ export const notificationScheme = yup.object({
   image: yup.object({
     uz: yup.mixed().optional(),
     ru: yup.mixed().optional(),
+    en: yup.mixed().optional(),
   }),
   type: yup.string().required('Type is required'),
 });

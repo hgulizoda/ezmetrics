@@ -42,14 +42,20 @@ export const UserDetailLayout = () => {
   return (
     <Box>
       <Container maxWidth={false}>
-        <Box display="flex" justifyContent="space-between" alignItems="center">
-          <Box display="flex" alignItems="center" gap={3} mb={3}>
+        <Box
+          display="flex"
+          justifyContent="space-between"
+          alignItems="center"
+          flexDirection={{ xs: 'column', sm: 'row' }}
+          gap={{ xs: 2, sm: 0 }}
+        >
+          <Box display="flex" alignItems="center" gap={3} mb={{ xs: 0, sm: 3 }}>
             <IconButton size="small" onClick={() => navigate(-1)}>
               <Iconify icon="weui:back-filled" />
             </IconButton>
             <Typography variant="h4">{t('profile.title')}</Typography>
           </Box>
-          <Box display="flex" ml={1} gap={1}>
+          <Box display="flex" ml={{ xs: 0, sm: 1 }} gap={1}>
             <LanguagePopover data={allLangs} />
             <SettingsButton />
             <AccountPopover />
@@ -58,7 +64,8 @@ export const UserDetailLayout = () => {
         <Card
           sx={{
             mb: 3,
-            height: 290,
+            height: { xs: 'auto', md: 290 },
+            minHeight: { xs: 350, md: 290 },
           }}
         >
           <Box
@@ -106,11 +113,13 @@ export const UserDetailLayout = () => {
           <Box
             sx={{
               display: 'flex',
-              justifyContent: 'flex-end',
+              flexDirection: { xs: 'column', sm: 'row' },
+              justifyContent: { xs: 'center', sm: 'flex-end' },
               alignItems: 'center',
               width: 1,
-              height: 50,
-              px: 3,
+              height: { xs: 'auto', sm: 50 },
+              px: { xs: 2, sm: 3 },
+              py: { xs: 2, sm: 0 },
               bottom: 0,
               zIndex: 9,
               position: 'absolute',
@@ -122,13 +131,14 @@ export const UserDetailLayout = () => {
                   md: 'flex-end',
                 },
               },
-              gap: 5,
+              gap: { xs: 2, sm: 5 },
             }}
           >
             <Button
               onClick={() => navigate(`${paths.dashboard.users}/${params.id}`)}
               startIcon={<Iconify icon="solar:user-id-linear" width={24} />}
               variant={isProfile ? 'contained' : 'outlined'}
+              sx={{ width: { xs: '100%', sm: 'auto' } }}
             >
               {t('profile.tabs.profile')}
             </Button>
@@ -137,6 +147,7 @@ export const UserDetailLayout = () => {
               onClick={() => navigate(`${paths.dashboard.users}/${params.id}/bonus`)}
               startIcon={<Iconify icon="mage:gift" width={24} />}
               variant={isBonus ? 'contained' : 'outlined'}
+              sx={{ width: { xs: '100%', sm: 'auto' } }}
             >
               {t('bonus.title')}
             </Button>
@@ -145,6 +156,7 @@ export const UserDetailLayout = () => {
               onClick={() => navigate(`${paths.dashboard.users}/${params.id}/orders`)}
               startIcon={<Iconify icon="hugeicons:package" width={24} />}
               variant={isOrders ? 'contained' : 'outlined'}
+              sx={{ width: { xs: '100%', sm: 'auto' } }}
             >
               {t('profile.tabs.orders')}
             </Button>

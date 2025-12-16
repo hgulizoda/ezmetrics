@@ -1,12 +1,13 @@
 import { Box, Container, Typography } from '@mui/material';
 
-import { allLangs } from 'src/locales';
+import { allLangs, useTranslate } from 'src/locales';
 import TableStatistics from 'src/modules/statistics/ui/table';
 import AccountPopover from 'src/layouts/common/account-popover';
 import SettingsButton from 'src/layouts/common/settings-button';
 import { LanguagePopover } from 'src/layouts/common/language-popover';
 
 export default function Page() {
+  const {t} = useTranslate('lang');
   return (
     <Container maxWidth="xl" sx={{ height: '100%' }}>
       <Box
@@ -20,7 +21,7 @@ export default function Page() {
         }}
       >
         <Typography variant="h4" component="h2" display="flex" gap={1}>
-          Umumiy statistika
+          {t('statistics.AllTitle')}
         </Typography>
         <Box display="flex" ml={1} gap={1}>
           <LanguagePopover data={allLangs} />

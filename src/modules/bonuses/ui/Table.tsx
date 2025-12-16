@@ -18,10 +18,10 @@ import {
 } from '@mui/material';
 
 import { baseColumns } from './col';
-import { Bonus } from '../types/BunusesList';
 import { useBonusesFilter } from './useFilter';
 import { useTranslate } from '../../../locales';
 import Iconify from '../../../components/iconify';
+import { IBonusesList } from '../types/BunusesList';
 import { useGetAllBonuses } from '../services/getAll';
 import { useGetBonusLimit } from '../services/getLimit';
 import { useBoolean } from '../../../hooks/use-boolean';
@@ -195,10 +195,12 @@ const BonusesView = () => {
           }}
         >
           <Box height={700} p={1} sx={{ width: '100%' }}>
-            <DataGridCustom<Bonus>
+            <DataGridCustom<IBonusesList>
               data={bonuses}
               col={baseColumns({
                 t,
+                handleUpdateStatus,
+                handleUnuseBonuse,
               })}
               loading={isLoading}
               rowCount={pagination.total_records}

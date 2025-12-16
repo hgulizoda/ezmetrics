@@ -29,6 +29,7 @@ const Banner = () => {
       image_url: {
         uz: '',
         ru: '',
+        en: '',
       },
     },
     resolver: yupResolver(bannerScheme),
@@ -37,6 +38,7 @@ const Banner = () => {
   const handleRemove = {
     imageUZ: () => form.setValue('image_url.uz', ''),
     imageRu: () => form.setValue('image_url.ru', ''),
+    imageEn: () => form.setValue('image_url.en', ''),
   };
 
   const formSubmit = async (value: BannerSchemeType) => {
@@ -50,10 +52,16 @@ const Banner = () => {
         ? await uploadAsync({ file: value.image_url.ru as File })
         : { url: value.image_url.ru };
 
+    const imageUrlEn =
+      value.image_url.en instanceof File
+        ? await uploadAsync({ file: value.image_url.en as File })
+        : { url: value.image_url.en };
+
     await creatingBanner({
       image_url: {
         uz: imageUrlUz.url,
         ru: imageUrlRu.url,
+        en: imageUrlEn.url,
       },
     });
 
@@ -75,7 +83,7 @@ const Banner = () => {
               <Divider />
               <CardContent>
                 <Grid container spacing={2}>
-                  <Grid item xs={6}>
+                  <Grid item xs={4}>
                     <Typography variant="subtitle2">{t('banner.imageUZ')}</Typography>
                     <RHFUpload
                       multiple
@@ -92,13 +100,30 @@ const Banner = () => {
                       }}
                     />
                   </Grid>
-                  <Grid item xs={6}>
+                  <Grid item xs={4}>
                     <Typography variant="subtitle2">{t('banner.imageRU')}</Typography>
                     <RHFUpload
                       thumbnail
                       multiple
                       name="image_url.ru"
-                      onDelete={handleRemove.imageUZ}
+                      onDelete={handleRemove.imageRu}
+                      sx={{
+                        '.css-1te7qta-MuiStack-root': {
+                          display: 'none',
+                        },
+                        '.css-5vb4lz': {
+                          mb: 0,
+                        },
+                      }}
+                    />
+                  </Grid>
+                  <Grid item xs={4}>
+                    <Typography variant="subtitle2">{t('banner.imageEN')}</Typography>
+                    <RHFUpload
+                      thumbnail
+                      multiple
+                      name="image_url.en"
+                      onDelete={handleRemove.imageEn}
                       sx={{
                         '.css-1te7qta-MuiStack-root': {
                           display: 'none',

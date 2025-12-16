@@ -13,6 +13,105 @@
     "not": "Yo'q",
     "clearAll": "Barchasini o`chirish"
   },
+  "auth": {
+    "logout": "Platformadan chiqish"
+  },
+  "settings": {
+    "title": "Sozlamalar",
+    "reset": "Qaytarish",
+    "mode": "Rejim",
+    "contrast": "Kontrast",
+    "direction": "Yo'nalish",
+    "layout": "Maket",
+    "stretch": "Cho'zish",
+    "stretchTooltip": "Faqat katta o'lchamlarda mavjud > 1600px (xl)",
+    "presets": "Ilova ranglari",
+    "fullscreen": "To'liq ekran rejimi",
+    "exitFullscreen": "To'liq ekrandan chiqish"
+  },
+  "chat": {
+    "title": "Chat",
+    "typeAMessage": "Xabar kiriting",
+    "editMessage": "Xabarni tahrirlash",
+    "searchClient": "Mijozni qidirish...",
+    "searchInChat": "Chat ichidan qidirish",
+    "startNewChat": "Yangi suhbatni boshlash",
+    "archivedChats": "Arxivlangan suhbatlar",
+    "chatsNotFound": "Suhbatlar topilmadi",
+    "selectedChats": "Tanlangan habarlar",
+    "thisDayChatNoutFound": "Ushbu kunda suhbat topilmadi",
+    "greeting": {
+      "title": "Hayrli kun!",
+      "subtitle": "Chat boshlash uchun foydalanuvchilardan birini tanlang"
+    },
+    "chat": "Chat",
+    "attachments": {
+      "title": "Biriktirmalar"
+    },
+    "information": {
+      "title": "Ma'lumot",
+      "lastSeen": "So'nggi faollik"
+    }
+  },
+  "feedbacks": {
+    "title": "Taklif  Shikoyatlar , Baholar",
+    "ratings": "Baholar",
+    "suggestions": "Taklif va Shikoyatlar",
+    "table": {
+      "fullName": "F.I.SH",
+      "userId": "ID",
+      "phone": "Telefon",
+      "rating": "Baho",
+      "comment": "Izohlar",
+      "order": "Yuk",
+      "reasons": "Sabablar",
+      "type": "Mavzu",
+      "description": "Ma`lumot",
+      "phoneNumber": "Telefon raqami"
+    },
+    "actions": {
+      "delete": "O'chirish",
+      "view": "Ko'rish",
+      "close": "Yopish"
+    },
+    "deleteConfirm": {
+      "title": "O'chirish",
+      "ratingContent": "O'chirilga reytingni ortga qaytarib bo'lmaydi !",
+      "suggestionContent": "O'chirilga taklif yoki shikoyatlarni ortga qaytarib bo'lmaydi !"
+    },
+    "reasons": {
+      "professionalism": "Professionalizm",
+      "affordable_price": "Hamyonbop narx",
+      "damage_free_delivery": "Beshikast yetkazish",
+      "delivery_speed": "Yetkazib berish tezligi",
+      "damaged_goods": "Yuklar shikastlangan",
+      "insufficient_quantity": "Tovar soni kam",
+      "high_price": "Yuqori narx",
+      "late_delivery": "Yuk o'z vaqtida yetkazib berilmadi",
+      "rude_staff": "Qo'pol hodimlar",
+      "measurement_error": "O'lchovdagi xatolik",
+      "other": "Boshqa"
+    },
+    "types": {
+      "complaint": "Shikoyat",
+      "suggestion": "Taklif",
+      "other": "Boshqa"
+    }
+  },
+  "statistics": {
+    "AllTitle": "Umumiy tahlillar",
+    "title": "Tahlillar",
+    "table": {
+      "fullName": "F.I.SH",
+      "userId": "Foydalanuvchi ID",
+      "phone": "Telefon",
+      "company": "Tashkilot",
+      "totalOrders": "Barcha buyurtmalar",
+      "totalWeight": "Umumiy og'irlik",
+      "totalCapacity": "Umumiy hajm",
+      "totalPlaces": "Umumiy joy"
+    }
+  },
   "users": {
     "title": "Foydalanuvchilar",
     "formTitle": "Foydalanuvchi yaratish",
@@ -27,7 +126,7 @@
       "phone": "Telefon raqam",
       "company": "Kompaniya nomi",
       "orders": "Jo'natmalar",
-      "status": "Status",
+      "status": "Holat",
       "verifed": "Tasdiqlangan",
       "notVerifed": "Tasdiqlanmagan"
     },
@@ -55,7 +154,7 @@
     "table": {
       "ball": "Ball",
       "cancelled": "Bekor qilingan",
-      "status": "Status",
+      "status": "Holat",
       "capacity": "Hajmi (m³)",
       "weight": "Og'irligi (kg)",
       "verify": "Ishlatish"
@@ -100,7 +199,7 @@
       "truck": "Jo'natma №",
       "sendedDate": "Jo'natilgan sana",
       "updatedDate": "Yangilangan sana",
-      "status": "Status",
+      "status": "Holat",
       "truckID": "Jo'natma №",
       "totalPackagesNumber": "Qadoq soni",
       "totalWeight": "Umumiy og'irligi",
@@ -175,8 +274,8 @@
     "title": "Transport",
     "truck": "Jo'natmalar",
     "truckName": "Jo'natma turi",
-    "truckStatus": "Status",
-    "createdTime": "Jo'natma yaratilgan sana",
+    "truckStatus": "Holat",
+    "createdTime": "Jo'natma tuzilgan sana",
     "estimatedArrivalTime": "Taxminiy yetkazish sanasi",
     "form": {
       "title": "Yangi jo'natma qo'shish",
@@ -185,7 +284,7 @@
       "containerNumber": "Konteyner №",
       "truckType": "Jo'natma turi",
       "containerType": "Transport turi",
-      "truckCreatedDate": "Jo'natma yaratilgan sana",
+      "truckCreatedDate": "Jo'natma tuzilgan sana",
       "truckEstimatedDate": "Taxminiy yetkazish sanasi"
     },
     "actions": {
@@ -202,7 +301,8 @@
     "extraTitle": "Banner rasmlari",
     "imageTitle": "Bannerning tartiblangan rasmlari",
     "imageUZ": "Banner rasmi (UZ)",
-    "imageRU": "Banner rasmi (RU)"
+    "imageRU": "Banner rasmi (RU)",
+    "imageEN": "Banner rasmi (EN)"
   },
   "archive": {
     "title": "Arxiv",
@@ -306,10 +406,13 @@
       "titleSecond": "Habarnoma taxrirlash",
       "titleUZ": "Habar nomi (UZ)",
       "titleRU": "Habar nomi (RU)",
+      "titleEN": "Habar nomi (EN)",
       "contentUZ": "Habar matni (UZ)",
       "contentRU": "Habar matni (RU)",
+      "contentEN": "Habar matni (EN)",
       "imageUZ": "Habarnoma rasmi (UZ)",
-      "imageRU": "Habarnoma rasmi (RU)"
+      "imageRU": "Habarnoma rasmi (RU)",
+      "imageEN": "Habarnoma rasmi (EN)"
     },
     "actions": {
       "delete": "O'chirish",
@@ -318,8 +421,8 @@
   },
   "truckOrderDetails": {
     "title": "Buyurtma ID raqami",
-    "status": "Status",
-    "statusUpdated": "Status yangilangan sana",
+    "status": "Holat",
+    "statusUpdated": "Holat yangilangan sana",
     "packageCapacity": "Buyurtma hajmi",
     "orderedDate": "Buyurtma berilgan sanasi",
     "packageWeight": "Buyurtma og'irligi",
@@ -353,7 +456,7 @@
       },
       "card": {
         "title": "Foydalanuvchi ID raqami",
-        "status": "Status",
+        "status": "Holat",
         "update": "Taxminiy yetkazish sanasi",
         "created": "Buyurtma berilgan sana",
         "timeline": "Yetkazib berish bosqichi",

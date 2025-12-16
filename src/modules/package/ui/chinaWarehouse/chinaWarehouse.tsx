@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import Dialog from '@mui/material/Dialog';
@@ -164,6 +164,16 @@ const ChinaWarehouseTable = () => {
 
   const { columnVisibilityModel, handleColumnVisibilityModelChange } =
     usePersistedColumnVisibilityModel('chinaWarehouseColumnsVisibility', initialVisibility);
+
+  const rowCountRef = useRef(data?.pagination?.total_records || 0);
+
+  const rowCount = useMemo(() => {
+    if (data?.pagination?.total_records !== undefined) {
+      rowCountRef.current = data.pagination.total_records;
+    }
+    return rowCountRef.current;
+  }, [data?.pagination?.total_records]);
+
   if (!data || error) return <ErrorData />;
 
   return (
@@ -185,7 +195,7 @@ const ChinaWarehouseTable = () => {
         onPaginationModelChange={onPaginationChange}
         initialState={{ pagination: { paginationModel: pagination } }}
         totals={displayTotals}
-        rowCount={data.pagination?.total_records}
+        rowCount={rowCount}
         filterComponent={
           <ChinaWarehouseFilter
             onChange={onFilterChange}

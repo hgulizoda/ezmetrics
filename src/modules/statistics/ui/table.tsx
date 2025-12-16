@@ -1,3 +1,5 @@
+import { useRef, useMemo } from 'react';
+
 import { Box } from '@mui/material';
 
 import { useTranslate } from 'src/locales';
@@ -17,6 +19,16 @@ const TableStatistics = () => {
     limit: pagination.pageSize,
     search,
   });
+
+  const rowCountRef = useRef(data?.pagination?.totalRecords || 0);
+
+  const rowCount = useMemo(() => {
+    if (data?.pagination?.totalRecords !== undefined) {
+      rowCountRef.current = data.pagination.totalRecords;
+    }
+    return rowCountRef.current;
+  }, [data?.pagination?.totalRecords]);
+
   if (error) return <ErrorData />;
   return (
     <Box height={700}>
@@ -30,7 +42,7 @@ const TableStatistics = () => {
         initialState={{
           pagination: { paginationModel: pagination },
         }}
-        rowCount={data?.pagination.totalRecords}
+        rowCount={rowCount}
         getRowId={() => crypto.randomUUID()}
         search={search}
         onSearchChange={onSearchChange}

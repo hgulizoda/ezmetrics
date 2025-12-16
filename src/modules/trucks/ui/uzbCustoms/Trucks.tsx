@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useMemo } from 'react';
 
 import { Box, Button } from '@mui/material';
 import LoadingButton from '@mui/lab/LoadingButton';
@@ -70,6 +70,15 @@ export const UZBTrucks = () => {
     openBackedTruck.onTrue();
   };
 
+  const rowCountRef = useRef(data?.pagination?.total_records || 0);
+
+  const rowCount = useMemo(() => {
+    if (data?.pagination?.total_records !== undefined) {
+      rowCountRef.current = data.pagination.total_records;
+    }
+    return rowCountRef.current;
+  }, [data?.pagination?.total_records]);
+
   if (error) return <ErrorData />;
 
   return (
@@ -80,6 +89,7 @@ export const UZBTrucks = () => {
         checkBoxSelection
         hasTotal={false}
         loading={isLoading}
+        rowCount={rowCount}
         search={search}
         onSearchChange={onSearchChange}
         initialState={{ pagination: { paginationModel: pagination } }}

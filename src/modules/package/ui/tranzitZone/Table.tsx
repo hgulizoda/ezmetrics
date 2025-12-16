@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import Dialog from '@mui/material/Dialog';
@@ -122,6 +122,15 @@ export const TranzitZoneTable = () => {
   const { columnVisibilityModel, handleColumnVisibilityModelChange } =
     usePersistedColumnVisibilityModel('transitColumnsVisibility', initialVisibility);
 
+  const rowCountRef = useRef(data?.pagination?.total_records || 0);
+
+  const rowCount = useMemo(() => {
+    if (data?.pagination?.total_records !== undefined) {
+      rowCountRef.current = data.pagination.total_records;
+    }
+    return rowCountRef.current;
+  }, [data?.pagination?.total_records]);
+
   if (!data || error) return <ErrorData />;
   return (
     <Box height={700}>
@@ -142,7 +151,7 @@ export const TranzitZoneTable = () => {
         rowSelectionModel={rowSelectionModel}
         setRowSelectionModel={setRowSelectionModel}
         multiStatusAction={addTruckDialog.onTrue}
-        rowCount={data.pagination?.total_records}
+        rowCount={rowCount}
         filterComponent={
           <TransitZoneFilter
             defaultValues={defaultFilter}

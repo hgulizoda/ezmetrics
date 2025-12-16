@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useMemo } from 'react';
 import { Trans } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
@@ -124,6 +124,15 @@ export const ChinaBorderTable = () => {
   const { columnVisibilityModel, handleColumnVisibilityModelChange } =
     usePersistedColumnVisibilityModel('chinaBorderColumnsVisibility', initialVisibility);
 
+  const rowCountRef = useRef(data?.pagination?.total_records || 0);
+
+  const rowCount = useMemo(() => {
+    if (data?.pagination?.total_records !== undefined) {
+      rowCountRef.current = data.pagination.total_records;
+    }
+    return rowCountRef.current;
+  }, [data?.pagination?.total_records]);
+
   if (!data || error) return <ErrorData />;
   return (
     <Box height={700}>
@@ -144,7 +153,7 @@ export const ChinaBorderTable = () => {
         rowSelectionModel={rowSelectionModel}
         setRowSelectionModel={setRowSelectionModel}
         multiStatusAction={addTruckDialog.onTrue}
-        rowCount={data.pagination?.total_records}
+        rowCount={rowCount}
         filterComponent={
           <ChinaBorderFilter
             defaultValues={defaultFilter}

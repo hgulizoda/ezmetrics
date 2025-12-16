@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { useSearchParams } from 'react-router-dom';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -83,6 +83,15 @@ const BonusesView = () => {
     });
     open.setValue(false);
   };
+
+  const rowCountRef = useRef(pagination?.total_records || 0);
+
+  const rowCount = useMemo(() => {
+    if (pagination?.total_records !== undefined) {
+      rowCountRef.current = pagination.total_records;
+    }
+    return rowCountRef.current;
+  }, [pagination?.total_records]);
 
   if (!bonuses) return <ErrorData />;
 
@@ -213,7 +222,7 @@ const BonusesView = () => {
                 handleUnuseBonuse,
               })}
               loading={isLoading}
-              rowCount={pagination.total_records}
+              rowCount={rowCount}
               onPaginationModelChange={onPaginationChange}
               initialState={{ pagination: { paginationModel: paginationInfo } }}
               onSearchChange={onSearchChange}

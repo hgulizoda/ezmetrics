@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useMemo } from 'react';
 
 import { Box } from '@mui/material';
 
@@ -36,6 +36,15 @@ export const ChinaBorderTrucks = () => {
     openSendedTruck.onTrue();
   };
 
+  const rowCountRef = useRef(data?.pagination?.total_records || 0);
+
+  const rowCount = useMemo(() => {
+    if (data?.pagination?.total_records !== undefined) {
+      rowCountRef.current = data.pagination.total_records;
+    }
+    return rowCountRef.current;
+  }, [data?.pagination?.total_records]);
+
   if (error) return <ErrorData />;
   return (
     <Box height={700}>
@@ -46,6 +55,7 @@ export const ChinaBorderTrucks = () => {
         checkBoxSelection
         hasTotal={false}
         loading={isLoading}
+        rowCount={rowCount}
         initialState={{ pagination: { paginationModel: pagination } }}
         onPaginationModelChange={onPaginationChange}
         rowSelectionModel={selectedRows}

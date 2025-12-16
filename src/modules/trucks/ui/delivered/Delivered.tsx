@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useMemo } from 'react';
 
 import { Box, Button } from '@mui/material';
 import LoadingButton from '@mui/lab/LoadingButton';
@@ -56,6 +56,15 @@ export const DeliveredTrucks = () => {
     openBackedTruck.onTrue();
   };
 
+  const rowCountRef = useRef(data?.pagination?.total_records || 0);
+
+  const rowCount = useMemo(() => {
+    if (data?.pagination?.total_records !== undefined) {
+      rowCountRef.current = data.pagination.total_records;
+    }
+    return rowCountRef.current;
+  }, [data?.pagination?.total_records]);
+
   if (error) return <ErrorData />;
 
   return (
@@ -68,6 +77,7 @@ export const DeliveredTrucks = () => {
         checkBoxSelection
         hasTotal={false}
         loading={isLoading}
+        rowCount={rowCount}
         initialState={{ pagination: { paginationModel: pagination } }}
         onPaginationModelChange={onPaginationChange}
         rowSelectionModel={selectedRows}

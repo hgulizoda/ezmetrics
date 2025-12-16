@@ -27,12 +27,12 @@ import Label from 'src/components/label';
 import { ConfirmDialog } from 'src/components/custome-dialog';
 
 import { feedcols } from './feedCol';
+import { ReviewItem } from '../types/feedbacks';
 import { useGetFeedbacks } from '../hooks/useGetFeedbacks';
 import { useDeleteFeedback } from '../hooks/useDeleteFeedback';
-import { ReviewItem } from '../types/feedbacks';
 
 export const Feedbacks = () => {
-  const {t} = useTranslate('lang');
+  const { t } = useTranslate('lang');
   const [feedbacksId, setFeedbacksId] = useState<string>('');
   const [orderID, setOrderID] = useState<string>('');
   const viewOrder = useBoolean();

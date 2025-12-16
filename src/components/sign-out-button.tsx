@@ -7,7 +7,6 @@ import type { Theme, SxProps } from '@mui/material/styles';
 import { useRouter } from 'src/routes/hooks';
 
 import { useTranslate } from 'src/locales';
-
 import { useAuthContext } from 'src/auth/hooks';
 
 import Iconify from './iconify';

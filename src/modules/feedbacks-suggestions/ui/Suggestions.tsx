@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 import { useState } from 'react';
 
 import { LoadingButton } from '@mui/lab';
@@ -25,11 +26,11 @@ import { ConfirmDialog } from 'src/components/custome-dialog';
 
 import { sugCol } from './sugCol';
 import { useGetSuggestions } from '../hooks/useGetSuggestions';
-import { useDeleteSuggestions } from '../hooks/useDeleteSuggestions';
 import { FeedbackItem, SuggestionEnum } from '../types/suggestions';
+import { useDeleteSuggestions } from '../hooks/useDeleteSuggestions';
 
 export const Suggestions = () => {
-  const {t} = useTranslate('lang');
+  const { t } = useTranslate('lang');
   const [paginationModel, setPaginationModel] = useState({
     page: 0,
     pageSize: 25,

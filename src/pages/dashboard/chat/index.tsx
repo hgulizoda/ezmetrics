@@ -1,6 +1,7 @@
 import { Box, Container, Typography } from '@mui/material';
-import { allLangs, useTranslate } from 'src/locales';
+
 import MainChatHome from 'src/modules/chat/ui';
+import { allLangs, useTranslate } from 'src/locales';
 import AccountPopover from 'src/layouts/common/account-popover';
 import SettingsButton from 'src/layouts/common/settings-button';
 import { LanguagePopover } from 'src/layouts/common/language-popover';

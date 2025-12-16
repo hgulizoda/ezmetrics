@@ -6,7 +6,7 @@ import { formatPhoneNumber } from 'src/utils/format-phone-number';
 import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 
-import { ReviewItem, ReasonsStatus } from '../types/feedbacks';
+import { ReviewItem, ReasonLabels, ReasonsStatus } from '../types/feedbacks';
 
 interface Props {
   onView: (item: ReviewItem) => void;
@@ -57,11 +57,7 @@ export const feedcols = ({ onView, onDelete, orderView, t }: Props): GridColDef<
     field: 'reasons',
     flex: 1,
     renderCell: ({ row }) =>
-      row.reasons.map((el) => (
-        <Label key={el} color="default">
-          {t(`feedbacks.reasons.${el}`)}
-        </Label>
-      )),
+      row.reasons.map((el) => <Label color="default">{ReasonLabels[el as ReasonsStatus]}</Label>),
   },
   {
     field: 'id',

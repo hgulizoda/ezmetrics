@@ -43,6 +43,7 @@
     "dob": "Date of Birth",
     "phone": "Phone Number",
     "company": "Company Name",
+    "created": "Date of registration",
     "table": {
       "fullName": "User Full Name",
       "clientID": "User ID",

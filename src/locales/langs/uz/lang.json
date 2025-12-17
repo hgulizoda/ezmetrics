@@ -120,6 +120,7 @@
     "dob": "Tug'ilgan sana",
     "phone": "Telefon raqam",
     "company": "Kompaniya nomi",
+    "created": "Ro'yxatdan o'tgan sana",
     "table": {
       "fullName": "Foydalanuvchi F.I.SH",
       "clientID": "Foydalanuvchi ID",

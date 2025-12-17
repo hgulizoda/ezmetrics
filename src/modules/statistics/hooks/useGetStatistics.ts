@@ -10,6 +10,12 @@ export const useGetStatistics = (params: { page: number; limit: number; search: 
     queryFn: () => statistics.get(params),
     select: (res) => ({
       list: statisticsMapper(get(res, 'data.users', [])),
+      totals: {
+        total_capacity: get(res, 'data.total_capacity'),
+        total_weight: get(res, 'data.total_weight'),
+        places: get(res, 'data.total_places'),
+        counts: get(res, 'data.total_orders'),
+      },
       pagination: {
         totalRecords: get(res, 'data.pagination.total_records'),
         currentPage: get(res, 'data.pagination.current_page'),

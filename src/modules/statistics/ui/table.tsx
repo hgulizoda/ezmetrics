@@ -13,12 +13,13 @@ import { useGetStatistics } from '../hooks/useGetStatistics';
 
 const TableStatistics = () => {
   const { onPaginationChange, pagination, search, onSearchChange } = useAllTableFilter();
-  const {t} = useTranslate('lang');
+  const { t } = useTranslate('lang');
   const { data, isLoading, error } = useGetStatistics({
     page: pagination.page + 1,
     limit: pagination.pageSize,
     search,
   });
+  console.log(data);
 
   const rowCountRef = useRef(data?.pagination?.totalRecords || 0);
 
@@ -36,7 +37,8 @@ const TableStatistics = () => {
         data={data?.list || []}
         col={column(t)}
         loading={isLoading}
-        hasTotal={false}
+        hasTotal
+        totals={data?.totals}
         checkBoxSelection={false}
         onPaginationModelChange={onPaginationChange}
         initialState={{

@@ -11,6 +11,7 @@ const userRes = (item: IUserRes): IUser => ({
   id: item?._id ?? '',
   userId: item?.profile?._id ?? '',
   fullName: `${item.profile?.first_name ?? ''} ${item.profile?.last_name ?? ''}`,
+  createdAt: item.created_at,
 });
 
 export const userAdapter = (data: IUserRes[]) => data?.map(userRes) || [];

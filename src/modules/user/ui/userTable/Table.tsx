@@ -3,6 +3,8 @@ import { useRef, useMemo, useState } from 'react';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { Box, Button, useTheme, Container, Typography, IconButton } from '@mui/material';
 
+import { useFormatDateHour } from 'src/utils/iso-date-hour';
+
 import { allLangs, useTranslate } from 'src/locales';
 import SettingsButton from 'src/layouts/common/settings-button';
 import AccountPopover from 'src/layouts/common/account-popover';
@@ -30,6 +32,7 @@ interface IProps extends IUserId {
 }
 
 const UsersTable = () => {
+  const formatDate = useFormatDateHour();
   const [rowSelectionModel, setRowSelectionModel] = useState<string[]>([]);
   const { t } = useTranslate('lang');
   const userStatus = useUserStatusLabels();
@@ -126,7 +129,7 @@ const UsersTable = () => {
           <DataGridCustom<IUser>
             data={data.users}
             loading={isLoading}
-            col={baseColumns({ handleVerification, onDeleteUser, t, userStatus })}
+            col={baseColumns({ handleVerification, onDeleteUser, t, userStatus, formatDate })}
             rowCount={rowCount}
             onPaginationModelChange={onPaginationChange}
             initialState={{ pagination: { paginationModel: pagination } }}

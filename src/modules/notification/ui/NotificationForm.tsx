@@ -58,10 +58,13 @@ export const NotificationsForm = ({ notification }: Props) => {
     if (notification) {
       form.setValue('title.uz', notification.title.uz ?? '');
       form.setValue('title.ru', notification.title.ru ?? '');
+      form.setValue('title.en', notification.title.en ?? '');
       form.setValue('body.uz', notification.body.uz ?? '');
       form.setValue('body.ru', notification.body.ru ?? '');
+      form.setValue('body.en', notification.body.en ?? '');
       form.setValue('image.uz', notification.image.uz ?? '');
       form.setValue('image.ru', notification.image.ru ?? '');
+      form.setValue('image.en', notification.image.en ?? '');
     }
   }, [form, notification]);
 
@@ -79,10 +82,20 @@ export const NotificationsForm = ({ notification }: Props) => {
       value.image.ru instanceof File
         ? await uploadAsync({ file: value.image.ru as File })
         : { url: value.image.ru };
+    const imageUrlEn =
+      value.image.en instanceof File
+        ? await uploadAsync({ file: value.image.en as File })
+        : { url: value.image.en };
     if (notification) {
-      await updateNotification({ ...value, image: { uz: imageUrlUz.url, ru: imageUrlRu.url } });
+      await updateNotification({
+        ...value,
+        image: { uz: imageUrlUz.url, ru: imageUrlRu.url, en: imageUrlEn.url },
+      });
     } else {
-      await sendNotification({ ...value, image: { uz: imageUrlUz.url, ru: imageUrlRu.url } });
+      await sendNotification({
+        ...value,
+        image: { uz: imageUrlUz.url, ru: imageUrlRu.url, en: imageUrlEn.url },
+      });
     }
     return form.reset();
   };
@@ -126,27 +139,39 @@ export const NotificationsForm = ({ notification }: Props) => {
               <RHFTextField name="title.en" label={t('notification.form.titleEN')} />
             </Grid>
             <Grid item xs={12} md={4}>
-              <Typography variant="subtitle2" mb={0.5}>{t('notification.form.contentUZ')}</Typography>
+              <Typography variant="subtitle2" mb={0.5}>
+                {t('notification.form.contentUZ')}
+              </Typography>
               <RHFEditor name="body.uz" />
             </Grid>
             <Grid item xs={12} md={4}>
-              <Typography variant="subtitle2" mb={0.5}>{t('notification.form.contentRU')}</Typography>
+              <Typography variant="subtitle2" mb={0.5}>
+                {t('notification.form.contentRU')}
+              </Typography>
               <RHFEditor name="body.ru" />
             </Grid>
             <Grid item xs={12} md={4}>
-              <Typography variant="subtitle2" mb={0.5}>{t('notification.form.contentEN')}</Typography>
+              <Typography variant="subtitle2" mb={0.5}>
+                {t('notification.form.contentEN')}
+              </Typography>
               <RHFEditor name="body.en" />
             </Grid>
             <Grid item xs={12} md={4}>
-              <Typography variant="subtitle2" mb={0.5}>{t('notification.form.imageUZ')}</Typography>
+              <Typography variant="subtitle2" mb={0.5}>
+                {t('notification.form.imageUZ')}
+              </Typography>
               <RHFUpload thumbnail name="image.uz" onDelete={handleRemove.imageUZ} />
             </Grid>
             <Grid item xs={12} md={4}>
-              <Typography variant="subtitle2" mb={0.5}>{t('notification.form.imageRU')}</Typography>
+              <Typography variant="subtitle2" mb={0.5}>
+                {t('notification.form.imageRU')}
+              </Typography>
               <RHFUpload thumbnail name="image.ru" onDelete={handleRemove.imageRu} />
             </Grid>
             <Grid item xs={12} md={4}>
-              <Typography variant="subtitle2" mb={0.5}>{t('notification.form.imageEN')}</Typography>
+              <Typography variant="subtitle2" mb={0.5}>
+                {t('notification.form.imageEN')}
+              </Typography>
               <RHFUpload thumbnail name="image.en" onDelete={handleRemove.imageEn} />
             </Grid>
             <Grid item xs={12} display="flex" justifyContent="flex-end" gap={1.5}>

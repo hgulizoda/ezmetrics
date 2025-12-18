@@ -10,42 +10,43 @@ import { IOrderWithBonus } from '../../types/SingleUserBonus';
 interface Props {
   onRemove: (id: string) => void;
   onView: (id: string) => void;
+  t: (key: string) => string;
 }
 
-export const baseColumn = ({ onRemove, onView }: Props): GridColDef<IOrderWithBonus>[] => [
+export const baseColumn = ({ onRemove, onView, t }: Props): GridColDef<IOrderWithBonus>[] => [
   {
-    headerName: 'Order nomi',
+    headerName: t('bonus.singleUser.orderName'),
     flex: 1,
     field: 'orderName',
     renderCell: ({ row }) => <Button onClick={() => onView(row.orderId)}>{row.orderName}</Button>,
   },
   {
-    headerName: 'Ball',
+    headerName: t('bonus.table.ball'),
     flex: 1,
     field: 'ball',
     renderCell: ({ row }) => fNumber(row.ball),
   },
 
   {
-    headerName: 'Hajmi',
+    headerName: t('bonus.table.capacity'),
     flex: 1,
     field: 'capacity',
     renderCell: ({ row }) => fNumber(row.capacity),
   },
   {
-    headerName: 'Og`irligi',
+    headerName: t('bonus.table.weight'),
     flex: 1,
     field: 'weight',
     renderCell: ({ row }) => fNumber(row.weight),
   },
   {
-    headerName: 'Qadoq',
+    headerName: t('bonus.singleUser.places'),
     flex: 1,
     field: 'places',
     renderCell: ({ row }) => fNumber(row.places),
   },
   {
-    headerName: 'Soni',
+    headerName: t('bonus.singleUser.count'),
     flex: 1,
     field: 'count',
     renderCell: ({ row }) => fNumber(row.count),
@@ -55,7 +56,7 @@ export const baseColumn = ({ onRemove, onView }: Props): GridColDef<IOrderWithBo
     field: 'id',
     getActions: ({ row }) => [
       <GridActionsCellItem
-        label="O'chirish"
+        label={t('actions.delete')}
         onClick={() => onRemove(row.id)}
         showInMenu
         icon={<Iconify icon="hugeicons:delete-01" />}

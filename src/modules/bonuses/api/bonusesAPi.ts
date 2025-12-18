@@ -15,7 +15,7 @@ export const bonusesAPI = {
   // get all list of  Bonuses
   getAll: (params: IFilters) =>
     axiosInstance
-      .get<IApiResponse<IBonusesList[]>>('user-bonus/all', { params })
+      .get<IApiResponse<IBonusesList>>('user-bonus/all', { params })
       .then((res) => res.data),
   // get user Bonuses
 

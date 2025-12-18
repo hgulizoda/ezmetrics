@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import Dialog from '@mui/material/Dialog';
@@ -134,6 +134,15 @@ export const UZBCustomsPackageTable = () => {
   const { columnVisibilityModel, handleColumnVisibilityModelChange } =
     usePersistedColumnVisibilityModel('uzbColumnsVisibility', initialVisibility);
 
+  const rowCountRef = useRef(data?.pagination?.total_records || 0);
+
+  const rowCount = useMemo(() => {
+    if (data?.pagination?.total_records !== undefined) {
+      rowCountRef.current = data.pagination.total_records;
+    }
+    return rowCountRef.current;
+  }, [data?.pagination?.total_records]);
+
   if (!data || error) return <ErrorData />;
   return (
     <Box height={700}>
@@ -154,7 +163,7 @@ export const UZBCustomsPackageTable = () => {
         rowSelectionModel={rowSelectionModel}
         setRowSelectionModel={setRowSelectionModel}
         multiStatusAction={addTruckDialog.onTrue}
-        rowCount={data.pagination?.total_records}
+        rowCount={rowCount}
         filterComponent={
           <UZBCustomsFilter
             defaultValues={defaultFilter}

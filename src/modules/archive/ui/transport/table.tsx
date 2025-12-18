@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useLocation } from 'react-router-dom';
 
 import LoadingButton from '@mui/lab/LoadingButton';
 
@@ -15,6 +16,7 @@ import { useGetTransports, useUnArchiveTruck, useDeleteTransport } from '../../h
 
 export const TransportsTable = () => {
   const { t } = useTranslate('lang');
+  const location = useLocation();
   const { onPaginationChange, pagination, search, onSearchChange } = useArchivePagination();
   const { data, isLoading, error } = useGetTransports({
     page: pagination.page + 1,
@@ -60,6 +62,7 @@ export const TransportsTable = () => {
           cellClick,
           isMultiple: rowSelected.length > 0,
           t,
+          from: `${location.pathname}${location.search}`,
           unarchive: (id: string) => {
             setTruckID(id);
             unArchive.onTrue();

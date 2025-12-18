@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useMemo } from 'react';
 
 import Dialog from '@mui/material/Dialog';
 import { Box, Button } from '@mui/material';
@@ -104,6 +104,15 @@ export const DeliveredPackageTable = () => {
   const { columnVisibilityModel, handleColumnVisibilityModelChange } =
     usePersistedColumnVisibilityModel('deliveredColumnsVisibility', initialVisibility);
 
+  const rowCountRef = useRef(data?.pagination?.total_records || 0);
+
+  const rowCount = useMemo(() => {
+    if (data?.pagination?.total_records !== undefined) {
+      rowCountRef.current = data.pagination.total_records;
+    }
+    return rowCountRef.current;
+  }, [data?.pagination?.total_records]);
+
   if (error) return <ErrorData />;
   if (!data) return <NoData />;
   return (
@@ -124,7 +133,7 @@ export const DeliveredPackageTable = () => {
         rowSelectionModel={rowSelectionModel}
         setRowSelectionModel={setRowSelectionModel}
         multiStatusAction={archiveDialog.onTrue}
-        rowCount={data.pagination?.total_records}
+        rowCount={rowCount}
         multiStatusTitle={t('actions.archive')}
         filterComponent={
           <DeliveredFilter

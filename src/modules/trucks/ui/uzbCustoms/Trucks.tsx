@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useRef, useMemo } from 'react';
+import { useLocation } from 'react-router-dom';
 
 import { Box, Button } from '@mui/material';
 import LoadingButton from '@mui/lab/LoadingButton';
@@ -19,6 +20,7 @@ import DataGridCustom from '../../../../components/data-grid-view/data-grid-cust
 
 export const UZBTrucks = () => {
   const { t } = useTranslate('lang');
+  const location = useLocation();
   const { mutateAsync, isPending: isBacking } = useBackTruck('in_transit');
   const [truckID, setTruckID] = useState<string>('');
   const { onPaginationChange, pagination, search, onSearchChange } = useTrucksPagination();
@@ -70,16 +72,32 @@ export const UZBTrucks = () => {
     openBackedTruck.onTrue();
   };
 
+  const rowCountRef = useRef(data?.pagination?.total_records || 0);
+
+  const rowCount = useMemo(() => {
+    if (data?.pagination?.total_records !== undefined) {
+      rowCountRef.current = data.pagination.total_records;
+    }
+    return rowCountRef.current;
+  }, [data?.pagination?.total_records]);
+
   if (error) return <ErrorData />;
 
   return (
     <Box height={700}>
       <DataGridCustom
-        col={baseColumns({ action: handleRowChange, t, formatDate, back: backTruckPrevStatus })}
+        col={baseColumns({
+          action: handleRowChange,
+          t,
+          formatDate,
+          back: backTruckPrevStatus,
+          from: `${location.pathname}${location.search}`,
+        })}
         data={data?.trucks || []}
         checkBoxSelection
         hasTotal={false}
         loading={isLoading}
+        rowCount={rowCount}
         search={search}
         onSearchChange={onSearchChange}
         initialState={{ pagination: { paginationModel: pagination } }}

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useMemo, useState } from 'react';
 
 import { LoadingButton } from '@mui/lab';
 import { DataGrid, gridClasses } from '@mui/x-data-grid';
@@ -27,12 +27,12 @@ import Label from 'src/components/label';
 import { ConfirmDialog } from 'src/components/custome-dialog';
 
 import { feedcols } from './feedCol';
+import { ReviewItem } from '../types/feedbacks';
 import { useGetFeedbacks } from '../hooks/useGetFeedbacks';
 import { useDeleteFeedback } from '../hooks/useDeleteFeedback';
-import { ReviewItem } from '../types/feedbacks';
 
 export const Feedbacks = () => {
-  const {t} = useTranslate('lang');
+  const { t } = useTranslate('lang');
   const [feedbacksId, setFeedbacksId] = useState<string>('');
   const [orderID, setOrderID] = useState<string>('');
   const viewOrder = useBoolean();
@@ -51,6 +51,15 @@ export const Feedbacks = () => {
     },
   });
 
+  const rowCountRef = useRef(data?.totalRecords || 0);
+
+  const rowCount = useMemo(() => {
+    if (data?.totalRecords !== undefined) {
+      rowCountRef.current = data?.totalRecords;
+    }
+    return rowCountRef.current;
+  }, [data?.totalRecords]);
+
   return (
     <Container maxWidth="xl">
       <Card>
@@ -58,6 +67,7 @@ export const Feedbacks = () => {
         <CardContent
           sx={{
             px: 0,
+            height: 750,
             ':last-child': { pb: 0 },
           }}
         >
@@ -88,7 +98,7 @@ export const Feedbacks = () => {
             paginationMode="server"
             onPaginationModelChange={setPaginationModel}
             paginationModel={paginationModel}
-            rowCount={data?.totalRecords ?? 0}
+            rowCount={rowCount}
           />
         </CardContent>
       </Card>

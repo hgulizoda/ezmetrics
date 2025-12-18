@@ -13,15 +13,16 @@ interface IProps {
   action: (id: string) => void;
   t: TFunction;
   formatDate: any;
+  from?: string;
 }
 
-export const baseColumns = ({ action, t, formatDate }: IProps): GridColDef<ITruckAdapter>[] => [
+export const baseColumns = ({ action, t, formatDate, from }: IProps): GridColDef<ITruckAdapter>[] => [
   {
     field: 'name',
     headerName: t('packages.tableTitle.truckID'),
     flex: 1,
     renderCell: ({ row }) => (
-      <Link style={{ color: 'inherit' }} to={`truck/${row.id}`}>
+      <Link style={{ color: 'inherit' }} to={`truck/${row.id}`} state={from ? { from } : undefined}>
         {row.name}
       </Link>
     ),

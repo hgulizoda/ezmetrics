@@ -6,6 +6,7 @@ export interface IUserRes {
   status: UserStatus;
   user_id: string;
   order_count: number;
+  created_at: string;
   profile: {
     _id: string;
     first_name: string;
@@ -27,4 +28,5 @@ export interface IUser {
   id: string;
   userId: string;
   fullName: string;
+  createdAt: string;
 }

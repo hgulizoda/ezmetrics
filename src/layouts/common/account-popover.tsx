@@ -11,13 +11,12 @@ import Typography from '@mui/material/Typography';
 
 import { useRouter } from 'src/routes/hooks';
 
-import { useTranslate } from 'src/locales';
-
 import { useGetAdminInfo } from 'src/hooks/use-get-admin';
 
 import { useFormatDate } from 'src/utils/iso-date';
 import { formatPhoneNumber } from 'src/utils/format-phone-number';
 
+import { useTranslate } from 'src/locales';
 import { useAuthContext } from 'src/auth/hooks';
 
 import Iconify from 'src/components/iconify';

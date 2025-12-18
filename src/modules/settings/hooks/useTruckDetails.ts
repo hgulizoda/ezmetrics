@@ -16,14 +16,14 @@ export const useGetTruckDetails = ({ id, params }: IProps) => {
     queryKey: ['truckDetails', params],
     queryFn: () => truckDetails.getOrder({ id, params }),
     select: (res) => ({
-        orders: truckDetailsAdapter(get(res, 'data.orders', [])),
-        name: get(res, 'data.name'),
-        totals: get(res, 'data.totals'),
-        createdAt: get(res, 'data.created_at', '--'),
-        estimatedArrivalDate: get(res, 'data.estimated_arrival_date', '--'),
-        containerNumber: get(res, 'data.container_number', '--'),
-        status: get(res, 'data.status'),
-      }),
+      orders: truckDetailsAdapter(get(res, 'data.orders', [])),
+      name: get(res, 'data.name'),
+      totals: get(res, 'data.totals') as any,
+      createdAt: get(res, 'data.created_at', '--'),
+      estimatedArrivalDate: get(res, 'data.estimated_arrival_date', '--'),
+      containerNumber: get(res, 'data.container_number', '--'),
+      status: get(res, 'data.status'),
+    }),
   });
 
   return { data, isLoading, error };
@@ -36,7 +36,7 @@ export const useGetTruckDetailsOrders = ({ id, params }: IProps) => {
     select: (res) => ({
       orders: truckDetailsAdapter(get(res, 'data.orders', [])),
       name: get(res, 'data.name'),
-      totals: get(res, 'data.totals'),
+      totals: get(res, 'data.totals') as any,
       containerNumber: get(res, 'data.container_number', '--'),
       arrivalDate: get(res, 'data.estimated_arrival_date', '--'),
       createdAt: get(res, 'data.created_at', ''),

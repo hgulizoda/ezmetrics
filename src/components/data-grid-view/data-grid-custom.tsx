@@ -112,10 +112,9 @@ export default function DataGridCustom<T>({
               -
               {totals?.average_weight ? (
                 <Typography variant="subtitle2">
-                 ({totals?.average_weight?.toFixed(1) || 0} {t('profile.ordersTabs.card.kg')});
+                  ({totals?.average_weight?.toFixed(1) || 0} {t('profile.ordersTabs.card.kg')});
                 </Typography>
-              ): null}
-              
+              ) : null}
               {totals?.places && (
                 <Typography variant="subtitle2">
                   {t('profile.ordersTabs.card.places')}: {fPlaces};

@@ -1,6 +1,7 @@
 interface Language {
   uz: string;
   ru: string;
+  en: string;
 }
 
 export interface INotificationRes {

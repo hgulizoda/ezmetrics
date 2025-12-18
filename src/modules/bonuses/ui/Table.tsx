@@ -1,5 +1,5 @@
-import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
+import { useRef, useMemo, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { yupResolver } from '@hookform/resolvers/yup';
 
@@ -23,9 +23,11 @@ import { useTranslate } from '../../../locales';
 import Iconify from '../../../components/iconify';
 import { IBonusesList } from '../types/BunusesList';
 import { useGetAllBonuses } from '../services/getAll';
+import { useUnuseBouns } from '../services/unUseBonus';
 import { useGetBonusLimit } from '../services/getLimit';
 import { useBoolean } from '../../../hooks/use-boolean';
 import { useUpdateLimit } from '../services/updateLimit';
+import { useUpdateStatus } from '../services/updateStatus';
 import { RHFTextField } from '../../../components/hook-form';
 import { limitSchema, LimitSchemaForm } from '../libs/limitsForm';
 import { ErrorData } from '../../../components/error-data/error-data';
@@ -55,7 +57,15 @@ const BonusesView = () => {
     search,
     status: searchParams.get('status'),
   });
+  const { updateBunusStatus } = useUpdateStatus();
+  const { unuseBouns } = useUnuseBouns();
 
+  const handleUpdateStatus = async (bonus_id: string, user_id: string) => {
+    await updateBunusStatus({ bonus_id, user_id });
+  };
+  const handleUnuseBonuse = async (bonus_id: string, user_id: string) => {
+    await unuseBouns({ bonus_id, user_id });
+  };
   const methods = useForm<LimitSchemaForm>({
     resolver: yupResolver(limitSchema),
   });
@@ -73,6 +83,15 @@ const BonusesView = () => {
     });
     open.setValue(false);
   };
+
+  const rowCountRef = useRef(pagination?.total_records || 0);
+
+  const rowCount = useMemo(() => {
+    if (pagination?.total_records !== undefined) {
+      rowCountRef.current = pagination.total_records;
+    }
+    return rowCountRef.current;
+  }, [pagination?.total_records]);
 
   if (!bonuses) return <ErrorData />;
 
@@ -203,7 +222,7 @@ const BonusesView = () => {
                 handleUnuseBonuse,
               })}
               loading={isLoading}
-              rowCount={pagination.total_records}
+              rowCount={rowCount}
               onPaginationModelChange={onPaginationChange}
               initialState={{ pagination: { paginationModel: paginationInfo } }}
               onSearchChange={onSearchChange}

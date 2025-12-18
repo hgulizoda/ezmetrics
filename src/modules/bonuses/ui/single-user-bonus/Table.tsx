@@ -1,5 +1,5 @@
-import { useState } from 'react';
 import { useParams } from 'react-router';
+import { useRef, useMemo, useState } from 'react';
 
 import { LoadingButton } from '@mui/lab';
 import { DataGrid, gridClasses, GridPaginationModel } from '@mui/x-data-grid';
@@ -7,6 +7,7 @@ import { Box, Card, Button, Dialog, Container, CardHeader, CardContent } from '@
 
 import { useBoolean } from 'src/hooks/use-boolean';
 
+import { useTranslate } from 'src/locales';
 import { TruckOrderDetail } from 'src/modules/settings/ui/truckDetails/TruckOrderDetail';
 
 import { ConfirmDialog } from 'src/components/custome-dialog';
@@ -17,9 +18,13 @@ import { useGetSingleUsers } from '../../services/useGetSingleUsers';
 import { useRemoveBonus } from '../../services/useRemoveSingeOrderBall';
 
 export const UsersBonusSingle = () => {
+  const { t } = useTranslate('lang');
+  const { isPending: isDeleting, mutateAsync: deleteAsync } = useRemoveBonus();
+  const [rowSelectionModel, setRowSelectionModel] = useState<string[]>([]);
   const params = useParams() as { id: string; name: string };
   const [orderID, setOrderID] = useState<string>();
   const viewOrder = useBoolean();
+  const isMultipleDelete = useBoolean();
   const [orderBallId, setOrderBallId] = useState<string>();
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
     page: 0,
@@ -34,12 +39,45 @@ export const UsersBonusSingle = () => {
     },
   });
 
-  const { isPending, mutateAsync } = useRemoveBonus();
+  console.log('data', data);
+
+  const rowCountRef = useRef(data?.total_records || 0);
+
+  const rowCount = useMemo(() => {
+    if (data?.total_records !== undefined) {
+      rowCountRef.current = data?.total_records;
+    }
+    return rowCountRef.current;
+  }, [data?.total_records]);
+
+  const deleteMultipleOrderBall = async () => {
+    try {
+      await Promise.all(
+        rowSelectionModel.map(async (id) => {
+          if (id) {
+            await deleteAsync(id);
+          }
+        })
+      );
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   if (isLoading) return <Circular />;
   return (
     <Container maxWidth="xl">
       <Card>
-        <CardHeader title={params.name} />
+        <CardHeader
+          title={params.name}
+          action={
+            rowSelectionModel.length > 0 ? (
+              <Button onClick={isMultipleDelete.onTrue} variant="contained" color="error">
+                {t('actions.delete')}
+              </Button>
+            ) : null
+          }
+        />
         <CardContent
           sx={{
             px: 0,
@@ -50,6 +88,7 @@ export const UsersBonusSingle = () => {
         >
           <Box>
             <DataGrid
+              checkboxSelection
               columns={baseColumn({
                 onRemove(id) {
                   setOrderBallId(id);
@@ -59,6 +98,7 @@ export const UsersBonusSingle = () => {
                   setOrderID(id);
                   viewOrder.onTrue();
                 },
+                t,
               })}
               sx={{
                 [`& .${gridClasses.cell}`]: {
@@ -66,8 +106,12 @@ export const UsersBonusSingle = () => {
                 },
               }}
               rows={data?.orders}
+              rowSelectionModel={rowSelectionModel}
+              onRowSelectionModelChange={(newRowSelectionModel) => {
+                setRowSelectionModel(newRowSelectionModel as string[]);
+              }}
               loading={isLoading}
-              rowCount={data?.total_records || 0}
+              rowCount={rowCount}
               getRowId={(row) => row.id || crypto.randomUUID()}
               onPaginationModelChange={setPaginationModel}
               initialState={{
@@ -82,28 +126,53 @@ export const UsersBonusSingle = () => {
         <ConfirmDialog
           open={openRemove.value}
           onClose={openRemove.onFalse}
-          title="O'chirish"
-          content="Order uchun berilgan ballni olib tashlash"
+          title={t('actions.delete')}
+          content={t('bonus.singleUser.removeSingle')}
           action={
             <>
               <Button variant="outlined" color="inherit" onClick={openRemove.onFalse}>
-                Bekor qilish
+                {t('actions.cancel')}
               </Button>
               <LoadingButton
-                loading={isPending}
+                loading={isDeleting}
                 onClick={async () => {
-                  await mutateAsync(orderBallId);
+                  await deleteAsync(orderBallId);
                   openRemove.onFalse();
                 }}
                 variant="contained"
                 color="error"
               >
-                O&apos;chirish
+                {t('actions.delete')}
               </LoadingButton>
             </>
           }
         />
       )}
+
+      {rowSelectionModel.length > 0 && (
+        <ConfirmDialog
+          open={isMultipleDelete.value}
+          onClose={isMultipleDelete.onFalse}
+          title={t('actions.delete')}
+          content={t('bonus.singleUser.removeMultiple')}
+          action={
+            <>
+              <Button variant="outlined" color="inherit" onClick={isMultipleDelete.onFalse}>
+                {t('actions.cancel')}
+              </Button>
+              <LoadingButton
+                loading={isDeleting}
+                onClick={deleteMultipleOrderBall}
+                variant="contained"
+                color="error"
+              >
+                {t('actions.delete')}
+              </LoadingButton>
+            </>
+          }
+        />
+      )}
+
       {orderID && (
         <Dialog
           open={viewOrder.value}

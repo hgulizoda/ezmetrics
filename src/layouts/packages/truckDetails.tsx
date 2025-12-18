@@ -1,6 +1,6 @@
 import { Suspense } from 'react';
 import { useParams } from 'react-router';
-import { Outlet, useNavigate } from 'react-router-dom';
+import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 
 import { Box } from '@mui/material';
 import Container from '@mui/material/Container';
@@ -20,10 +20,27 @@ export const PackageTruckDetails = () => {
   const { t } = useTranslate('lang');
   const shipmentLabels = useShipmentTypeLabels();
   const navigate = useNavigate();
+  const location = useLocation();
   const formatDate = useFormatDate();
 
   const params = useParams() as { id: string };
   const { data, isLoading } = useGetTruckDetails({ id: params.id, params: {} });
+
+  const handleBack = () => {
+    const from = (location.state as { from?: string } | null)?.from;
+    if (from) {
+      navigate(from, { replace: true });
+      return;
+    }
+
+    const parentPath = location.pathname.replace(/\/truck\/[^/]+$/, '');
+    if (parentPath && parentPath !== location.pathname) {
+      navigate(parentPath, { replace: true });
+      return;
+    }
+
+    navigate(-1);
+  };
 
   return (
     <Container maxWidth={false}>
@@ -38,7 +55,7 @@ export const PackageTruckDetails = () => {
         }}
       >
         <Box display="flex" alignItems="center" gap={1}>
-          <IconButton size="small" onClick={() => navigate(-1)}>
+          <IconButton size="small" onClick={handleBack}>
             <Iconify icon="weui:back-filled" />
           </IconButton>
           <Box display="flex" alignItems="center" gap={0.5}>

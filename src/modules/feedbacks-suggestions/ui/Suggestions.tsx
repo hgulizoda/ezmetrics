@@ -1,4 +1,5 @@
-import { useState } from 'react';
+/* eslint-disable no-nested-ternary */
+import { useRef, useMemo, useState } from 'react';
 
 import { LoadingButton } from '@mui/lab';
 import { DataGrid, gridClasses } from '@mui/x-data-grid';
@@ -25,11 +26,11 @@ import { ConfirmDialog } from 'src/components/custome-dialog';
 
 import { sugCol } from './sugCol';
 import { useGetSuggestions } from '../hooks/useGetSuggestions';
-import { useDeleteSuggestions } from '../hooks/useDeleteSuggestions';
 import { FeedbackItem, SuggestionEnum } from '../types/suggestions';
+import { useDeleteSuggestions } from '../hooks/useDeleteSuggestions';
 
 export const Suggestions = () => {
-  const {t} = useTranslate('lang');
+  const { t } = useTranslate('lang');
   const [paginationModel, setPaginationModel] = useState({
     page: 0,
     pageSize: 25,
@@ -45,6 +46,15 @@ export const Suggestions = () => {
   const { isPending, mutateAsync } = useDeleteSuggestions(suggestionsId);
   const openView = useBoolean();
   const openDelete = useBoolean();
+
+  const rowCountRef = useRef(data?.totalRecords || 0);
+
+  const rowCount = useMemo(() => {
+    if (data?.totalRecords !== undefined) {
+      rowCountRef.current = data?.totalRecords;
+    }
+    return rowCountRef.current;
+  }, [data?.totalRecords]);
 
   return (
     <Container maxWidth="xl">
@@ -76,7 +86,7 @@ export const Suggestions = () => {
                 borderBottom: 'none',
               },
             }}
-            rowCount={data?.totalRecords ?? 0}
+            rowCount={rowCount}
             onPaginationModelChange={setPaginationModel}
             initialState={{
               pagination: { paginationModel },

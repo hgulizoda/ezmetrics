@@ -47,6 +47,12 @@ export const useGetTrucks = (params?: IFilterProps) => {
   const initialData = {
     trucks: [],
     pagination: null,
+    totals: {
+      total_capacity: 0,
+      total_weight: 0,
+      total_counts: 0,
+      total_places: 0,
+    },
   };
   const {
     data = initialData,
@@ -58,6 +64,7 @@ export const useGetTrucks = (params?: IFilterProps) => {
     select: (res) => ({
       trucks: getTrucksAdapter(get(res, 'data', [])),
       pagination: get(res, 'pagination', null),
+      totals: get(res, 'totals', null) as any,
     }),
   });
 

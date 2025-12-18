@@ -10,15 +10,16 @@ interface Props {
   isMultiple: boolean;
   unarchive: (id: string) => void;
   t: TFunction;
+  from?: string;
 }
 
-export const baseColumns = ({ cellClick, unarchive, isMultiple, t }: Props): GridColDef[] => [
+export const baseColumns = ({ cellClick, unarchive, isMultiple, t, from }: Props): GridColDef[] => [
   {
     headerName: t('transport.truckName'),
     field: 'name',
     flex: 1,
     renderCell: ({ row }) => (
-      <Link to={`${row.id}`} style={{ color: 'inherit' }}>
+      <Link to={`${row.id}`} style={{ color: 'inherit' }} state={from ? { from } : undefined}>
         {row.name}
       </Link>
     ),

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useMemo, useState } from 'react';
 
 import { Button } from '@mui/material';
 import LoadingButton from '@mui/lab/LoadingButton';
@@ -90,6 +90,15 @@ export const ArchivedPackages = () => {
   const { columnVisibilityModel, handleColumnVisibilityModelChange } =
     usePersistedColumnVisibilityModel('archivePackageColumnsVisibility', initialVisibility);
 
+  const rowCountRef = useRef(data?.pagination?.total_records || 0);
+
+  const rowCount = useMemo(() => {
+    if (data?.pagination?.total_records !== undefined) {
+      rowCountRef.current = data.pagination?.total_records;
+    }
+    return rowCountRef.current;
+  }, [data?.pagination?.total_records]);
+
   if (error) return <ErrorData />;
   return (
     <>
@@ -103,6 +112,7 @@ export const ArchivedPackages = () => {
         hasTotal={false}
         checkBoxSelection
         loading={isLoading}
+        rowCount={rowCount}
         search={search}
         onSearchChange={onSearchChange}
         rowSelectionModel={selectedPackages}

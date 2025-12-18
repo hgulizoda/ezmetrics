@@ -36,4 +36,4 @@ export const getBonuses = (item?: IBonusesList): IBonusesList => ({
 });
 
 export const getBonusesAdapter = (data?: IBonusesList[]) =>
-  data?.map((item) => getBonuses(item)) ?? [];
+  data?.map((item) => getBonuses(item)) || [];

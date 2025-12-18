@@ -1,14 +1,13 @@
 import dayjs from 'dayjs';
+import { ru, enUS } from 'date-fns/locale';
 import { useSearchParams } from 'react-router-dom';
 import RelativeTime from 'dayjs/plugin/relativeTime';
 import { useState, Dispatch, useEffect, SetStateAction } from 'react';
 
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { Box, Stack, Badge, Avatar, Tooltip, IconButton, ListItemText } from '@mui/material';
-
-import { ru, enUS } from 'date-fns/locale';
 
 import { queryClient } from 'src/query';
 import { useTranslate } from 'src/locales';

@@ -1,6 +1,6 @@
-import { useState } from 'react';
 import { Trans } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+import { useRef, useMemo, useState } from 'react';
 
 import Dialog from '@mui/material/Dialog';
 import { Box, Button } from '@mui/material';
@@ -51,7 +51,7 @@ export const ChinaBorderTable = () => {
   const { mutateAsync, isPending } = useArchivePackage(rowSelectionModel, 'residuePackages');
   const { data, error, isLoading } = useGetWithoutTrucksPackages({
     page: pagination.page + 1,
-    limit: pagination.pageSize,
+    limit: 1,
     status: 'to_china_border',
     search,
     ...filter,
@@ -124,6 +124,15 @@ export const ChinaBorderTable = () => {
   const { columnVisibilityModel, handleColumnVisibilityModelChange } =
     usePersistedColumnVisibilityModel('chinaBorderColumnsVisibility', initialVisibility);
 
+  const rowCountRef = useRef(data?.pagination?.total_records || 0);
+
+  const rowCount = useMemo(() => {
+    if (data?.pagination?.total_records !== undefined) {
+      rowCountRef.current = data.pagination.total_records;
+    }
+    return rowCountRef.current;
+  }, [data?.pagination?.total_records]);
+
   if (!data || error) return <ErrorData />;
   return (
     <Box height={700}>
@@ -144,7 +153,7 @@ export const ChinaBorderTable = () => {
         rowSelectionModel={rowSelectionModel}
         setRowSelectionModel={setRowSelectionModel}
         multiStatusAction={addTruckDialog.onTrue}
-        rowCount={data.pagination?.total_records}
+        rowCount={rowCount}
         filterComponent={
           <ChinaBorderFilter
             defaultValues={defaultFilter}

@@ -188,7 +188,12 @@ const TruckDetails = () => {
             columnVisibilityModel={columnVisibilityModel}
             onColumnResize={handleColumnResizeStop}
             hasTotal
-            totals={data?.totals}
+            totals={{
+              total_capacity: data?.totals?.total_capacity || 0,
+              total_weight: data?.totals?.total_weight || 0,
+              counts: data?.totals?.total_count || 0,
+              places: data?.totals?.total_places || 0,
+            }}
             onPaginationModelChange={onPaginationChange}
             initialState={{ pagination: { paginationModel: pagination } }}
           />

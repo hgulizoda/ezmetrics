@@ -20,6 +20,7 @@ interface Props {
   onDeleteUser: (id: string) => void;
   t: TFunction;
   userStatus: any;
+  formatDate: any;
 }
 
 export const baseColumns = ({
@@ -27,6 +28,7 @@ export const baseColumns = ({
   onDeleteUser,
   t,
   userStatus,
+  formatDate,
 }: Props): GridColDef<IUser>[] => [
   {
     field: 'fullName',
@@ -58,6 +60,12 @@ export const baseColumns = ({
     renderCell: ({ row }) => (
       <Label color={UserStatusLabelsColor[row.status]}>{userStatus[row.status]}</Label>
     ),
+  },
+  {
+    field: 'created_at',
+    headerName: t('users.created'),
+    flex: 1,
+    renderCell: ({ row }) => (row.createdAt ? formatDate(row.createdAt) : '--'),
   },
   {
     field: 'actions',

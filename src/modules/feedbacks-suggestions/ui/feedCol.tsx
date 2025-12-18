@@ -6,7 +6,7 @@ import { formatPhoneNumber } from 'src/utils/format-phone-number';
 import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 
-import { ReviewItem, ReasonsStatus } from '../types/feedbacks';
+import { ReviewItem } from '../types/feedbacks';
 
 interface Props {
   onView: (item: ReviewItem) => void;

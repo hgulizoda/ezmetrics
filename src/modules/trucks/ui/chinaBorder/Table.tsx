@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useRef, useMemo, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 
 import { Box } from '@mui/material';
 
@@ -16,6 +17,7 @@ import DataGridCustom from '../../../../components/data-grid-view/data-grid-cust
 
 export const ChinaBorderTrucks = () => {
   const { t } = useTranslate('lang');
+  const location = useLocation();
 
   const { onPaginationChange, pagination, search, onSearchChange } = useTrucksPagination();
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
@@ -36,16 +38,31 @@ export const ChinaBorderTrucks = () => {
     openSendedTruck.onTrue();
   };
 
+  const rowCountRef = useRef(data?.pagination?.total_records || 0);
+
+  const rowCount = useMemo(() => {
+    if (data?.pagination?.total_records !== undefined) {
+      rowCountRef.current = data.pagination.total_records;
+    }
+    return rowCountRef.current;
+  }, [data?.pagination?.total_records]);
+
   if (error) return <ErrorData />;
   return (
     <Box height={700}>
       <DataGridCustom
-        col={baseColumns({ action: handleRowChange, t, formatDate })}
+        col={baseColumns({
+          action: handleRowChange,
+          t,
+          formatDate,
+          from: `${location.pathname}${location.search}`,
+        })}
         data={data?.trucks || []}
         multiStatusTitle={t('multiStatusActions.sendTransit')}
         checkBoxSelection
         hasTotal={false}
         loading={isLoading}
+        rowCount={rowCount}
         initialState={{ pagination: { paginationModel: pagination } }}
         onPaginationModelChange={onPaginationChange}
         rowSelectionModel={selectedRows}

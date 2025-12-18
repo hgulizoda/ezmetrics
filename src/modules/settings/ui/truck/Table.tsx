@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useMemo, useState } from 'react';
 
 import { LoadingButton } from '@mui/lab';
 import { Box, Button, useTheme, Container, Typography, IconButton } from '@mui/material';
@@ -90,6 +90,15 @@ export const TrucksTable = () => {
     archiveDialog.onFalse();
   };
 
+  const rowCountRef = useRef(data.pagination?.total_records || 0);
+
+  const rowCount = useMemo(() => {
+    if (data.pagination?.total_records !== undefined) {
+      rowCountRef.current = data.pagination?.total_records;
+    }
+    return rowCountRef.current;
+  }, [data.pagination?.total_records]);
+
   if (error) return <ErrorData />;
   return (
     <Container maxWidth={false} sx={{ height: '100%' }}>
@@ -141,7 +150,7 @@ export const TrucksTable = () => {
             })}
             search={search}
             onSearchChange={onSearchChange}
-            hasTotal={false}
+            hasTotal
             onPaginationModelChange={onPaginationChange}
             initialState={{ pagination: { paginationModel: pagination } }}
             checkBoxSelection
@@ -154,6 +163,13 @@ export const TrucksTable = () => {
                 {t('actions.delete')}
               </Button>
             }
+            rowCount={rowCount}
+            totals={{
+              total_capacity: data?.totals.total_capacity || 0,
+              total_weight: data?.totals.total_weight || 0,
+              counts: data?.totals.total_count || 0,
+              places: data?.totals.total_places || 0,
+            }}
           />
         </Box>
       </Box>

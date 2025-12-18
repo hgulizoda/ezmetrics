@@ -1,7 +1,9 @@
-import { useState } from 'react';
+import { useRef, useMemo, useState } from 'react';
 
 import LoadingButton from '@mui/lab/LoadingButton';
 import { Box, Button, useTheme, Container, Typography, IconButton } from '@mui/material';
+
+import { useFormatDateHour } from 'src/utils/iso-date-hour';
 
 import { allLangs, useTranslate } from 'src/locales';
 import SettingsButton from 'src/layouts/common/settings-button';
@@ -30,6 +32,7 @@ interface IProps extends IUserId {
 }
 
 const UsersTable = () => {
+  const formatDate = useFormatDateHour();
   const [rowSelectionModel, setRowSelectionModel] = useState<string[]>([]);
   const { t } = useTranslate('lang');
   const userStatus = useUserStatusLabels();
@@ -75,6 +78,16 @@ const UsersTable = () => {
     setDeleteUser(id);
     openConfirmModalDelete.onTrue();
   };
+
+  const rowCountRef = useRef(data?.pagination?.total_records || 0);
+
+  const rowCount = useMemo(() => {
+    if (data?.pagination?.total_records !== undefined) {
+      rowCountRef.current = data.pagination.total_records;
+    }
+    return rowCountRef.current;
+  }, [data?.pagination?.total_records]);
+
   if (error || !data) return <ErrorData />;
 
   return (
@@ -116,8 +129,8 @@ const UsersTable = () => {
           <DataGridCustom<IUser>
             data={data.users}
             loading={isLoading}
-            col={baseColumns({ handleVerification, onDeleteUser, t, userStatus })}
-            rowCount={data.pagination?.total_records}
+            col={baseColumns({ handleVerification, onDeleteUser, t, userStatus, formatDate })}
+            rowCount={rowCount}
             onPaginationModelChange={onPaginationChange}
             initialState={{ pagination: { paginationModel: pagination } }}
             rowSelectionModel={rowSelectionModel}

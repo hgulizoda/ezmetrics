@@ -126,7 +126,12 @@ export const TruckOrders = () => {
           rowSelectionModel={selectedRow}
           setRowSelectionModel={setSelectedRow}
           multiStatusAction={openArchiveDialog.onTrue}
-          totals={data?.totals}
+          totals={{
+            total_capacity: data?.totals?.total_capacity || 0,
+            total_weight: data?.totals?.total_weight || 0,
+            counts: data?.totals?.total_count || 0,
+            places: data?.totals?.total_places || 0,
+          }}
         />
       </Box>
       {orderID && (

@@ -57,7 +57,11 @@ export const feedcols = ({ onView, onDelete, orderView, t }: Props): GridColDef<
     field: 'reasons',
     flex: 1,
     renderCell: ({ row }) =>
-      row.reasons.map((el) => <Label key={el} color="default">{t(`feedbacks.reasons.${el}`)}</Label>),
+      row.reasons.map((el) => (
+        <Label key={el} color="default">
+          {t(`feedbacks.reasons.${el}`)}
+        </Label>
+      )),
   },
   {
     field: 'id',

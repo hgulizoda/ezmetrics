@@ -36,7 +36,7 @@ export const useAllTableFilter = (defaultPage = 0, defaultPageSize = 100) => {
         });
 
         return params;
-      });
+      }, { replace: true });
     },
     [setSearchParams]
   );
@@ -63,7 +63,7 @@ export const useAllTableFilter = (defaultPage = 0, defaultPageSize = 100) => {
           }
         });
         return params;
-      });
+      }, { replace: true });
     },
     [setFilter, setSearchParams]
   );

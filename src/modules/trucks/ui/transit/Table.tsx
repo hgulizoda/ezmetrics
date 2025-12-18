@@ -1,4 +1,5 @@
 import { useState, useRef, useMemo } from 'react';
+import { useLocation } from 'react-router-dom';
 import { Trans } from 'react-i18next';
 
 import { Box, Button } from '@mui/material';
@@ -22,6 +23,7 @@ import DataGridCustom from '../../../../components/data-grid-view/data-grid-cust
 
 export const TransitTrucks = () => {
   const { t } = useTranslate('lang');
+  const location = useLocation();
   const { mutateAsync, isPending } = useBackTruck('to_china_border');
   const [truckID, setTruckID] = useState<string>('');
   const { onPaginationChange, pagination, search, onSearchChange } = useTrucksPagination();
@@ -74,7 +76,13 @@ export const TransitTrucks = () => {
       <DataGridCustom
         search={search}
         onSearchChange={onSearchChange}
-        col={baseColumns({ action: handleRowChange, t, formatDate, back: backTruckPrevStatus })}
+        col={baseColumns({
+          action: handleRowChange,
+          t,
+          formatDate,
+          back: backTruckPrevStatus,
+          from: `${location.pathname}${location.search}`,
+        })}
         data={data?.trucks || []}
         checkBoxSelection
         hasTotal={false}

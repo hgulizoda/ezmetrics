@@ -24,7 +24,7 @@ export const useTrucksPagination = (defaultPage = 0, defaultPageSize = 100) => {
         });
 
         return params;
-      });
+      }, { replace: true });
     },
     [setSearchParams]
   );

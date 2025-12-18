@@ -36,7 +36,7 @@ export const useChinaWarehouseTableFilter = (defaultPage = 0, defaultPageSize = 
         });
 
         return params;
-      });
+      }, { replace: true });
     },
     [setSearchParams]
   );
@@ -63,7 +63,7 @@ export const useChinaWarehouseTableFilter = (defaultPage = 0, defaultPageSize = 
           }
         });
         return params;
-      });
+      }, { replace: true });
     },
     [setFilter, setSearchParams]
   );

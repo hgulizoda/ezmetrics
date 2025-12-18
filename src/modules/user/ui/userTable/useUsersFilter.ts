@@ -26,7 +26,7 @@ export const useUsersFilter = (defaultPage = 0, defaultPageSize = 100) => {
         });
 
         return params;
-      });
+      }, { replace: true });
     },
     [setSearchParams]
   );

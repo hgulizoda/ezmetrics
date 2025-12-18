@@ -14,6 +14,7 @@ interface IProps {
   t: TFunction;
   formatDate: any;
   back: (id: string) => void;
+  from?: string;
 }
 
 export const baseColumns = ({
@@ -21,13 +22,14 @@ export const baseColumns = ({
   t,
   formatDate,
   back,
+  from,
 }: IProps): GridColDef<ITruckAdapter>[] => [
   {
     field: 'name',
     headerName: t('packages.tableTitle.truckID'),
     flex: 1,
     renderCell: ({ row }) => (
-      <Link style={{ color: 'inherit' }} to={`truck/${row.id}`}>
+      <Link style={{ color: 'inherit' }} to={`truck/${row.id}`} state={from ? { from } : undefined}>
         {row.name}
       </Link>
     ),

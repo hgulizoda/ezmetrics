@@ -1,4 +1,5 @@
 import { useRef, useMemo, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 
 import { Box } from '@mui/material';
 
@@ -16,6 +17,7 @@ import DataGridCustom from '../../../../components/data-grid-view/data-grid-cust
 
 export const ChinaBorderTrucks = () => {
   const { t } = useTranslate('lang');
+  const location = useLocation();
 
   const { onPaginationChange, pagination, search, onSearchChange } = useTrucksPagination();
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
@@ -49,7 +51,12 @@ export const ChinaBorderTrucks = () => {
   return (
     <Box height={700}>
       <DataGridCustom
-        col={baseColumns({ action: handleRowChange, t, formatDate })}
+        col={baseColumns({
+          action: handleRowChange,
+          t,
+          formatDate,
+          from: `${location.pathname}${location.search}`,
+        })}
         data={data?.trucks || []}
         multiStatusTitle={t('multiStatusActions.sendTransit')}
         checkBoxSelection

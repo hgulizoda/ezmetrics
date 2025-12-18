@@ -1,4 +1,5 @@
 import { useState, useRef, useMemo } from 'react';
+import { useLocation } from 'react-router-dom';
 
 import { Box, Button } from '@mui/material';
 import LoadingButton from '@mui/lab/LoadingButton';
@@ -19,6 +20,7 @@ import DataGridCustom from '../../../../components/data-grid-view/data-grid-cust
 
 export const DeliveredTrucks = () => {
   const { t } = useTranslate('lang');
+  const location = useLocation();
   const { mutateAsync, isPending } = useBackTruck('in_customs');
   const [truckID, setTruckID] = useState<string>('');
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
@@ -72,7 +74,13 @@ export const DeliveredTrucks = () => {
       <DataGridCustom
         search={search}
         onSearchChange={onSearchChange}
-        col={baseColumns({ action: handleRowChange, t, formatDate, back: backTruckPrevStatus })}
+        col={baseColumns({
+          action: handleRowChange,
+          t,
+          formatDate,
+          back: backTruckPrevStatus,
+          from: `${location.pathname}${location.search}`,
+        })}
         data={data?.trucks || []}
         checkBoxSelection
         hasTotal={false}

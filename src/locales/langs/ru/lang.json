@@ -32,6 +32,7 @@
   "statistics": {
     "AllTitle": "Общая аналитика",
     "title": "Статистика",
+    "detailTitle": "Заказы пользователя",
     "table": {
       "fullName": "Ф.И.О",
       "userId": "ID пользователя",

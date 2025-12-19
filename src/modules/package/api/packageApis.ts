@@ -40,10 +40,15 @@ export const chinaWarehouse = {
 
 // Get User Profile Orders
 export const profileOrders = {
-  getAll: (id: string, status: string) =>
-    axiosInstance
-      .get<{ data: IUserProfileRes[] }>(`orders/user/${id}/orders?status=${status}`)
-      .then((res) => res.data),
+  getAll: (id: string, status: string | undefined, params?: IFilterProps) => {
+    const queryParams: IFilterProps = { ...params };
+    if (status && status.trim()) {
+      queryParams.status = status;
+    }
+    return axiosInstance
+      .get<IApiResponse<IUserProfileRes> & { totals?: { total_weight: number; total_capacity: number; total_counts: number; total_places: number } }>(`orders/user/${id}/orders`, { params: queryParams })
+      .then((res) => res.data);
+  },
 };
 
 // Get single order

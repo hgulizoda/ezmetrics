@@ -17,6 +17,7 @@ export const useGetTruckDetails = ({ id, params }: IProps) => {
     queryFn: () => truckDetails.getOrder({ id, params }),
     select: (res) => ({
       orders: truckDetailsAdapter(get(res, 'data.orders', [])),
+      average_weight: get(res, 'data.average_weight', 0),
       name: get(res, 'data.name'),
       totals: get(res, 'data.totals') as any,
       createdAt: get(res, 'data.created_at', '--'),
@@ -37,6 +38,7 @@ export const useGetTruckDetailsOrders = ({ id, params }: IProps) => {
       orders: truckDetailsAdapter(get(res, 'data.orders', [])),
       name: get(res, 'data.name'),
       totals: get(res, 'data.totals') as any,
+      average_weight: get(res, 'data.average_weight', 0),
       containerNumber: get(res, 'data.container_number', '--'),
       arrivalDate: get(res, 'data.estimated_arrival_date', '--'),
       createdAt: get(res, 'data.created_at', ''),

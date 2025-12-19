@@ -131,6 +131,7 @@ export const TruckOrders = () => {
             total_weight: data?.totals?.total_weight || 0,
             counts: data?.totals?.total_count || 0,
             places: data?.totals?.total_places || 0,
+            average_weight: data?.average_weight || 0,
           }}
         />
       </Box>

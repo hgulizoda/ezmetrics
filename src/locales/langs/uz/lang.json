@@ -292,6 +292,7 @@
     "truckStatus": "Holat",
     "createdTime": "Jo'natma tuzilgan sana",
     "estimatedArrivalTime": "Taxminiy yetkazish sanasi",
+    "averageWeight": "O'rtacha og'irlik",
     "form": {
       "title": "Yangi jo'natma qo'shish",
       "titleUpdate": "Jo'natmani taxrirlash",

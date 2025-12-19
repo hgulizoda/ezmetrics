@@ -110,11 +110,6 @@ export default function DataGridCustom<T>({
                 {fNumber(totals?.total_weight ?? 0) || 0} {t('profile.ordersTabs.card.kg')};
               </Typography>
               -
-              {totals?.average_weight ? (
-                <Typography variant="subtitle2">
-                  ({totals?.average_weight?.toFixed(1) || 0} {t('profile.ordersTabs.card.kg')});
-                </Typography>
-              ) : null}
               {totals?.places && (
                 <Typography variant="subtitle2">
                   {t('profile.ordersTabs.card.places')}: {fPlaces};
@@ -122,9 +117,15 @@ export default function DataGridCustom<T>({
               )}
               {totals?.counts && (
                 <Typography variant="subtitle2">
-                  {t('profile.ordersTabs.card.counts')}: {fCounts}
+                  {t('profile.ordersTabs.card.counts')}: {fCounts};
                 </Typography>
               )}
+              {totals?.average_weight ? (
+                <Typography variant="subtitle2">
+                  {t('transport.averageWeight')}: {totals?.average_weight.toLocaleString() || 0}{' '}
+                  {t('profile.ordersTabs.card.kg')}
+                </Typography>
+              ) : null}
             </Box>
           </Box>
         </Box>

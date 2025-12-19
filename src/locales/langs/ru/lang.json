@@ -296,6 +296,7 @@
     "truckStatus": "Статус",
     "createdTime": "Дата создания отправки",
     "estimatedArrivalTime": "Предполагаемая дата доставки",
+    "averageWeight": "Средний вес",
     "form": {
       "title": "Добавить новую отправку",
       "titleUpdate": "Редактирование отправки",

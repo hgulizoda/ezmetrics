@@ -1,21 +1,23 @@
 import { get } from 'lodash';
+import { useRef, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { useRef, useMemo } from 'react';
 
 import { Box } from '@mui/material';
+
+import { useFormatDate } from 'src/utils/iso-date';
+
+import { useTranslate } from 'src/locales';
+import { user } from 'src/modules/user/api/userApi';
+import { IUserRes } from 'src/modules/user/types/User';
+import { useAllTableFilter } from 'src/modules/package/ui/allPackages/useFilter';
+import { useGetProfileOrders } from 'src/modules/package/hook/useGetProfileOrders';
 
 import { ErrorData } from 'src/components/error-data/error-data';
 import DataGridCustom from 'src/components/data-grid-view/data-grid-custom';
 
-import { useTranslate } from 'src/locales';
-import { useAllTableFilter } from 'src/modules/package/ui/allPackages/useFilter';
-import { useGetProfileOrders } from 'src/modules/package/hook/useGetProfileOrders';
-import { user } from 'src/modules/user/api/userApi';
-import { IUserRes } from 'src/modules/user/types/User';
 import { IApiResponse } from 'src/types/ApiRes';
 import { useShipmentTypeLabels, useShipmentTooltipTypeLabels } from 'src/types/TableStatus';
-import { useFormatDate } from 'src/utils/iso-date';
 
 import { userStatisticsDetailColumns } from './detailCol';
 
@@ -41,29 +43,19 @@ const UserStatisticsDetailTable = () => {
     enabled: !!userId && !isMongoObjectId,
   });
 
-  // Use MongoDB _id if userId is ObjectId, otherwise use userData from query
-  // Only use userData if it's loaded (not undefined)
-  // If userId is not ObjectId and userData is not loaded yet, userObjectId will be null
   const userObjectId = isMongoObjectId ? userId : (userData ?? null);
 
-  // Only fetch orders when we have a valid userObjectId
-  // If userId is not ObjectId, wait for userData to be loaded
-  // Pass empty string only if userObjectId is null, hook's enabled will prevent the call
   const {
     profileOrders,
     totals,
     pagination: paginationData,
     isLoading: isLoadingOrders,
     error,
-  } = useGetProfileOrders(
-    userObjectId ?? '',
-    undefined,
-    {
-      page: pagination.page + 1,
-      limit: pagination.pageSize,
-      search,
-    }
-  );
+  } = useGetProfileOrders(userObjectId ?? '', undefined, {
+    page: pagination.page + 1,
+    limit: pagination.pageSize,
+    search,
+  });
 
   const rowCountRef = useRef(paginationData?.total_records || 0);
 

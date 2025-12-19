@@ -32,12 +32,6 @@ export const userStatisticsDetailColumns = ({
     renderCell: ({ row }) => <Box>{row.description}</Box>,
   },
   {
-    field: 'orderId',
-    headerName: t('packages.tableTitle.orderId'),
-    flex: 1,
-    renderCell: ({ row }) => <Box>{row.orderId}</Box>,
-  },
-  {
     field: 'status',
     headerName: t('profile.ordersTabs.card.status'),
     flex: 1,

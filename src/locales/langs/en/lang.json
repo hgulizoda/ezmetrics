@@ -73,6 +73,21 @@
       "secondContentUnVerify": "Revoke confirmation of user(s) registration on the NEXUS platform"
     }
   },
+  "statistics": {
+    "AllTitle": "General Analytics",
+    "title": "Statistics",
+    "detailTitle": "User Orders",
+    "table": {
+      "fullName": "Full Name",
+      "userId": "User ID",
+      "phone": "Phone",
+      "company": "Company",
+      "totalOrders": "Total Orders",
+      "totalWeight": "Total Weight",
+      "totalCapacity": "Total Capacity",
+      "totalPlaces": "Total Places"
+    }
+  },
   "packages": {
     "title": "Shipments",
     "trucks": "Trucks",

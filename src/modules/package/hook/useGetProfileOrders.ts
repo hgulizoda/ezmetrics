@@ -1,19 +1,30 @@
 import { get } from 'lodash';
-import { useParams } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
 
 import { profileOrders } from '../api/packageApis';
 import { getProfileOrdersAdapter } from '../libs/userProfileOrdersAdapter';
+import { IFilterProps } from '../types/Filter';
 
-export const useGetProfileOrders = (id: string, status: string) => {
-  const params = useParams();
+export const useGetProfileOrders = (
+  id: string,
+  status: string | undefined,
+  params?: IFilterProps
+) => {
   const { data, isLoading, error } = useQuery({
-    queryKey: ['profileOrders', params],
-    queryFn: () => profileOrders.getAll(id, status),
-    select: (res) => getProfileOrdersAdapter(get(res, 'data', [])),
+    queryKey: ['profileOrders', id, status, params?.page, params?.limit, params?.search],
+    queryFn: () => profileOrders.getAll(id, status, params),
+    enabled: !!id && id.trim() !== '',
+    select: (res) => ({
+      orders: getProfileOrdersAdapter(get(res, 'data', [])),
+      totals: get(res, 'totals'),
+      pagination: get(res, 'pagination'),
+    }),
   });
+  
   return {
-    profileOrders: data,
+    profileOrders: data?.orders,
+    totals: data?.totals,
+    pagination: data?.pagination,
     isLoading,
     error,
   };

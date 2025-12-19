@@ -1,8 +1,10 @@
 import { TFunction } from 'i18next';
+import { Link } from 'react-router-dom';
 
 import { GridColDef } from '@mui/x-data-grid';
 
 import { fNumber } from 'src/utils/format-number';
+import { paths } from 'src/routes/paths';
 
 import { IStat } from '../types/Stats';
 
@@ -11,6 +13,11 @@ export const column = (t: TFunction): GridColDef<IStat>[] => [
     headerName: t('statistics.table.fullName'),
     field: 'fullName',
     flex: 1,
+    renderCell: ({ row }) => (
+      <Link to={`${paths.dashboard.statistics}/${row.userId}`} style={{ color: 'inherit' }}>
+        {row.fullName}
+      </Link>
+    ),
   },
   {
     headerName: t('statistics.table.userId'),

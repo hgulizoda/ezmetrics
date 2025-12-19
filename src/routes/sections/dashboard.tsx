@@ -27,6 +27,7 @@ const RemovedBonusRoot = lazy(() => import('src/pages/dashboard/bonus/removed'))
 const BonusPageRoot = lazy(() => import('src/pages/dashboard/bonus'));
 
 const Statistics = lazy(() => import('src/pages/dashboard/statistics'));
+const StatisticsDetail = lazy(() => import('src/pages/dashboard/statistics/detail'));
 
 export const dashboardRoutes = [
   {
@@ -92,6 +93,10 @@ export const dashboardRoutes = [
       {
         path: 'statistics',
         element: <Statistics />,
+      },
+      {
+        path: 'statistics/:userId',
+        element: <StatisticsDetail />,
       },
       ...packagesRoutes,
       ...usersRoutes,

@@ -47,6 +47,21 @@
       "secondContentUnVerify": "确认用户未在NEXUS平台注册"
     }
   },
+  "statistics": {
+    "AllTitle": "总体分析",
+    "title": "统计",
+    "detailTitle": "用户订单",
+    "table": {
+      "fullName": "全名",
+      "userId": "用户ID",
+      "phone": "电话",
+      "company": "公司",
+      "totalOrders": "总订单",
+      "totalWeight": "总重量",
+      "totalCapacity": "总容量",
+      "totalPlaces": "总位置"
+    }
+  },
   "packages": {
     "title": "包裹",
     "trucks": "卡车",

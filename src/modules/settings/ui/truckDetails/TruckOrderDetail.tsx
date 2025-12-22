@@ -228,8 +228,6 @@ export const TruckOrderDetail = ({ orderID, onClose }: Props) => {
                       src={item}
                       alt="J"
                       loading="lazy"
-                      ratio="1/1"
-                      width={1}
                       style={{
                         height: '100%',
                         borderRadius: 16,

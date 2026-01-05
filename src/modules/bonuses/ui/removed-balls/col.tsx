@@ -1,6 +1,7 @@
+import { TFunction } from 'i18next';
+
 import { Button } from '@mui/material';
 import { GridColDef, GridActionsCellItem } from '@mui/x-data-grid';
-import { TFunction } from 'i18next';
 
 import { fNumber } from 'src/utils/format-number';
 

@@ -3,13 +3,15 @@ import { useNavigate } from 'react-router-dom';
 
 import { Box, Container, Typography, IconButton } from '@mui/material';
 
-import { allLangs, useTranslate } from 'src/locales';
 import { paths } from 'src/routes/paths';
-import Iconify from 'src/components/iconify';
-import UserStatisticsDetailTable from 'src/modules/statistics/ui/userDetailTable';
+
+import { allLangs, useTranslate } from 'src/locales';
 import AccountPopover from 'src/layouts/common/account-popover';
 import SettingsButton from 'src/layouts/common/settings-button';
 import { LanguagePopover } from 'src/layouts/common/language-popover';
+import UserStatisticsDetailTable from 'src/modules/statistics/ui/userDetailTable';
+
+import Iconify from 'src/components/iconify';
 
 export default function StatisticsDetailPage() {
   const { t } = useTranslate('lang');

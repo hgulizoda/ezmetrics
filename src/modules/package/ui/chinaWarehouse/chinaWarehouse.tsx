@@ -104,11 +104,11 @@ const ChinaWarehouseTable = () => {
 
   // Calculate average weight for selected rows
   const selectedAverageWeight =
-    selectedRows.length > 0 ? selectedTotals.total_weight / selectedRows.length : 0;
+    selectedRows.length > 0 ? selectedTotals.total_weight / selectedTotals.total_capacity : 0;
 
   // Calculate average weight for all data
   const allDataAverageWeight =
-    data.orders.length > 0 ? data.totals.total_weight / data.orders.length : 0;
+    data.orders.length > 0 ? data.totals.total_weight / data.totals.total_capacity : 0;
 
   // Use selected totals if rows are selected, otherwise use all data totals
   // Includes both total_weight (sum) and average_weight (average) separately

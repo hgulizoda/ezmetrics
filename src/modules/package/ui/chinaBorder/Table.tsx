@@ -51,7 +51,7 @@ export const ChinaBorderTable = () => {
   const { mutateAsync, isPending } = useArchivePackage(rowSelectionModel, 'residuePackages');
   const { data, error, isLoading } = useGetWithoutTrucksPackages({
     page: pagination.page + 1,
-    limit: 1,
+    limit: pagination.pageSize,
     status: 'to_china_border',
     search,
     ...filter,

@@ -1,9 +1,9 @@
 import { get } from 'lodash';
 import { useQuery } from '@tanstack/react-query';
 
+import { IFilterProps } from '../types/Filter';
 import { profileOrders } from '../api/packageApis';
 import { getProfileOrdersAdapter } from '../libs/userProfileOrdersAdapter';
-import { IFilterProps } from '../types/Filter';
 
 export const useGetProfileOrders = (
   id: string,
@@ -20,7 +20,7 @@ export const useGetProfileOrders = (
       pagination: get(res, 'pagination'),
     }),
   });
-  
+
   return {
     profileOrders: data?.orders,
     totals: data?.totals,

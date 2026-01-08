@@ -101,7 +101,10 @@ const TableAllPackages = () => {
         initialState={{
           pagination: { paginationModel: pagination },
         }}
-        totals={data.totals}
+        totals={{
+          ...data.totals,
+          average_weight: data.totals.total_weight / data.totals.total_capacity,
+        }}
         rowCount={rowCount}
         filterComponent={
           <AllTableFilter

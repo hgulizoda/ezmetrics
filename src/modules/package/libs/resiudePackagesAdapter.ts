@@ -21,6 +21,7 @@ export const resiuepackages = (item: IResiduePackageRes): IResiduePackage => ({
   truck: item.truck ?? '',
   description: item.description ?? '',
   containerNumber: item.container_number ?? '',
+  isCustomsByUser: item.isCustomsByUser ?? false,
 });
 
 export const residuePackagesAdapter = (data?: IResiduePackageRes[]) =>

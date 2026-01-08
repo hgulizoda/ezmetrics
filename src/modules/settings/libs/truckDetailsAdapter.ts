@@ -13,6 +13,7 @@ const truckDetails = (item: ITruckOrderRes): ITruckDetails => ({
   description: item.description ?? '',
   totalCount: item.total_count ?? 0,
   totalPlace: item.total_places ?? 0,
+  isCustomsByUser: item.isCustomsByUser ?? false,
 });
 
 export const truckDetailsAdapter = (data: ITruckOrderRes[]) => data?.map(truckDetails) || [];

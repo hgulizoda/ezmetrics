@@ -30,6 +30,7 @@ export const getProfileOrder = (item: IUserProfileRes): IProfileOrders => ({
   totalCount: item.total_count ?? 0,
   totalPlaces: item.total_places ?? 0,
   note: item.note ?? '',
+  isCustomsByUser: item.isCustomsByUser ?? false,
 });
 
 export const getProfileOrdersAdapter = (profileOrders: IUserProfileRes[]) =>

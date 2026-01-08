@@ -9,7 +9,7 @@ import { Card, Grid, CardHeader, CardContent } from '@mui/material';
 
 import { useTranslate } from 'src/locales';
 
-import FormProvider, { RHFTextField, RHFPhoneField } from 'src/components/hook-form';
+import FormProvider, { RHFSwitch, RHFTextField, RHFPhoneField } from 'src/components/hook-form';
 
 import Iconify from '../../../../components/iconify';
 import { useBoolean } from '../../../../hooks/use-boolean';
@@ -33,6 +33,7 @@ const UserInformation = () => {
       birth_date: new Date(),
       avatar: '',
       user_id: '',
+      isBonusEnabled: true,
     },
     resolver: yupResolver(userScheme),
   });
@@ -48,6 +49,7 @@ const UserInformation = () => {
       form.setValue('user_id', profile.userUniqueId, {
         shouldDirty: true,
       });
+      form.setValue('isBonusEnabled', profile.isBonusEnabled, { shouldDirty: true });
     }
   }, [form, profile]);
 
@@ -138,6 +140,13 @@ const UserInformation = () => {
                 label={t('profile.profileTab.userID')}
                 type="id"
                 InputLabelProps={{ shrink: true }}
+                disabled={editUser.value}
+              />
+            </Grid>
+            <Grid item xs={4}>
+              <RHFSwitch
+                name="isBonusEnabled"
+                label={t('users.table.isBonusEnabled')}
                 disabled={editUser.value}
               />
             </Grid>

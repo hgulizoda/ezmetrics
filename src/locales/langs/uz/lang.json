@@ -130,7 +130,10 @@
       "orders": "Jo'natmalar",
       "status": "Holat",
       "verifed": "Tasdiqlangan",
-      "notVerifed": "Tasdiqlanmagan"
+      "notVerifed": "Tasdiqlanmagan",
+      "isBonusEnabledTrue": "Faol",
+      "isBonusEnabledFalse": "Faol emas",
+      "isBonusEnabled": "Bonus holati"
     },
     "actions": {
       "giveVerification": "Tasdiqlash",
@@ -237,7 +240,8 @@
       "description": "Tovar nomini kiriting",
       "short": "Izoh kiriting",
       "imageUpload": "Fayl tanlang",
-      "imageUploadDescription": "Faylarni bu yerga torting yoki qurilmangizdan tanlang"
+      "imageUploadDescription": "Faylarni bu yerga torting yoki qurilmangizdan tanlang",
+      "isCustomsByUser": "Bojxona foydalanuvchi tomonidan amalga oshiriladi"
     },
     "actions": {
       "chinaBorder": "Jo'natildiga",

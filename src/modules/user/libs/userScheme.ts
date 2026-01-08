@@ -11,6 +11,7 @@ export const userScheme = yup.object().shape({
     .string()
     .min(7, "4 raqamdan oshmasligi va kam bo'lmasligi kerak")
     .max(7, "4 raqamdan oshmasligi va kam bo'lmasligi kerak"),
+  isBonusEnabled: yup.boolean(),
 });
 
 export type UserFormType = yup.InferType<typeof userScheme>;

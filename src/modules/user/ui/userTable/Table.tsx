@@ -151,6 +151,7 @@ const UsersTable = () => {
             multiStatusTitle={t('users.actions.giveVerification')}
             onSearchChange={onSearchChange}
             search={search}
+            getRowClassName={({ row }) => row.isBonusEnabled ? '' : 'colored-row'}
           />
         </Box>
 

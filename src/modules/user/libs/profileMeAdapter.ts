@@ -11,4 +11,5 @@ export const getProfileAdapter = (item: IProfileMeRes): IProfileMe => ({
   id: item._id ?? '',
   userId: item.user?._id ?? '',
   userUniqueId: item.user?.user_id ?? '',
+  isBonusEnabled: item.isBonusEnabled ?? false,
 });

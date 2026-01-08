@@ -23,6 +23,7 @@ import FormProvider, {
   RHFUpload,
   RHFTextField,
   RHFAutocomplete,
+  RHFSwitch,
 } from 'src/components/hook-form';
 
 import { useCreatePackage } from '../../hook/newPackage';
@@ -57,6 +58,7 @@ const CreatePackageForm = () => {
       order_weight: '',
       total_count: '',
       total_places: '',
+      isCustomsByUser: false,
     },
     resolver: yupResolver(createPackageScheme),
   });
@@ -72,6 +74,7 @@ const CreatePackageForm = () => {
       form.setValue('order_weight', singleOrderData.orderWeight ?? '');
       form.setValue('user.label', singleOrderData.user.userId ?? '');
       form.setValue('user.value', singleOrderData.user.id ?? '');
+      form.setValue('isCustomsByUser', singleOrderData.isCustomsByUser ?? false);
     }
   }, [form, params.id, singleOrderData]);
 
@@ -221,12 +224,15 @@ const CreatePackageForm = () => {
                   />
                 </Grid>
 
-                <Grid item xs={12}>
+                <Grid item xs={6}>
                   <RHFTextField
                     name="description"
                     InputLabelProps={{ shrink: true }}
                     label={t('packages.createPackageForm.description')}
                   />
+                </Grid>
+                <Grid item xs={6}>
+                  <RHFSwitch name="isCustomsByUser" label={t('packages.createPackageForm.isCustomsByUser')} />
                 </Grid>
                 <Grid item xs={12}>
                   <Typography variant="subtitle2" mb={1}>
@@ -234,6 +240,7 @@ const CreatePackageForm = () => {
                   </Typography>
                   <RHFEditor name="note" placeholder={t('packages.createPackageForm.short')} />
                 </Grid>
+                
                 <Grid item xs={12}>
                   <RHFUpload
                     multiple

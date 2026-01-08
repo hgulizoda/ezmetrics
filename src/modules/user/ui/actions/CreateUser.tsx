@@ -12,7 +12,11 @@ import { useTranslate } from 'src/locales';
 import { useCreateUser } from '../../hook/user';
 import RHFDatePicker from '../../../../components/hook-form/rhf-datepicker';
 import { userSchemeRequried, UserFormTypeRequired } from '../../libs/useSchemeRequired';
-import FormProvider, { RHFTextField, RHFPhoneField } from '../../../../components/hook-form';
+import FormProvider, {
+  RHFSwitch,
+  RHFTextField,
+  RHFPhoneField,
+} from '../../../../components/hook-form';
 
 interface IProps {
   open: boolean;
@@ -30,6 +34,7 @@ export const CreateUser = ({ open, onClose }: IProps) => {
       company_name: '',
       birth_date: new Date(),
       avatar: '',
+      isBonusEnabled: false,
     },
     resolver: yupResolver(userSchemeRequried),
   });
@@ -59,6 +64,9 @@ export const CreateUser = ({ open, onClose }: IProps) => {
             </Grid>
             <Grid item xs={6}>
               <RHFTextField fullWidth name="company_name" label={t('users.company')} />
+            </Grid>
+            <Grid item xs={6}>
+              <RHFSwitch name="isBonusEnabled" label={t('users.table.isBonusEnabled')} />
             </Grid>
           </Grid>
         </DialogContent>

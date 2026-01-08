@@ -14,6 +14,7 @@ export interface IUserRes {
     birth_date: string;
     company_name: string;
     avatar: string;
+    isBonusEnabled?: boolean;
   };
 }
 
@@ -29,4 +30,5 @@ export interface IUser {
   userId: string;
   fullName: string;
   createdAt: string;
+  isBonusEnabled?: boolean;
 }

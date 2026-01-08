@@ -154,6 +154,12 @@ export default function DataGridCustom<T>({
       <DataGrid
         loading={loading}
         sx={{
+          '& .colored-row': {
+            backgroundColor: theme.palette.success.lighter,
+            '&:hover': {
+              backgroundColor: theme.palette.success.lighter,
+            },
+          },
           [`& .${gridClasses.cell}`]: {
             borderBottom: 'none',
             borderRight: `1px solid ${theme.palette.divider}`,
@@ -227,6 +233,8 @@ export default function DataGridCustom<T>({
         rowSelectionModel={rowSelectionModel}
         checkboxSelection={checkBoxSelection}
         paginationMode="server"
+        getRowClassName={({ row }) => row.isCustomsByUser ? 'colored-row' : ''}
+        
         rowCount={rowCount}
         density={density}
         {...props}

@@ -7,6 +7,7 @@ export const userSchemeRequried = yup.object().shape({
   company_name: yup.string(),
   birth_date: yup.mixed().required(),
   avatar: yup.string().optional(),
+  isBonusEnabled: yup.boolean().required(),
 });
 
 export type UserFormTypeRequired = yup.InferType<typeof userSchemeRequried>;

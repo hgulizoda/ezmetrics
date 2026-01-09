@@ -27,6 +27,7 @@ export interface IUserProfileRes {
     first_name: string;
     last_name: string;
   };
+  isCustomsByUser?: boolean;
   total_count: number;
   total_places: number;
 }
@@ -62,4 +63,5 @@ export interface IProfileOrders {
   totalCount: number;
   totalPlaces: number;
   note: string;
+  isCustomsByUser?: boolean;
 }

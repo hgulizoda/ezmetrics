@@ -28,7 +28,6 @@ export const baseColumns = ({
   onDeleteUser,
   t,
   userStatus,
-  formatDate,
 }: Props): GridColDef<IUser>[] => [
   {
     field: 'fullName',
@@ -62,10 +61,16 @@ export const baseColumns = ({
     ),
   },
   {
-    field: 'created_at',
-    headerName: t('users.created'),
+    field: 'isBonusEnabled',
+    headerName: t('users.table.isBonusEnabled'),
     flex: 1,
-    renderCell: ({ row }) => (row.createdAt ? formatDate(row.createdAt) : '--'),
+    renderCell: ({ row }) => (
+      <Label color={row.isBonusEnabled ? 'success' : 'error'}>
+        {row.isBonusEnabled
+          ? t('users.table.isBonusEnabledTrue')
+          : t('users.table.isBonusEnabledFalse')}
+      </Label>
+    ),
   },
   {
     field: 'actions',

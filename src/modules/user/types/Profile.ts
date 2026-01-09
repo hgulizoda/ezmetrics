@@ -15,6 +15,7 @@ export interface IProfileMeRes {
   is_deleted: boolean;
   last_name: string;
   updated_at: string;
+  isBonusEnabled: boolean;
 }
 
 export interface IProfileMe {
@@ -28,4 +29,5 @@ export interface IProfileMe {
   id: string;
   userId: string;
   userUniqueId: string;
+  isBonusEnabled: boolean;
 }

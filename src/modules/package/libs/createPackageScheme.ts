@@ -12,6 +12,7 @@ export const createPackageScheme = yup.object().shape({
   description: yup.string().optional(),
   note: yup.string().optional(),
   images: yup.array().of(yup.mixed<string | File>()),
+  isCustomsByUser: yup.boolean().optional(),
 });
 
 export type CreatePackageFormType = yup.InferType<typeof createPackageScheme>;

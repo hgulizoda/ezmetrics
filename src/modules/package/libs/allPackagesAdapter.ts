@@ -18,6 +18,7 @@ export const getPackage = (item: IAllPackagesRes): IAllPackagesAdapter => ({
   packageCapacity: item.order_capacity ?? 0,
   description: item.description ?? '',
   containerNumber: item.container_number ?? '',
+  isCustomsByUser: item.isCustomsByUser ?? false,
 });
 
 export const getAllPackagesAdapter = (data?: IAllPackagesRes[]) => data?.map(getPackage) || [];

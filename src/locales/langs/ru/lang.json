@@ -173,7 +173,10 @@
       "orders": "Отправки",
       "status": "Статус",
       "verifed": "Подтверждён",
-      "notVerifed": "Не подтверждён"
+      "notVerifed": "Не подтверждён",
+      "isBonusEnabledTrue": "Активен",
+      "isBonusEnabledFalse": "Неактивен",
+      "isBonusEnabled": "Статус бонусов"
     },
     "actions": {
       "giveVerification": "Подтвердить",
@@ -241,7 +244,8 @@
       "description": "Введите наименование товара",
       "short": "Введите примечание",
       "imageUpload": "Выберите файл",
-      "imageUploadDescription": "Перетащите файлы сюда или выберите с устройства"
+      "imageUploadDescription": "Перетащите файлы сюда или выберите с устройства",
+      "isCustomsByUser": "Таможня за пользователя"
     },
     "actions": {
       "chinaBorder": "На китайскую границу",
@@ -283,7 +287,9 @@
       "pleaseTryAgain": "Пожалуйста, попробуйте снова.",
       "noDataForRequest": "Данные по запросу отсутствуют.",
       "backTruckToPrevTitle": "Отменить отправку",
-      "backTruckToPrevContent": "Вы действительно хотите отменить эту отправку?"
+      "backTruckToPrevContent": "Вы действительно хотите отменить эту отправку?",
+      "takeAllFromTruck": "Вы действительно хотите выгрузить все отправки из грузовика?",
+      "takeAll": "Выгрузить все"
     },
     "delivered": {
       "title": "Доставка",

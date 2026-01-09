@@ -14,6 +14,7 @@ export interface IGetChinaWarehouseRes {
   status_updated_at: string;
   total_count: number;
   total_places: number;
+  isCustomsByUser: boolean;
   user: {
     _id: string;
     phone_number: string;
@@ -40,4 +41,5 @@ export interface IChinaWarehouse {
   totalCount: number;
   totalPlaces: number;
   description: string;
+  isCustomsByUser: boolean;
 }

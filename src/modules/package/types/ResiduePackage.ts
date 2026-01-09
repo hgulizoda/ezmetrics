@@ -16,6 +16,7 @@ export interface IResiduePackageRes {
   total_places: number;
   order_type: string;
   container_number: string;
+  isCustomsByUser: boolean;
   user: {
     _id: string;
     phone_number: string;
@@ -46,6 +47,7 @@ export interface IResiduePackage {
   truck: string;
   description: string;
   containerNumber: string;
+  isCustomsByUser: boolean;
 }
 
 export interface IChinaBorderUpdate {

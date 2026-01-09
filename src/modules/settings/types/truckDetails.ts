@@ -21,6 +21,7 @@ export interface ITruckOrderRes {
   order_type: string;
   total_count: number;
   total_places: number;
+  isCustomsByUser: boolean;
 }
 
 interface UserDetails {
@@ -42,4 +43,5 @@ export interface ITruckDetails {
   description: string;
   totalCount: number;
   totalPlace: number;
+  isCustomsByUser: boolean;
 }

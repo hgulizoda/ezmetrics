@@ -27,6 +27,7 @@ export interface IAllPackagesRes {
   description: string;
   truck: string;
   container_number: string;
+  isCustomsByUser: boolean;
 }
 
 export interface IAllPackagesAdapter {
@@ -47,4 +48,5 @@ export interface IAllPackagesAdapter {
   truck: string;
   description: string;
   containerNumber: string;
+  isCustomsByUser: boolean;
 }

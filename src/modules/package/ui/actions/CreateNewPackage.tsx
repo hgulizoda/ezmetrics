@@ -21,9 +21,9 @@ import Iconify from 'src/components/iconify';
 import FormProvider, {
   RHFEditor,
   RHFUpload,
+  RHFSwitch,
   RHFTextField,
   RHFAutocomplete,
-  RHFSwitch,
 } from 'src/components/hook-form';
 
 import { useCreatePackage } from '../../hook/newPackage';
@@ -232,7 +232,10 @@ const CreatePackageForm = () => {
                   />
                 </Grid>
                 <Grid item xs={6}>
-                  <RHFSwitch name="isCustomsByUser" label={t('packages.createPackageForm.isCustomsByUser')} />
+                  <RHFSwitch
+                    name="isCustomsByUser"
+                    label={t('packages.createPackageForm.isCustomsByUser')}
+                  />
                 </Grid>
                 <Grid item xs={12}>
                   <Typography variant="subtitle2" mb={1}>
@@ -240,7 +243,7 @@ const CreatePackageForm = () => {
                   </Typography>
                   <RHFEditor name="note" placeholder={t('packages.createPackageForm.short')} />
                 </Grid>
-                
+
                 <Grid item xs={12}>
                   <RHFUpload
                     multiple

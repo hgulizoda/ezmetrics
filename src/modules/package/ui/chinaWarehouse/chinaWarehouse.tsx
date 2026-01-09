@@ -88,10 +88,8 @@ const ChinaWarehouseTable = () => {
   };
   const sortedOrders = getMatchingObjects<IChinaWarehouse>(data.orders, rowSelectionModel);
 
-  // Get full selected rows for totals calculation
   const selectedRows = data.orders.filter((order) => rowSelectionModel.includes(order.id));
 
-  // Calculate totals for selected rows
   const selectedTotals = selectedRows.reduce(
     (acc, order) => ({
       total_capacity: acc.total_capacity + (order.packageCapacity || 0),
@@ -101,17 +99,10 @@ const ChinaWarehouseTable = () => {
     }),
     { total_capacity: 0, total_weight: 0, counts: 0, places: 0 }
   );
-
-  // Calculate average weight for selected rows
   const selectedAverageWeight =
     selectedRows.length > 0 ? selectedTotals.total_weight / selectedTotals.total_capacity : 0;
-
-  // Calculate average weight for all data
   const allDataAverageWeight =
     data.orders.length > 0 ? data.totals.total_weight / data.totals.total_capacity : 0;
-
-  // Use selected totals if rows are selected, otherwise use all data totals
-  // Includes both total_weight (sum) and average_weight (average) separately
   const displayTotals =
     rowSelectionModel.length > 0
       ? {

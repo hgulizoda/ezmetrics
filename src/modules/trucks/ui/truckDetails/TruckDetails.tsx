@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { enqueueSnackbar } from 'notistack';
 import { useNavigate } from 'react-router-dom';
 import { useParams, useLocation } from 'react-router';
@@ -127,6 +127,41 @@ export const TruckOrders = () => {
   const { columnVisibilityModel, handleColumnVisibilityModelChange } =
     usePersistedColumnVisibilityModel('truckOrderDetailsColumnsVisibility', initialVisibility);
 
+  const selectedRows = useMemo(
+    () => data?.orders?.filter((order) => selectedRow.includes(order.id)),
+    [data?.orders, selectedRow]
+  );
+
+  const selectedTotals = useMemo(() => {
+    if (selectedRows?.length) {
+      return selectedRows.reduce(
+        (acc, order) => ({
+          total_capacity: acc.total_capacity + (order.orderCapacity || 0),
+          total_weight: acc.total_weight + (order.orderWeight || 0),
+          counts: acc.counts + (order.totalCount || 0),
+          places: acc.places + (order.totalPlace || 0),
+        }),
+        { total_capacity: 0, total_weight: 0, counts: 0, places: 0 }
+      );
+    }
+    return { total_capacity: 0, total_weight: 0, counts: 0, places: 0 };
+  }, [selectedRows]);
+
+  const selectedAverageWeight = selectedTotals.total_weight / selectedTotals.total_capacity || 0;
+
+  const displayTotals =
+    selectedRow.length > 0
+      ? {
+          ...selectedTotals,
+          average_weight: selectedAverageWeight,
+        }
+      : {
+          ...data?.totals,
+          average_weight: data?.average_weight || 0,
+          counts: data?.totals?.total_count || 0,
+          places: data?.totals?.total_places || 0,
+        };
+
   if (error) return <ErrorData />;
 
   return (
@@ -154,13 +189,7 @@ export const TruckOrders = () => {
               {t('packages.actions.takeAll')}
             </Button>
           }
-          totals={{
-            total_capacity: data?.totals?.total_capacity || 0,
-            total_weight: data?.totals?.total_weight || 0,
-            counts: data?.totals?.total_count || 0,
-            places: data?.totals?.total_places || 0,
-            average_weight: data?.average_weight || 0,
-          }}
+          totals={displayTotals}
         />
       </Box>
       {orderID && (

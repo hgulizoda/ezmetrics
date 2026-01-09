@@ -97,31 +97,33 @@ export default function DataGridCustom<T>({
     >
       {hasTotal && (
         <Box display="flex" alignItems="center" width={1} gap={2}>
-          <Box display="flex" alignItems="center" gap={1}>
+          <Box display="flex" alignItems="center" flexWrap="nowrap" gap={1}>
             <Typography variant="subtitle2">
               {t('packages.actions.totalPackagesCapacity')}:
             </Typography>
             <Box display="flex" gap={1}>
-              <Typography variant="subtitle2">
+              <Typography variant="subtitle2" whiteSpace="nowrap">
                 {fNumber(totals?.total_capacity ?? 0) || 0} {t('profile.ordersTabs.card.m3')}
               </Typography>
               -
-              <Typography variant="subtitle2">
+              <Typography variant="subtitle2" whiteSpace="nowrap">
                 {fNumber(totals?.total_weight ?? 0) || 0} {t('profile.ordersTabs.card.kg')};
               </Typography>
               -
               {totals?.places && (
-                <Typography variant="subtitle2">
+                <Typography variant="subtitle2" whiteSpace="nowrap">
                   {t('profile.ordersTabs.card.places')}: {fPlaces};
                 </Typography>
               )}
+              -
               {totals?.counts && (
-                <Typography variant="subtitle2">
+                <Typography variant="subtitle2" whiteSpace="nowrap">
                   {t('profile.ordersTabs.card.counts')}: {fCounts};
                 </Typography>
               )}
+              -
               {totals?.average_weight ? (
-                <Typography variant="subtitle2">
+                <Typography variant="subtitle2" whiteSpace="nowrap">
                   {t('transport.averageWeight')}: {totals?.average_weight.toLocaleString() || 0}{' '}
                   {t('profile.ordersTabs.card.kg')}
                 </Typography>
@@ -233,8 +235,7 @@ export default function DataGridCustom<T>({
         rowSelectionModel={rowSelectionModel}
         checkboxSelection={checkBoxSelection}
         paginationMode="server"
-        getRowClassName={({ row }) => row.isCustomsByUser ? 'colored-row' : ''}
-        
+        getRowClassName={({ row }) => (row.isCustomsByUser ? 'colored-row' : '')}
         rowCount={rowCount}
         density={density}
         {...props}

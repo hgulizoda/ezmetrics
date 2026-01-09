@@ -283,7 +283,9 @@
       "pleaseTryAgain": "Iltimos qaytadan urinib koring.",
       "noDataForRequest": "So'rov bo'yicha ma'lumotlar mavjud emas.",
       "backTruckToPrevTitle": "Jo'natmani ortga qaytarish",
-      "backTruckToPrevContent": "Siz rostdanham ushbu jo'natmani ortga qaytarmoqchimisiz?"
+      "backTruckToPrevContent": "Siz rostdanham ushbu jo'natmani ortga qaytarmoqchimisiz?",
+      "takeAllFromTruck": "Barcha yuklarni jo'natmadan chiqarishni tasdiqlaysizmi?",
+      "takeAll": "Barchasini chiqarish"
     },
     "delivered": {
       "title": "Yetkazib berish",

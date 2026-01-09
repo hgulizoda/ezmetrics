@@ -36,20 +36,12 @@ export const useSeparatePackage = (id: string, query: string) => {
 };
 
 export const useFullSeparatePackage = (truckID: string) => {
-  const { t } = useTranslate('lang');
   const { mutateAsync, isPending } = useMutation({
     mutationFn: (id: string) => truckPackage.takeDown(truckID, id),
     onSuccess: () => {
-      enqueueSnackbar(t('mutate.takeFromTruck'), {
-        variant: 'success',
-        anchorOrigin: { vertical: 'top', horizontal: 'right' },
-      });
       queryClient.invalidateQueries({
         queryKey: ['truckDetails'],
       });
-    },
-    onError: (error) => {
-      showErrorSnackbar(error);
     },
   });
   return {

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { enqueueSnackbar } from 'notistack';
 import { useNavigate } from 'react-router-dom';
 import { useParams, useLocation } from 'react-router';
 
@@ -11,6 +12,9 @@ import usePersistedColumnVisibilityModel, {
   ColumnVisibilityModel,
 } from 'src/hooks/use-col-visibility';
 
+import { showErrorSnackbar } from 'src/utils/showErrorSnackbar';
+
+import { queryClient } from 'src/query';
 import { useTranslate } from 'src/locales';
 import { ITruckDetails } from 'src/modules/settings/types/truckDetails';
 import { useGetTruckDetails } from 'src/modules/settings/hooks/useTruckDetails';
@@ -44,6 +48,7 @@ export const TruckOrders = () => {
   const { onPaginationChange, pagination, search, onSearchChange } = useTrucksPagination();
   const openDialog = useBoolean();
   const openArchiveDialog = useBoolean();
+  const openTakeAllDialog = useBoolean();
   const { data, isLoading, error } = useGetTruckDetails({
     id: params.id,
     params: { page: pagination.page + 1, limit: pagination.pageSize, search },
@@ -76,8 +81,26 @@ export const TruckOrders = () => {
   };
 
   const onTakeFromTruck = async () => {
-    await onTakeDown(orderID);
-    takeDownDialog.onFalse();
+    try {
+      if (selectedRow.length > 0) {
+        Promise.all(selectedRow.map((id) => onTakeDown(id)));
+        setSelectedRow([]);
+      } else {
+        await onTakeDown(orderID);
+      }
+      enqueueSnackbar(t('mutate.takeFromTruck'), {
+        variant: 'success',
+        anchorOrigin: { vertical: 'top', horizontal: 'right' },
+      });
+      queryClient.invalidateQueries({
+        queryKey: ['truckDetails'],
+      });
+    } catch (err) {
+      showErrorSnackbar(err);
+    } finally {
+      takeDownDialog.onFalse();
+      openTakeAllDialog.onFalse();
+    }
   };
 
   const initialColumns = baseColumns({
@@ -126,6 +149,11 @@ export const TruckOrders = () => {
           rowSelectionModel={selectedRow}
           setRowSelectionModel={setSelectedRow}
           multiStatusAction={openArchiveDialog.onTrue}
+          multiStatusComponent={
+            <Button onClick={openTakeAllDialog.onTrue} color="inherit" variant="contained">
+              {t('packages.actions.takeAll')}
+            </Button>
+          }
           totals={{
             total_capacity: data?.totals?.total_capacity || 0,
             total_weight: data?.totals?.total_weight || 0,
@@ -175,6 +203,27 @@ export const TruckOrders = () => {
         action={
           <>
             <Button variant="contained" color="error" onClick={takeDownDialog.onFalse}>
+              {t('actions.not')}
+            </Button>
+            <LoadingButton
+              loading={isTaking}
+              variant="contained"
+              color="primary"
+              onClick={onTakeFromTruck}
+            >
+              {t('actions.yes')}
+            </LoadingButton>
+          </>
+        }
+      />
+
+      <ConfirmDialog
+        open={openTakeAllDialog.value}
+        onClose={openTakeAllDialog.onFalse}
+        title={t('packages.actions.takeAllFromTruck')}
+        action={
+          <>
+            <Button variant="contained" color="error" onClick={openTakeAllDialog.onFalse}>
               {t('actions.not')}
             </Button>
             <LoadingButton

@@ -287,7 +287,9 @@
       "pleaseTryAgain": "Пожалуйста, попробуйте снова.",
       "noDataForRequest": "Данные по запросу отсутствуют.",
       "backTruckToPrevTitle": "Отменить отправку",
-      "backTruckToPrevContent": "Вы действительно хотите отменить эту отправку?"
+      "backTruckToPrevContent": "Вы действительно хотите отменить эту отправку?",
+      "takeAllFromTruck": "Вы действительно хотите выгрузить все отправки из грузовика?",
+      "takeAll": "Выгрузить все"
     },
     "delivered": {
       "title": "Доставка",

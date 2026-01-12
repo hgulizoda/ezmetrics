@@ -46,7 +46,8 @@ export const ChinaBorderTable = () => {
   } = useChinaBorderTableFilter();
   const { onBackPackage, isBacking } = useBackPrevStepSingleOrder(
     'in_china_warehouse',
-    'residuePackages'
+    'residuePackages',
+    rowSelectionModel
   );
   const { mutateAsync, isPending } = useArchivePackage(rowSelectionModel, 'residuePackages');
   const { data, error, isLoading } = useGetWithoutTrucksPackages({

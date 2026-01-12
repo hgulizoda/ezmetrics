@@ -46,8 +46,10 @@ export const CustomsPackageTable = () => {
   } = useCustomsTableFilter();
   const { onBackPackage, isBacking } = useBackPrevStepSingleOrder(
     'to_uzb_customs',
-    'residuePackages'
+    'residuePackages',
+    rowSelectionModel
   );
+  console.log(rowSelectionModel);
   const { mutateAsync, isPending } = useArchivePackage(rowSelectionModel, 'residuePackages');
   const { data, error, isLoading } = useGetWithoutTrucksPackages({
     page: pagination.page + 1,

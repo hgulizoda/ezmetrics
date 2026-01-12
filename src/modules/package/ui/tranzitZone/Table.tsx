@@ -1,5 +1,5 @@
-import { useState, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useRef, useMemo, useState } from 'react';
 
 import Dialog from '@mui/material/Dialog';
 import { Box, Button } from '@mui/material';
@@ -44,7 +44,8 @@ export const TranzitZoneTable = () => {
   } = useTransitZoneTableFilter();
   const { onBackPackage, isBacking } = useBackPrevStepSingleOrder(
     'to_china_border',
-    'residuePackages'
+    'residuePackages',
+    rowSelectionModel
   );
   const { mutateAsync, isPending } = useArchivePackage(rowSelectionModel, 'residuePackages');
   const { data, error, isLoading } = useGetWithoutTrucksPackages({

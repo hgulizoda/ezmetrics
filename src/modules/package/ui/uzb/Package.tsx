@@ -43,8 +43,12 @@ export const UZBCustomsPackageTable = () => {
     search,
     onSearchChange,
   } = useUZBCustomsTableFilter();
-  const { isDelevered, onDelivered } = useDelivered();
-  const { onBackPackage, isBacking } = useBackPrevStepSingleOrder('in_transit', 'residuePackages');
+  const { isDelevered, onDelivered } = useDelivered(rowSelectionModel);
+  const { onBackPackage, isBacking } = useBackPrevStepSingleOrder(
+    'in_transit',
+    'residuePackages',
+    rowSelectionModel
+  );
   const { mutateAsync, isPending } = useArchivePackage(rowSelectionModel, 'residuePackages');
   const { data, error, isLoading } = useGetWithoutTrucksPackages({
     page: pagination.page + 1,

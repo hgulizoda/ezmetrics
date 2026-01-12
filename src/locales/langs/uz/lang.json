@@ -285,7 +285,8 @@
       "backTruckToPrevTitle": "Jo'natmani ortga qaytarish",
       "backTruckToPrevContent": "Siz rostdanham ushbu jo'natmani ortga qaytarmoqchimisiz?",
       "takeAllFromTruck": "Barcha yuklarni jo'natmadan chiqarishni tasdiqlaysizmi?",
-      "takeAll": "Barchasini chiqarish"
+      "takeAll": "Barchasini chiqarish",
+      "returnAll": "Barcha yuklarni ortga qaytarish"
     },
     "delivered": {
       "title": "Yetkazib berish",

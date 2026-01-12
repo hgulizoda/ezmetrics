@@ -46,7 +46,16 @@ export const profileOrders = {
       queryParams.status = status;
     }
     return axiosInstance
-      .get<IApiResponse<IUserProfileRes> & { totals?: { total_weight: number; total_capacity: number; total_counts: number; total_places: number } }>(`orders/user/${id}/orders`, { params: queryParams })
+      .get<
+        IApiResponse<IUserProfileRes> & {
+          totals?: {
+            total_weight: number;
+            total_capacity: number;
+            total_counts: number;
+            total_places: number;
+          };
+        }
+      >(`orders/user/${id}/orders`, { params: queryParams })
       .then((res) => res.data);
   },
 };
@@ -62,7 +71,7 @@ export const singleOrder = {
         ...value,
       })
       .then((res) => res),
-  goBack: (id: string, userID: string, status: string) =>
+  goBack: (id: string | undefined, userID: string | undefined, status: string) =>
     axiosInstance.put(`orders/${id}/status/${userID}`, { status }).then((res) => res),
   archive: (id: string) => axiosInstance.put(`orders/${id}/archive`).then((res) => res),
 };

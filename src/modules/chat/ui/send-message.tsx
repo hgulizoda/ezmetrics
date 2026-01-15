@@ -2,7 +2,16 @@ import { useSearchParams } from 'react-router-dom';
 import { useRef, useState, useEffect } from 'react';
 import EmojiPicker, { Theme, EmojiStyle } from 'emoji-picker-react';
 
-import { Box, Stack, useTheme, InputBase, IconButton, Typography } from '@mui/material';
+import {
+  Box,
+  Stack,
+  Button,
+  useTheme,
+  InputBase,
+  IconButton,
+  Typography,
+  useMediaQuery,
+} from '@mui/material';
 
 import { queryClient } from 'src/query';
 import { useTranslate } from 'src/locales';
@@ -39,6 +48,7 @@ export const SendMessage = ({
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
   const theme = useTheme();
+  const isMobile = useMediaQuery('(max-width:768px)');
   const inputRef = useRef<HTMLInputElement>(null);
   const { emit } = useChatContext();
   const { t } = useTranslate('lang');
@@ -284,19 +294,33 @@ export const SendMessage = ({
             <IconButton onClick={handleDocClick}>
               <Iconify icon={isPending ? 'line-md:uploading-loop' : 'eva:attach-2-fill'} />
             </IconButton>
-            <IconButton onClick={isRecording ? stopRecording : startRecording}>
-              <Iconify
-                icon={
-                  // eslint-disable-next-line no-nested-ternary
-                  isPending
-                    ? 'line-md:uploading-loop'
-                    : isRecording
-                      ? 'solar:record-bold-duotone'
-                      : 'solar:microphone-bold'
-                }
-                color={isRecording ? theme.palette.error.dark : undefined}
-              />
-            </IconButton>
+            {!isMobile && (
+              <IconButton onClick={isRecording ? stopRecording : startRecording}>
+                <Iconify
+                  icon={
+                    // eslint-disable-next-line no-nested-ternary
+                    isPending
+                      ? 'line-md:uploading-loop'
+                      : isRecording
+                        ? 'solar:record-bold-duotone'
+                        : 'solar:microphone-bold'
+                  }
+                  color={isRecording ? theme.palette.error.dark : undefined}
+                />
+              </IconButton>
+            )}
+            {isMobile && (
+              <Button
+                sx={{
+                  mt: 0.5,
+                }}
+                variant="soft"
+                color="primary"
+                size="small"
+              >
+                {t('actions.send')}
+              </Button>
+            )}
           </Stack>
         }
         sx={{
@@ -304,10 +328,7 @@ export const SendMessage = ({
           flexShrink: 0,
           borderTop: `solid 1px ${theme.palette.divider}`,
           display: 'flex',
-          alignItems: 'flex-end',
-          '.css-yubm5r-MuiInputBase-input': {
-            mb: '3px',
-          },
+          alignItems: 'center',
         }}
       />
 

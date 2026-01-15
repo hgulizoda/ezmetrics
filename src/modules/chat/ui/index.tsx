@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
-import { Stack } from '@mui/material';
+import { Fade, Stack, useMediaQuery } from '@mui/material';
 
 import { useTranslate } from 'src/locales';
 
@@ -14,12 +14,15 @@ import CustomerProfile from './customer';
 import CustomersList from './customer-list';
 import { SendMessage } from './send-message';
 import { ChatHeader } from './chat-area-header';
+import { MobileChatView, MobileProfileView, MobileUsersListView } from './mobile';
 import { IMessageRes } from '../types/messages';
 
 export default function MainChatHome() {
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const hasChat = searchParams.get('id');
+  const viewParam = searchParams.get('view');
   const { t } = useTranslate('lang');
+  const isMobile = useMediaQuery('(max-width:768px)');
   const [replyMessage, setReplyMessage] = useState<IMessageRes | null>(null);
   const [editMessage, setEditMessage] = useState<IMessageRes | null>(null);
   const [searchChat, setSearchChat] = useState<Date>();
@@ -30,6 +33,40 @@ export default function MainChatHome() {
 
   const clearReply = () => {
     setReplyMessage(null);
+  };
+
+  const resolvedMobileView = (() => {
+    if (viewParam === 'profile' && hasChat) return 'profile';
+    if ((viewParam === 'chat' || (!viewParam && hasChat)) && hasChat) return 'chat';
+    return 'list';
+  })();
+
+  const updateSearchParams = (next: Record<string, string | null>) => {
+    const params = new URLSearchParams(searchParams);
+    Object.entries(next).forEach(([key, value]) => {
+      if (value === null) {
+        params.delete(key);
+      } else {
+        params.set(key, value);
+      }
+    });
+    setSearchParams(params);
+  };
+
+  const handleMobileSelectChat = (chatId: string) => {
+    updateSearchParams({ id: chatId, view: 'chat' });
+  };
+
+  const handleBackToList = () => {
+    updateSearchParams({ view: 'list' });
+  };
+
+  const handleOpenProfile = () => {
+    updateSearchParams({ view: 'profile' });
+  };
+
+  const handleBackToChat = () => {
+    updateSearchParams({ view: 'chat' });
   };
 
   const layout = (
@@ -74,6 +111,53 @@ export default function MainChatHome() {
       }}
     />
   );
+
+  if (isMobile) {
+    return (
+      <Stack
+        sx={{
+          height: 'calc(100vh - 180px)',
+          minHeight: 0,
+          borderRadius: 2,
+          position: 'relative',
+          bgcolor: 'background.paper',
+          boxShadow: (theme) => theme.customShadows.card,
+          overflow: 'hidden',
+        }}
+      >
+        {resolvedMobileView === 'list' && (
+          <Fade in timeout={200}>
+            <div style={{ height: '100%' }}>
+              <MobileUsersListView onSelectChat={handleMobileSelectChat} />
+            </div>
+          </Fade>
+        )}
+        {resolvedMobileView === 'chat' && hasChat && (
+          <Fade in timeout={200}>
+            <div style={{ height: '100%' }}>
+              <MobileChatView
+                onBack={handleBackToList}
+                onProfile={handleOpenProfile}
+                onReplyMessage={handleReplyMessage}
+                replyMessage={replyMessage}
+                clearReply={clearReply}
+                editMessage={editMessage}
+                setEditMessage={setEditMessage}
+                searchChat={searchChat}
+              />
+            </div>
+          </Fade>
+        )}
+        {resolvedMobileView === 'profile' && hasChat && (
+          <Fade in timeout={200}>
+            <div style={{ height: '100%' }}>
+              <MobileProfileView onBack={handleBackToChat} />
+            </div>
+          </Fade>
+        )}
+      </Stack>
+    );
+  }
 
   return <Stack height={670}>{layout}</Stack>;
 }

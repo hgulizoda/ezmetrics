@@ -22,6 +22,7 @@ import {
   Autocomplete,
   ListItemAvatar,
   InputAdornment,
+  useMediaQuery,
 } from '@mui/material';
 
 import { useBoolean } from 'src/hooks/use-boolean';
@@ -43,7 +44,11 @@ import { useCreateRoom } from '../hooks/useCreateRoom';
 import { useArchiveChat } from '../hooks/useArchiveChat';
 import { ICustomerRes, IOnlineUsers } from '../types/chat';
 
-export default function CustomersList() {
+type CustomersListProps = {
+  onSelectChat?: (chatId: string) => void;
+};
+
+export default function CustomersList({ onSelectChat }: CustomersListProps) {
   const { t } = useTranslate('lang');
   const { currentLang } = useTranslate();
   const [chatId, setChatId] = useState<string>('');
@@ -89,6 +94,15 @@ export default function CustomersList() {
     limit: 10000,
     search: debouncedSearch,
   });
+  const isMobile = useMediaQuery('(max-width:768px)');
+
+  const handleSelectChat = (id: string) => {
+    if (onSelectChat) {
+      onSelectChat(id);
+      return;
+    }
+    setSearchParams({ id });
+  };
 
   const createNewChat = async (
     event: React.SyntheticEvent,
@@ -99,7 +113,7 @@ export default function CustomersList() {
   ) => {
     event.preventDefault();
     if (value?.value) {
-      await createAsync(value.value).then((res) => setSearchParams({ id: res.data._id }));
+      await createAsync(value.value).then((res) => handleSelectChat(res.data._id));
     }
   };
 
@@ -112,14 +126,14 @@ export default function CustomersList() {
   if (isLoading) return 'Loading...';
 
   return (
-    <Box
-      sx={{
-        height: '100%',
-        display: 'flex',
-        flexDirection: 'column',
-        borderRight: `1px solid ${theme.palette.divider}`,
-      }}
-    >
+      <Box
+        sx={{
+          height: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          borderRight: isMobile ? 'none' : `1px solid ${theme.palette.divider}`,
+        }}
+      >
       <Box sx={{ p: 2 }} display="flex" justifyContent="space-between" alignItems="center">
         <AccountPopover />
 
@@ -188,7 +202,7 @@ export default function CustomersList() {
                 button
                 key={customer?.user?._id}
                 onClick={() => {
-                  setSearchParams({ id: customer?._id });
+                  handleSelectChat(customer?._id);
                 }}
                 sx={
                   searchParams.get('id') === customer?._id

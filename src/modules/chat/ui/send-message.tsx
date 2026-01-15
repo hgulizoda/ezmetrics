@@ -151,7 +151,7 @@ export const SendMessage = ({
   }, [emit, chatId]);
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && e.ctrlKey && !e.shiftKey) {
+    if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       handleSendMessage();
     }
@@ -261,7 +261,7 @@ export const SendMessage = ({
         fullWidth
         value={newMessage}
         multiline
-        onKeyUp={handleKeyPress}
+        onKeyDown={handleKeyPress}
         onChange={(e) => setNewMessage(e.target.value)}
         placeholder={editMessage ? `${t('chat.editMessage')}...` : `${t('chat.typeAMessage')}`}
         autoFocus

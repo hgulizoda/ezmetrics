@@ -1,5 +1,5 @@
 import { useRef, useMemo, useState } from 'react';
-
+import { TruckOrderDetail } from 'src/modules/settings/ui/truckDetails/TruckOrderDetail';
 import { Box } from '@mui/material';
 import Dialog from '@mui/material/Dialog';
 
@@ -24,7 +24,6 @@ import { useGetAllPackages } from '../../hook/allPackages';
 import { useBoolean } from '../../../../hooks/use-boolean';
 import { IAllPackagesAdapter } from '../../types/AllPackages';
 import { useExcelDownload } from '../../libs/useExcelDownload';
-import { TruckOrderDetail } from '../../../settings/ui/truckDetails/TruckOrderDetail';
 
 const TableAllPackages = () => {
   const formatDate = useFormatDate();
@@ -40,6 +39,7 @@ const TableAllPackages = () => {
     search,
     onSearchChange,
   } = useAllTableFilter();
+
   const viewOrder = useBoolean();
 
   const [orderID, setOrderID] = useState<string>();

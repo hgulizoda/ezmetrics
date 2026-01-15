@@ -1,5 +1,5 @@
 import { useRef, useMemo, useState } from 'react';
-import { TruckOrderDetail } from 'src/modules/settings/ui/truckDetails/TruckOrderDetail';
+
 import { Box } from '@mui/material';
 import Dialog from '@mui/material/Dialog';
 
@@ -11,6 +11,7 @@ import usePersistedColumnVisibilityModel, {
 import { useFormatDate } from 'src/utils/iso-date';
 
 import { useTranslate } from 'src/locales';
+import { TruckOrderDetail } from 'src/modules/settings/ui/truckDetails/TruckOrderDetail';
 
 import { ErrorData } from 'src/components/error-data/error-data';
 import DataGridCustom from 'src/components/data-grid-view/data-grid-custom';

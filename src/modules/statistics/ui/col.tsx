@@ -3,8 +3,9 @@ import { Link } from 'react-router-dom';
 
 import { GridColDef } from '@mui/x-data-grid';
 
-import { fNumber } from 'src/utils/format-number';
 import { paths } from 'src/routes/paths';
+
+import { fNumber } from 'src/utils/format-number';
 
 import { IStat } from '../types/Stats';
 

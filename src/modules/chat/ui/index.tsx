@@ -14,8 +14,8 @@ import CustomerProfile from './customer';
 import CustomersList from './customer-list';
 import { SendMessage } from './send-message';
 import { ChatHeader } from './chat-area-header';
-import { MobileChatView, MobileProfileView, MobileUsersListView } from './mobile';
 import { IMessageRes } from '../types/messages';
+import { MobileChatView, MobileProfileView, MobileUsersListView } from './mobile';
 
 export default function MainChatHome() {
   const [searchParams, setSearchParams] = useSearchParams();

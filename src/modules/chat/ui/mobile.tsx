@@ -1,9 +1,9 @@
 import dayjs from 'dayjs';
-import RelativeTime from 'dayjs/plugin/relativeTime';
-import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import RelativeTime from 'dayjs/plugin/relativeTime';
+import { useMemo, useState, useEffect } from 'react';
 
-import { Avatar, Badge, Box, IconButton, Stack, Typography } from '@mui/material';
+import { Box, Badge, Stack, Avatar, IconButton, Typography } from '@mui/material';
 
 import { queryClient } from 'src/query';
 import { useTranslate } from 'src/locales';
@@ -12,12 +12,12 @@ import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 
 import ChatArea from './chat-area';
-import CustomersList from './customer-list';
 import CustomerProfile from './customer';
+import CustomersList from './customer-list';
 import { SendMessage } from './send-message';
+import type { IMessageRes } from '../types/messages';
 import { useGetChatLists } from '../hooks/useGetChatLists';
 import type { ICustomerRes, IOnlineUsers } from '../types/chat';
-import type { IMessageRes } from '../types/messages';
 
 dayjs.extend(RelativeTime);
 
@@ -42,7 +42,6 @@ type MobileProfileViewProps = {
 
 type MobileHeaderProps = {
   onBack: () => void;
-  onProfile?: () => void;
 };
 
 function useActiveChatUser() {
@@ -71,7 +70,7 @@ function useActiveChatUser() {
   return { singleUser, isOnline, avatarSrc };
 }
 
-function MobileChatHeader({ onBack, onProfile }: MobileHeaderProps) {
+function MobileChatHeader({ onBack, onProfile }: MobileHeaderProps & { onProfile?: () => void }) {
   const { currentLang } = useTranslate('lang');
   const { singleUser, isOnline, avatarSrc } = useActiveChatUser();
 

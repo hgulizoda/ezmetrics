@@ -20,9 +20,9 @@ import {
   IconButton,
   ListItemText,
   Autocomplete,
+  useMediaQuery,
   ListItemAvatar,
   InputAdornment,
-  useMediaQuery,
 } from '@mui/material';
 
 import { useBoolean } from 'src/hooks/use-boolean';
@@ -126,14 +126,14 @@ export default function CustomersList({ onSelectChat }: CustomersListProps) {
   if (isLoading) return 'Loading...';
 
   return (
-      <Box
-        sx={{
-          height: '100%',
-          display: 'flex',
-          flexDirection: 'column',
-          borderRight: isMobile ? 'none' : `1px solid ${theme.palette.divider}`,
-        }}
-      >
+    <Box
+      sx={{
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        borderRight: isMobile ? 'none' : `1px solid ${theme.palette.divider}`,
+      }}
+    >
       <Box sx={{ p: 2 }} display="flex" justifyContent="space-between" alignItems="center">
         <AccountPopover />
 

@@ -1,3 +1,5 @@
+import { PackagingType } from "./CreatePackageEnum";
+
 export interface IUserProfileRes {
   _id: string;
   description: string;
@@ -30,6 +32,7 @@ export interface IUserProfileRes {
   isCustomsByUser?: boolean;
   total_count: number;
   total_places: number;
+  packagingType?: PackagingType
 }
 
 export interface IProfileOrders {
@@ -64,4 +67,5 @@ export interface IProfileOrders {
   totalPlaces: number;
   note: string;
   isCustomsByUser?: boolean;
+  packagingType?: PackagingType
 }

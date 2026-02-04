@@ -241,7 +241,11 @@
       "short": "Izoh kiriting",
       "imageUpload": "Fayl tanlang",
       "imageUploadDescription": "Faylarni bu yerga torting yoki qurilmangizdan tanlang",
-      "isCustomsByUser": "Bojxona rasmiylashtiruvi (mijoz)"
+      "isCustomsByUser": "Bojxona rasmiylashtiruvi (mijoz)",
+      "packagingTypeTitle": "Qadoqlash turi",
+      "box": "Yashik",
+      "rack": "Reyka",
+      "none": "Tanlanmagan"
     },
     "actions": {
       "chinaBorder": "Jo'natildiga",

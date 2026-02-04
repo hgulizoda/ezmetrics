@@ -245,7 +245,11 @@
       "short": "Введите примечание",
       "imageUpload": "Выберите файл",
       "imageUploadDescription": "Перетащите файлы сюда или выберите с устройства",
-      "isCustomsByUser": "Таможенное оформление (клиент)"
+      "isCustomsByUser": "Таможенное оформление (клиент)",
+      "packagingTypeTitle": "Тип упаковки",
+      "box": "В ящике",
+      "rack": "На рейках",
+      "none": "Не выбрано"
     },
     "actions": {
       "chinaBorder": "На китайскую границу",

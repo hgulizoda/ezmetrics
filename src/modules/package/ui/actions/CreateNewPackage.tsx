@@ -11,7 +11,7 @@ import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import LoadingButton from '@mui/lab/LoadingButton';
 import InputAdornment from '@mui/material/InputAdornment';
-import { Box, Button, CardActions, CardContent } from '@mui/material';
+import { Box, Button, MenuItem, CardActions, CardContent } from '@mui/material';
 
 import { useTranslate } from 'src/locales';
 import { IUser } from 'src/modules/user/types/User';
@@ -22,12 +22,14 @@ import FormProvider, {
   RHFEditor,
   RHFUpload,
   RHFSwitch,
+  RHFSelect,
   RHFTextField,
   RHFAutocomplete,
 } from 'src/components/hook-form';
 
 import { useCreatePackage } from '../../hook/newPackage';
 import { useUploadImage } from '../../hook/useUploadImage';
+import { PackagingType } from '../../types/CreatePackageEnum';
 import { createPackageScheme, CreatePackageFormType } from '../../libs/createPackageScheme';
 import { useActionSingleOrder, useUpdateSingleOrder } from '../../hook/useActionSingleOrder';
 
@@ -41,6 +43,7 @@ const CreatePackageForm = () => {
   const params = useParams() as { id: string };
   const { updateSinglePackage, isUpdating } = useUpdateSingleOrder(params.id);
   const { singleOrderData } = useActionSingleOrder(params.id);
+  console.log(singleOrderData)
   const navigate = useNavigate();
   const { data } = useGetUsersList({ page: 1, limit: 10000 });
   const { uploadAsync, isPending: uploading } = useUploadImage();
@@ -59,6 +62,7 @@ const CreatePackageForm = () => {
       total_count: '',
       total_places: '',
       isCustomsByUser: false,
+      packagingType: PackagingType.NONE
     },
     resolver: yupResolver(createPackageScheme),
   });
@@ -75,6 +79,7 @@ const CreatePackageForm = () => {
       form.setValue('user.label', singleOrderData.user.userId ?? '');
       form.setValue('user.value', singleOrderData.user.id ?? '');
       form.setValue('isCustomsByUser', singleOrderData.isCustomsByUser ?? false);
+      form.setValue('packagingType', singleOrderData.packagingType ?? PackagingType.NONE)
     }
   }, [form, params.id, singleOrderData]);
 
@@ -231,11 +236,24 @@ const CreatePackageForm = () => {
                     label={t('packages.createPackageForm.description')}
                   />
                 </Grid>
-                <Grid item xs={6}>
-                  <RHFSwitch
-                    name="isCustomsByUser"
-                    label={t('packages.createPackageForm.isCustomsByUser')}
-                  />
+                <Grid item xs={6} spacing={5} container>
+                  <Grid xs={6} item>
+                    <RHFSelect
+                      name="packagingType"
+                      InputLabelProps={{ shrink: true }}
+                      label={t('packages.createPackageForm.packagingTypeTitle')}
+                    >
+                      <MenuItem value={PackagingType.BOX}>{t('packages.createPackageForm.box')}</MenuItem>
+                      <MenuItem value={PackagingType.RACK}>{t('packages.createPackageForm.rack')}</MenuItem>
+                      <MenuItem value={PackagingType.NONE}>{t('packages.createPackageForm.none')}</MenuItem>
+                    </RHFSelect>
+                  </Grid>
+                  <Grid xs={6} item>
+                    <RHFSwitch
+                      name="isCustomsByUser"
+                      label={t('packages.createPackageForm.isCustomsByUser')}
+                    />
+                  </Grid>
                 </Grid>
                 <Grid item xs={12}>
                   <Typography variant="subtitle2" mb={1}>

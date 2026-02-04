@@ -1,3 +1,4 @@
+import { PackagingType } from '../types/CreatePackageEnum';
 import { IProfileOrders, IUserProfileRes } from '../types/UserProfileOrders';
 
 export const getProfileOrder = (item: IUserProfileRes): IProfileOrders => ({
@@ -31,6 +32,7 @@ export const getProfileOrder = (item: IUserProfileRes): IProfileOrders => ({
   totalPlaces: item.total_places ?? 0,
   note: item.note ?? '',
   isCustomsByUser: item.isCustomsByUser ?? false,
+  packagingType: item.packagingType ?? PackagingType.NONE
 });
 
 export const getProfileOrdersAdapter = (profileOrders: IUserProfileRes[]) =>

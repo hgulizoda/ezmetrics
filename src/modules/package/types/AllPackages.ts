@@ -28,6 +28,7 @@ export interface IAllPackagesRes {
   truck: string;
   container_number: string;
   isCustomsByUser: boolean;
+  packagingType: string
 }
 
 export interface IAllPackagesAdapter {
@@ -49,4 +50,5 @@ export interface IAllPackagesAdapter {
   description: string;
   containerNumber: string;
   isCustomsByUser: boolean;
+  packagingType: string
 }

@@ -157,7 +157,7 @@ export default function DataGridCustom<T>({
         loading={loading}
         sx={{
           '& .colored-row': {
-            backgroundColor: theme.palette.success.dark,
+            backgroundColor: theme.palette.success.light,
             color: 'white',
             '&:hover': { backgroundColor: theme.palette.success.dark },
           },

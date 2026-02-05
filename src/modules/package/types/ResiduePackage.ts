@@ -17,6 +17,7 @@ export interface IResiduePackageRes {
   order_type: string;
   container_number: string;
   isCustomsByUser: boolean;
+  packagingType: string,
   user: {
     _id: string;
     phone_number: string;
@@ -48,6 +49,7 @@ export interface IResiduePackage {
   description: string;
   containerNumber: string;
   isCustomsByUser: boolean;
+  packagingType: string
 }
 
 export interface IChinaBorderUpdate {

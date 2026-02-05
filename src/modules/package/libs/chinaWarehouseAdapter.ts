@@ -17,6 +17,7 @@ export const chinaWarehouse = (item: IGetChinaWarehouseRes): IChinaWarehouse => 
   totalPlaces: item.total_places ?? 0,
   description: item.description ?? '',
   isCustomsByUser: item.isCustomsByUser ?? false,
+  packagingType: item.packagingType ?? "NONE"
 });
 
 export const chinaWarehouseAdapter = (data?: IGetChinaWarehouseRes[]) =>

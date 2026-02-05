@@ -157,19 +157,32 @@ export default function DataGridCustom<T>({
         loading={loading}
         sx={{
           '& .colored-row': {
-            backgroundColor: theme.palette.success.lighter,
+            backgroundColor: theme.palette.success.light,
+            color: 'white',
+            '&:hover': { backgroundColor: theme.palette.success.dark },
+          },
+
+          '& .racked-row': {
+            backgroundColor: theme.palette.warning.dark,
+            color: 'white',
+            '&:hover': { backgroundColor: theme.palette.warning.dark },
+          },
+
+          '& .double-colored': {
+            backgroundImage: `linear-gradient(90deg, ${theme.palette.success.dark} 0 50%, ${theme.palette.warning.dark} 50% 100%)`,
+            color: 'white',
             '&:hover': {
-              backgroundColor: theme.palette.success.lighter,
+              backgroundImage: `linear-gradient(90deg, ${theme.palette.success.dark} 0 50%, ${theme.palette.warning.dark} 50% 100%)`,
             },
           },
+
           [`& .${gridClasses.cell}`]: {
             borderBottom: 'none',
             borderRight: `1px solid ${theme.palette.divider}`,
-            ':focus-within': {
-              outline: 'none',
-            },
+            ':focus-within': { outline: 'none' },
           },
           [`& .${gridClasses.row}`]: { borderBottom: 'none' },
+
           '& .MuiTablePagination-selectLabel': { display: 'none' },
           '& .MuiDataGrid-toolbarContainer': { py: 3 },
         }}
@@ -235,7 +248,14 @@ export default function DataGridCustom<T>({
         rowSelectionModel={rowSelectionModel}
         checkboxSelection={checkBoxSelection}
         paginationMode="server"
-        getRowClassName={({ row }) => (row.isCustomsByUser ? 'colored-row' : '')}
+        getRowClassName={({ row }) => {
+          const hasCustoms = row.isCustomsByUser;
+          const hasPackaging = row.packagingType && row.packagingType !== "NONE";
+          if (hasCustoms && hasPackaging) return "double-colored";
+          if (hasCustoms) return "colored-row";
+          if (hasPackaging) return "racked-row";
+          return "";
+        }}
         rowCount={rowCount}
         density={density}
         {...props}

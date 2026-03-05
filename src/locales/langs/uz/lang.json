@@ -259,6 +259,7 @@
       "takePackageAction": "Chiqarish",
       "selectTransit": "Tranzit zonani tanlang",
       "sendTransit": "Jo'natmani 'Tranzit' bosqichiga o'tkazish",
+      "sendTransitDescription": "Jo'natmani 'Tranzit' bosqichiga o'tkazmoqchimisiz?",
       "sendUZBCustoms": "Jo'natmani 'Bojxona <0/>' bosqichiga o'tkazish",
       "sendUZB": "Bojxona <0/>",
       "addTruck": "Jo'natmaga qo'shish",

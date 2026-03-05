@@ -121,6 +121,7 @@
       "takePackageAction": "取出",
       "selectTransit": "选择过境区",
       "sendTransit": "将卡车发送到过境区",
+      "sendTransitDescription": "您确定要将该货运转到“过境”阶段吗？",
       "sendUZBCustoms": "发送到乌兹别克海关",
       "addTruck": "添加到卡车",
       "back": "返回",

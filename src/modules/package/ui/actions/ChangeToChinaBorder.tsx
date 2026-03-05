@@ -51,6 +51,7 @@ export const ChangeToChinaBorder = ({ open, onClose, packageId, rowIDs }: Props)
     defaultValues: {
       status: 'to_china_border',
       truck: '',
+      transit_zone: '',
     },
     resolver: yupResolver(chinaBorderscheme),
   });
@@ -107,6 +108,12 @@ export const ChangeToChinaBorder = ({ open, onClose, packageId, rowIDs }: Props)
                         {el.containerNumber}
                       </MenuItem>
                     ))}
+                </RHFSelect>
+              </Grid>
+              <Grid item xs={12}>
+                <RHFSelect name="transit_zone" label={t('packages.actions.selectTransit')}>
+                  <MenuItem value="kg">{t('country.kg')}</MenuItem>
+                  <MenuItem value="kz">{t('country.kz')}</MenuItem>
                 </RHFSelect>
               </Grid>
             </Grid>

@@ -55,4 +55,5 @@ export interface IResiduePackage {
 export interface IChinaBorderUpdate {
   status: string;
   truck: string;
+  transit_zone: string;
 }

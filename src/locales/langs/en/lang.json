@@ -147,6 +147,7 @@
       "takePackageAction": "Remove",
       "selectTransit": "Select transit zone",
       "sendTransit": "Send the truck to the transit zone",
+      "sendTransitDescription": "Do you want to move this shipment to the 'Transit' stage?",
       "sendUZBCustoms": "Send to UZB customs",
       "addTruck": "Add to the truck",
       "back": "Return back",

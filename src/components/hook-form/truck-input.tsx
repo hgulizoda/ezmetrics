@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 
 import TextField from '@mui/material/TextField';
@@ -11,15 +10,7 @@ type Props = TextFieldProps & {
 };
 
 export default function RHFTruckField({ name, helperText, type, ...other }: Props) {
-  const { control, setValue } = useFormContext();
-
-  // Get last two digits of the current year
-  const currentYearLastTwo = new Date().getFullYear().toString().slice(-2);
-  const defaultValue = `${currentYearLastTwo}`; // Only the year, no "000"
-
-  useEffect(() => {
-    setValue(name, defaultValue); // Set default value when component mounts
-  }, [setValue, name, defaultValue]);
+  const { control } = useFormContext();
 
   return (
     <Controller
@@ -34,12 +25,6 @@ export default function RHFTruckField({ name, helperText, type, ...other }: Prop
           onChange={(event) => {
             let value = event.target.value.replace(/\D/g, ''); // Remove non-numeric characters
             if (value.length > 5) value = value.slice(0, 5); // Restrict to 5 digits
-
-            // Ensure the value starts with the current year's last two digits
-            if (!value.startsWith(currentYearLastTwo)) {
-              value = currentYearLastTwo + value.slice(2);
-            }
-
             field.onChange(value);
           }}
           error={!!error}

@@ -8,8 +8,8 @@ export default function LoginPage() {
   return (
     <>
       <Helmet>
-        <title> Nexus Logistics - Dashboard Login</title>
-        <meta name="description" content="Nexus Logistics Dashboard Login" />
+        <title>EZ Metric - Login</title>
+        <meta name="description" content="EZ Metric Dashboard Login" />
         <meta name="robots" content="noindex, nofollow" />
         <link rel="canonical" href={`${import.meta.env.VITE_DASHBOARD_URL}/login`} />
       </Helmet>

@@ -1,7 +1,6 @@
 import { lazy, Suspense } from 'react';
-import { Outlet, Navigate } from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
 
-import { AuthGuard } from 'src/auth/guard';
 import DashboardLayout from 'src/layouts/dashboard';
 // ----------------------------------------------------------------------
 import AddPackageFormPage from 'src/pages/dashboard/packages/addpackage';
@@ -29,23 +28,76 @@ const BonusPageRoot = lazy(() => import('src/pages/dashboard/bonus'));
 const Statistics = lazy(() => import('src/pages/dashboard/statistics'));
 const StatisticsDetail = lazy(() => import('src/pages/dashboard/statistics/detail'));
 
+// EZ Metric Pages
+const EZMetricDashboard = lazy(() => import('src/pages/dashboard/ez-metric/dashboard'));
+const WorkersPage = lazy(() => import('src/pages/dashboard/ez-metric/workers'));
+const ClockPage = lazy(() => import('src/pages/dashboard/ez-metric/clock'));
+const ShiftsPage = lazy(() => import('src/pages/dashboard/ez-metric/shifts'));
+const FaceIdPage = lazy(() => import('src/pages/dashboard/ez-metric/face-id'));
+const EfficiencyPage = lazy(() => import('src/pages/dashboard/ez-metric/efficiency'));
+const BonusRulesPage = lazy(() => import('src/pages/dashboard/ez-metric/bonus-rules'));
+const SalaryPage = lazy(() => import('src/pages/dashboard/ez-metric/salary'));
+const ReportsPage = lazy(() => import('src/pages/dashboard/ez-metric/reports'));
+const ProgressPage = lazy(() => import('src/pages/dashboard/ez-metric/progress'));
+const EZSettingsPage = lazy(() => import('src/pages/dashboard/ez-metric/settings'));
+
 export const dashboardRoutes = [
   {
     path: 'dashboard',
     element: (
-      <AuthGuard>
-        <DashboardLayout>
-          <Suspense fallback={<LoadingScreen />}>
-            <Outlet />
-          </Suspense>
-        </DashboardLayout>
-      </AuthGuard>
+      <DashboardLayout>
+        <Suspense fallback={<LoadingScreen />}>
+          <Outlet />
+        </Suspense>
+      </DashboardLayout>
     ),
     children: [
       {
         index: true,
-        element: <Navigate to="/dashboard/all" />,
+        element: <EZMetricDashboard />,
       },
+      // EZ Metric routes
+      {
+        path: 'workers',
+        element: <WorkersPage />,
+      },
+      {
+        path: 'clock',
+        element: <ClockPage />,
+      },
+      {
+        path: 'shifts',
+        element: <ShiftsPage />,
+      },
+      {
+        path: 'face-id',
+        element: <FaceIdPage />,
+      },
+      {
+        path: 'efficiency',
+        element: <EfficiencyPage />,
+      },
+      {
+        path: 'bonus-rules',
+        element: <BonusRulesPage />,
+      },
+      {
+        path: 'salary',
+        element: <SalaryPage />,
+      },
+      {
+        path: 'reports',
+        element: <ReportsPage />,
+      },
+      {
+        path: 'progress',
+        element: <ProgressPage />,
+      },
+      {
+        path: 'settings',
+        element: <EZSettingsPage />,
+      },
+      // Legacy routes
       {
         path: 'add-package',
         element: <AddPackageFormPage />,

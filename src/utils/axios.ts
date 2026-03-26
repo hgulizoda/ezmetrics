@@ -52,28 +52,71 @@ export const fetcher = async (args: string | [string, AxiosRequestConfig]) => {
 // ----------------------------------------------------------------------
 
 export const endpoints = {
-  chat: '/api/chat',
-  kanban: '/api/kanban',
-  calendar: '/api/calendar',
   auth: {
-    me: '/admin/me',
-    login: '/auth/admin/signin',
-    register: '/api/auth/register',
+    me: '/auth/me',
+    login: '/auth/login',
   },
-  mail: {
-    list: '/api/mail/list',
-    details: '/api/mail/details',
-    labels: '/api/mail/labels',
+  users: {
+    list: '/users',
+    detail: (id: string) => `/users/${id}`,
   },
+  workers: {
+    list: '/workers',
+    detail: (id: string) => `/workers/${id}`,
+    status: '/workers/status',
+  },
+  clock: {
+    in: '/clock/in',
+    out: '/clock/out',
+    records: '/clock/records',
+    detail: (id: string) => `/clock/${id}`,
+    export: '/clock/export',
+  },
+  shifts: {
+    list: '/shifts',
+    detail: (id: string) => `/shifts/${id}`,
+  },
+  efficiency: {
+    list: '/efficiency',
+    history: '/efficiency/history',
+  },
+  bonusRules: {
+    list: '/bonus-rules',
+    detail: (id: string) => `/bonus-rules/${id}`,
+  },
+  salary: {
+    records: '/salary',
+    detail: (id: string) => `/salary/${id}`,
+    rules: '/salary/rates',
+    override: (id: string) => `/salary/${id}/override`,
+  },
+  loans: {
+    list: '/loans',
+    detail: (id: string) => `/loans/${id}`,
+  },
+  reports: {
+    totals: '/reports/salary-totals',
+    worker: (id: string) => `/reports/worker/${id}`,
+    trends: '/reports/trends',
+    export: '/reports/export',
+    filter: '/reports',
+  },
+  dashboard: {
+    summary: '/dashboard/summary',
+  },
+  faceId: {
+    verify: '/faceid/verify',
+  },
+  settings: {
+    list: '/admin/settings',
+    detail: (key: string) => `/admin/settings/${key}`,
+  },
+  // Legacy endpoints (backward compatibility)
+  chat: '/chat',
   post: {
-    list: '/api/post/list',
-    details: '/api/post/details',
-    latest: '/api/post/latest',
-    search: '/api/post/search',
-  },
-  product: {
-    list: '/api/product/list',
-    details: '/api/product/details',
-    search: '/api/product/search',
+    list: '/posts',
+    details: '/posts',
+    latest: '/posts/latest',
+    search: '/posts/search',
   },
 };

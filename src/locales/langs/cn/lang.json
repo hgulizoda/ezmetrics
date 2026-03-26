@@ -42,9 +42,9 @@
         "unverify": "取消验证"
       },
       "firstContentVerify": "验证所有用户",
-      "secondContentVerify": "确认用户已在NEXUS平台注册",
+      "secondContentVerify": "确认用户已在EZ Metric平台注册",
       "firstContentUnVerify": "取消所有用户的验证",
-      "secondContentUnVerify": "确认用户未在NEXUS平台注册"
+      "secondContentUnVerify": "确认用户未在EZ Metric平台注册"
     }
   },
   "statistics": {

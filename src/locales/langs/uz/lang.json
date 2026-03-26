@@ -149,9 +149,9 @@
         "unverify": "tasdiqni olish"
       },
       "firstContentVerify": "Barcha foydalanuvchilarni tasdiqlash",
-      "secondContentVerify": "Foydalanuvchi(lar)ni NEXUS platformasidan ro'yxatdan o'tganligini tasdiqlash",
+      "secondContentVerify": "Foydalanuvchi(lar)ni EZ Metric platformasidan ro'yxatdan o'tganligini tasdiqlash",
       "firstContentUnVerify": "Barcha foydalanuchilardan tasdiqni olish",
-      "secondContentUnVerify": "Foydalanuvchi(lar)ni NEXUS platformasidan ro'yxatdan o'tganligi haqidagi tasdiqni olish"
+      "secondContentUnVerify": "Foydalanuvchi(lar)ni EZ Metric platformasidan ro'yxatdan o'tganligi haqidagi tasdiqni olish"
     }
   },
   "bonus": {

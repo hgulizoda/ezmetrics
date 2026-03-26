@@ -39,8 +39,8 @@ type ActionsType = ActionMapType<Payload>[keyof ActionMapType<Payload>];
 // ----------------------------------------------------------------------
 
 const initialState: AuthStateType = {
-  user: null,
-  loading: true,
+  user: { displayName: 'Admin', role: 'admin' },
+  loading: false,
 };
 
 const reducer = (state: AuthStateType, action: ActionsType) => {
@@ -83,41 +83,13 @@ export function AuthProvider({ children }: Props) {
   const [state, dispatch] = useReducer(reducer, initialState);
 
   const initialize = useCallback(async () => {
-    try {
-      const accessToken = localStorage.getItem(STORAGE_KEY);
-      if (accessToken) {
-        // accessToken && isValidToken(accessToken) -- for validation
-        setSession(accessToken);
-        const {
-          data: { data },
-        } = await axios.get(endpoints.auth.me);
-        const user = data[0];
-        dispatch({
-          type: Types.INITIAL,
-          payload: {
-            user: {
-              ...user,
-              accessToken,
-            },
-          },
-        });
-      } else {
-        dispatch({
-          type: Types.INITIAL,
-          payload: {
-            user: null,
-          },
-        });
-      }
-    } catch (error) {
-      console.error(error);
-      dispatch({
-        type: Types.INITIAL,
-        payload: {
-          user: null,
-        },
-      });
-    }
+    // Skip backend auth check - using mock user
+    dispatch({
+      type: Types.INITIAL,
+      payload: {
+        user: { displayName: 'Admin', role: 'admin' },
+      },
+    });
   }, []);
 
   useEffect(() => {
@@ -125,9 +97,9 @@ export function AuthProvider({ children }: Props) {
   }, [initialize]);
 
   // LOGIN
-  const login = useCallback(async (phone: string, password: string) => {
+  const login = useCallback(async (email: string, password: string) => {
     const loginData = {
-      phone,
+      email,
       password,
     };
 

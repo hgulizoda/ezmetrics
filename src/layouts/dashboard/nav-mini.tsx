@@ -4,7 +4,7 @@ import Stack from '@mui/material/Stack';
 import { useAdminRole } from 'src/hooks/use-mocked-user';
 
 import { hideScroll } from 'src/theme/css';
-import { LogoMini } from 'src/assets/icons/Logo';
+import Logo from 'src/components/logo';
 
 import { NavSectionMini } from 'src/components/nav-section';
 
@@ -44,7 +44,7 @@ export default function NavMini() {
         }}
       >
         <Box width={100} height={100} display="flex" justifyContent="center" alignItems="center">
-          <LogoMini />
+          <Logo sx={{ width: 48, height: 48 }} />
         </Box>
 
         <NavSectionMini

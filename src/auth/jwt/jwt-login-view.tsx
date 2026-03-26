@@ -20,6 +20,8 @@ import { PATH_AFTER_LOGIN } from 'src/config-global';
 import Iconify from 'src/components/iconify';
 import FormProvider, { RHFTextField } from 'src/components/hook-form';
 
+import logoImg from 'src/assets/data/logo.jpg';
+
 // ----------------------------------------------------------------------
 
 export default function JwtLoginView() {
@@ -29,13 +31,13 @@ export default function JwtLoginView() {
   const password = useBoolean();
 
   const LoginSchema = Yup.object().shape({
-    phone: Yup.string().required('Phone is required'),
+    email: Yup.string().required('Email is required').email('Must be a valid email'),
     password: Yup.string().required('Password is required'),
   });
 
   const defaultValues = {
-    phone: '',
-    password: '',
+    email: 'admin@globalmove.com',
+    password: 'admin123',
   };
 
   const methods = useForm({
@@ -50,7 +52,7 @@ export default function JwtLoginView() {
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-      await login?.(data.phone.replace(/\s+/g, ''), data.password);
+      await login?.(data.email, data.password);
 
       router.push(PATH_AFTER_LOGIN);
     } catch (error) {
@@ -59,14 +61,18 @@ export default function JwtLoginView() {
   });
 
   const renderHead = (
-    <Stack spacing={2} sx={{ mb: 5 }}>
-      <Typography variant="h4">Sign in</Typography>
+    <Stack spacing={2} sx={{ mb: 5, alignItems: 'center' }}>
+      <img src={logoImg} alt="EZ Metric" style={{ width: 80, height: 80, borderRadius: 8 }} />
+      <Typography variant="h4">EZ Metric</Typography>
+      <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+        Sign in to your account
+      </Typography>
     </Stack>
   );
 
   const renderForm = (
     <Stack spacing={2.5}>
-      <RHFTextField name="phone" label="Login" type="text" />
+      <RHFTextField name="email" label="Email" type="text" />
 
       <RHFTextField
         name="password"

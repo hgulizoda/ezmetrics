@@ -192,9 +192,9 @@
         "unverify": "отменить подтверждение"
       },
       "firstContentVerify": "Подтвердить всех пользователей",
-      "secondContentVerify": "Подтвердить регистрацию пользователя(ей) на платформе NEXUS",
+      "secondContentVerify": "Подтвердить регистрацию пользователя(ей) на платформе EZ Metric",
       "firstContentUnVerify": "Отменить подтверждение всех пользователей",
-      "secondContentUnVerify": "Отменить подтверждение регистрации пользователя(ей) на платформе NEXUS"
+      "secondContentUnVerify": "Отменить подтверждение регистрации пользователя(ей) на платформе EZ Metric"
     }
   },
   "packages": {

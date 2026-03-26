@@ -68,9 +68,9 @@
         "unverify": "revoke verification"
       },
       "firstContentVerify": "Verify all users",
-      "secondContentVerify": "Confirm that the user(s) have registered on the NEXUS platform",
+      "secondContentVerify": "Confirm that the user(s) have registered on the EZ Metric platform",
       "firstContentUnVerify": "Revoke verification from all users",
-      "secondContentUnVerify": "Revoke confirmation of user(s) registration on the NEXUS platform"
+      "secondContentUnVerify": "Revoke confirmation of user(s) registration on the EZ Metric platform"
     }
   },
   "statistics": {

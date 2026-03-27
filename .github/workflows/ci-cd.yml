@@ -18,7 +18,7 @@ on:
 
 env:
   DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-  PROJECT_NAME: ${{ github.event.repository.name }}
+  PROJECT_NAME: ezmetrics
   DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
   SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
   SSH_KNOWN_HOSTS: ${{ secrets.SSH_KNOWN_HOSTS }}

@@ -27,6 +27,8 @@ import TableContainer from '@mui/material/TableContainer';
 import InputAdornment from '@mui/material/InputAdornment';
 import CircularProgress from '@mui/material/CircularProgress';
 
+import { exportCsv } from 'src/utils/exportCsv';
+
 import {
   useSalary,
   useWorkers,
@@ -40,7 +42,6 @@ import {
   useChargedEmployees,
 } from 'src/modules/ez-metric/api';
 
-import { exportCsv } from 'src/utils/exportCsv';
 import Iconify from 'src/components/iconify';
 
 // ----------------------------------------------------------------------
@@ -296,7 +297,7 @@ export default function SalaryPage() {
             <IconButton
               size="small"
               sx={{ color: 'text.secondary' }}
-              onClick={tab === 0 ? exportSalaryOverview : tab === 1 ? exportOvertime : exportChargedEmployees}
+              onClick={(() => { if (tab === 0) return exportSalaryOverview; if (tab === 1) return exportOvertime; return exportChargedEmployees; })()}
             >
               <Iconify icon="solar:download-minimalistic-bold-duotone" width={22} />
             </IconButton>

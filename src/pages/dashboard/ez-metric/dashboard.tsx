@@ -6,8 +6,6 @@ import Chip from '@mui/material/Chip';
 import Grid from '@mui/material/Grid';
 import Stack from '@mui/material/Stack';
 import Avatar from '@mui/material/Avatar';
-import Tooltip from '@mui/material/Tooltip';
-import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import { alpha, useTheme } from '@mui/material/styles';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -48,7 +46,7 @@ export default function EZMetricDashboard() {
   } = useDashboardSummary();
   const { data: workers, isLoading: loadingWorkers, refetch: refetchWorkers } = useWorkers();
 
-  const handleRefresh = () => {
+  const _handleRefresh = () => {
     refetchSummary();
     refetchWorkers();
   };

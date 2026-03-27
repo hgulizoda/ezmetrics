@@ -1,6 +1,0 @@
-export { UserRole } from './user-role.enum'
-export { SalaryType } from './salary-type.enum'
-export { ClockType } from './clock-type.enum'
-export { BonusRuleType } from './bonus-rule-type.enum'
-export { SalaryStatus } from './salary-status.enum'
-export { LoanType } from './loan-type.enum'

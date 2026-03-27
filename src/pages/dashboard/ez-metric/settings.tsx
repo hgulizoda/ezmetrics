@@ -100,10 +100,10 @@ export default function SettingsPage() {
             <Typography variant="h6" sx={{ mb: 2 }}>Quick Actions</Typography>
             <Stack spacing={1.5}>
               {[
-                { label: 'Manage Shifts', icon: 'solar:calendar-bold-duotone', color: '#FFAB00', path: '/dashboard/shifts' },
-                { label: 'Bonus Rules', icon: 'solar:gift-bold-duotone', color: '#7635DC', path: '/dashboard/bonus-rules' },
+                { label: 'Workers', icon: 'solar:users-group-rounded-bold-duotone', color: '#FFAB00', path: '/dashboard/workers' },
+                { label: 'Clock In/Out', icon: 'solar:clock-circle-bold-duotone', color: '#7635DC', path: '/dashboard/clock' },
                 { label: 'Salary Config', icon: 'solar:wallet-money-bold-duotone', color: '#22C55E', path: '/dashboard/salary' },
-                { label: 'View Reports', icon: 'solar:document-bold-duotone', color: '#2065D1', path: '/dashboard/reports' },
+                { label: 'Efficiency', icon: 'solar:chart-2-bold-duotone', color: '#2065D1', path: '/dashboard/efficiency' },
               ].map((action) => (
                 <Card
                   key={action.label}

@@ -212,7 +212,7 @@ export default function EfficiencyPage() {
 
       {/* Bar Chart */}
       <Card sx={{ p: 3, borderRadius: 2 }}>
-        <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mb: 2 }}>
+        <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mb: 3, pb: 2.5, borderBottom: (t) => `1px solid ${t.palette.divider}` }}>
           <Box>
             <Typography variant="h6">Actual vs Expected Hours</Typography>
             <Stack direction="row" alignItems="center" spacing={2} sx={{ mt: 0.5 }}>

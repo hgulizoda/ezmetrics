@@ -30,6 +30,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 
 import { useWorkers, useClockRecords, useUpdateClockRecord } from 'src/modules/ez-metric/api';
 
+import { exportCsv } from 'src/utils/exportCsv';
 import Iconify from 'src/components/iconify';
 
 function getEffColor(eff: number | null): string {
@@ -150,6 +151,16 @@ export default function ClockPage() {
   }, [filteredRecords]);
 
   const _displayedRecords = tab === 0 ? todayRecords : filteredRecords;
+
+  const clockCsvHeaders = ['Name', 'Date', 'Clock In', 'Clock Out', 'Total Hours', 'Efficiency', 'Shift Period', 'Type', 'Department', 'Status'];
+  const clockCsvRow = (r: any) => [
+    r.worker?.name || '', r.date ? new Date(r.date).toISOString().split('T')[0] : '',
+    formatTime(r.clockIn) || '', r.clockOut ? formatTime(r.clockOut) : '',
+    r.totalHours ?? '', r.efficiency != null ? `${r.efficiency}%` : '',
+    r.shiftPeriod || '', r.type || '', r.department || '', r.status || '',
+  ];
+  const exportToday = () => exportCsv('clock-today', clockCsvHeaders, todayRecords.map(clockCsvRow));
+  const exportAllRecords = () => exportCsv('clock-records', clockCsvHeaders, filteredRecords.map(clockCsvRow));
 
   const handleOpenEdit = useCallback((record: any) => {
     const clockInVal = record.clockIn ? new Date(record.clockIn).toTimeString().slice(0, 5) : '';
@@ -272,15 +283,6 @@ export default function ClockPage() {
             Manage worker time records
           </Typography>
         </Box>
-        <Stack direction="row" spacing={1.5}>
-          <Button
-            variant="soft"
-            color="info"
-            startIcon={<Iconify icon="solar:download-minimalistic-bold-duotone" />}
-          >
-            Export Excel
-          </Button>
-        </Stack>
       </Stack>
 
       {/* Stats */}
@@ -308,10 +310,17 @@ export default function ClockPage() {
       </Grid>
 
       <Card sx={{ borderRadius: 2 }}>
-        <Tabs value={tab} onChange={(_, v) => setTab(v)} sx={{ px: 2.5, pt: 1 }}>
-          <Tab label="Today" />
-          <Tab label="All Records" />
-        </Tabs>
+        <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ pr: 2 }}>
+          <Tabs value={tab} onChange={(_, v) => setTab(v)} sx={{ px: 2.5, pt: 1 }}>
+            <Tab label="Today" />
+            <Tab label="All Records" />
+          </Tabs>
+          <Tooltip title="Export CSV">
+            <IconButton size="small" sx={{ color: 'text.secondary' }} onClick={tab === 0 ? exportToday : exportAllRecords}>
+              <Iconify icon="solar:download-minimalistic-bold-duotone" width={22} />
+            </IconButton>
+          </Tooltip>
+        </Stack>
 
         {/* ============================================================ */}
         {/* TAB 0: TODAY - no date filter, just the table */}
@@ -320,6 +329,7 @@ export default function ClockPage() {
           isLoading ? (
             <Box sx={{ display: 'flex', justifyContent: 'center', py: 6 }}><CircularProgress /></Box>
           ) : (
+            <Box>
             <TableContainer>
               <Table>
                 <TableHead>
@@ -347,6 +357,7 @@ export default function ClockPage() {
                 </TableBody>
               </Table>
             </TableContainer>
+            </Box>
           )
         )}
 
@@ -356,8 +367,8 @@ export default function ClockPage() {
         {tab === 1 && (
           <Box>
             {/* Filters bar */}
-            <Box sx={{ p: 2.5, pb: 0 }}>
-              <Stack direction="row" spacing={2} flexWrap="wrap" alignItems="center" sx={{ mb: 2 }}>
+            <Box sx={{ px: 3, pt: 2.5, pb: 2, borderBottom: (t) => `1px solid ${t.palette.divider}` }}>
+              <Stack direction="row" spacing={2} flexWrap="wrap" alignItems="center" sx={{ mb: 1.5 }}>
                 <TextField
                   select
                   size="small"
@@ -406,7 +417,7 @@ export default function ClockPage() {
               </Stack>
 
               {/* Period summary bar */}
-              <Stack direction="row" spacing={3} sx={{ mb: 2, px: 1 }}>
+              <Stack direction="row" spacing={3} sx={{ mb: 0, px: 1 }}>
                 {[
                   { label: 'Days', value: periodStats.daysCount, color: '#2065D1' },
                   { label: 'Records', value: periodStats.totalRecords, color: '#7635DC' },

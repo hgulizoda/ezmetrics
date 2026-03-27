@@ -215,7 +215,39 @@ export default function WorkersPage() {
 
       {/* Table */}
       <Card sx={{ borderRadius: 2 }}>
-        <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ p: 2.5 }}>
+        <Stack
+          direction="row"
+          alignItems="center"
+          justifyContent="space-between"
+          sx={{ px: 3, py: 2 }}
+        >
+          <Typography variant="h6">Workers</Typography>
+          <Stack direction="row" spacing={1}>
+            <Tooltip title="Export CSV">
+              <IconButton onClick={handleDownloadReport} size="small" sx={{ color: 'text.secondary' }}>
+                <Iconify icon="solar:download-minimalistic-bold-duotone" width={22} />
+              </IconButton>
+            </Tooltip>
+            <Button
+              variant="contained"
+              size="small"
+              startIcon={<Iconify icon="solar:add-circle-bold" />}
+              onClick={handleOpenDialog}
+              sx={{ borderRadius: 1.5 }}
+            >
+              Add Worker
+            </Button>
+          </Stack>
+        </Stack>
+        <Stack
+          direction="row"
+          alignItems="center"
+          sx={{
+            px: 3,
+            pb: 2,
+            borderBottom: (t) => `1px solid ${t.palette.divider}`,
+          }}
+        >
           <TextField
             placeholder="Search workers..."
             size="small"
@@ -230,24 +262,6 @@ export default function WorkersPage() {
               ),
             }}
           />
-          <Stack direction="row" spacing={1.5}>
-            <Button
-              variant="outlined"
-              startIcon={<Iconify icon="solar:download-minimalistic-bold-duotone" />}
-              onClick={handleDownloadReport}
-              sx={{ borderRadius: 1.5 }}
-            >
-              Download Report
-            </Button>
-            <Button
-              variant="contained"
-              startIcon={<Iconify icon="solar:add-circle-bold" />}
-              onClick={handleOpenDialog}
-              sx={{ borderRadius: 1.5 }}
-            >
-              Add Worker
-            </Button>
-          </Stack>
         </Stack>
         <TableContainer>
           <Table>

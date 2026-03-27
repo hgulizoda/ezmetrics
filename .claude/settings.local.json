@@ -48,7 +48,9 @@
       "Bash(npx eslint:*)",
       "Bash(python3:*)",
       "Bash(echo \"EXIT:$?\")",
-      "Bash(grep -v \"^$\")"
+      "Bash(grep -v \"^$\")",
+      "Bash(find 'C:/Users/Hasanova/utility/global move/EzMertrics' -type f \\\\\\(-name .env* -o -name config.* -o -name *.config.* \\\\\\))",
+      "Bash(find 'C:/Users/Hasanova/utility/global move/EzMertrics/src' -type f \\\\\\(-name *axios* -o -name *http* -o -name *client* -o -name *api* \\\\\\))"
     ],
     "deny": [],
     "ask": []

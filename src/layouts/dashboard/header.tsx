@@ -2,6 +2,7 @@ import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import { useTheme } from '@mui/material/styles';
 import IconButton from '@mui/material/IconButton';
+import { useQueryClient } from '@tanstack/react-query';
 
 import { useOffSetTop } from 'src/hooks/use-off-set-top';
 import { useResponsive } from 'src/hooks/use-responsive';
@@ -23,6 +24,7 @@ export default function Header({ onOpenNav }: Props) {
   const theme = useTheme();
 
   const settings = useSettingsContext();
+  const queryClient = useQueryClient();
 
   const isNavHorizontal = settings.themeLayout === 'horizontal';
 
@@ -55,7 +57,11 @@ export default function Header({ onOpenNav }: Props) {
 
       <div style={{ flexGrow: 1 }} />
 
-      <IconButton onClick={handleToggleMode} sx={{ mr: 1 }}>
+      <IconButton onClick={() => queryClient.invalidateQueries()}>
+        <Iconify icon="solar:refresh-bold-duotone" />
+      </IconButton>
+
+      <IconButton onClick={handleToggleMode}>
         <Iconify icon={isDark ? 'solar:sun-bold-duotone' : 'solar:moon-bold-duotone'} />
       </IconButton>
     </Toolbar>

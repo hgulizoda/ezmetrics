@@ -127,11 +127,6 @@ export default function EZMetricDashboard() {
             EZ Metric - Workforce Overview
           </Typography>
         </Box>
-        <Tooltip title="Refresh">
-          <IconButton onClick={handleRefresh}>
-            <Iconify icon="solar:refresh-bold-duotone" />
-          </IconButton>
-        </Tooltip>
       </Stack>
 
       {/* Summary Cards */}

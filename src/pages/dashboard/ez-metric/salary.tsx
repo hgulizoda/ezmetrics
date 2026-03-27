@@ -40,6 +40,7 @@ import {
   useChargedEmployees,
 } from 'src/modules/ez-metric/api';
 
+import { exportCsv } from 'src/utils/exportCsv';
 import Iconify from 'src/components/iconify';
 
 // ----------------------------------------------------------------------
@@ -85,7 +86,10 @@ function getEfficiencyChipColor(efficiency: string): 'success' | 'info' | 'warni
 export default function SalaryPage() {
   const [tab, setTab] = useState(0);
 
-  // --- Overall Salary edit state ---
+  // --- Overall Salary state ---
+  const [salarySearch, setSalarySearch] = useState('');
+  const [salaryTypeFilter, setSalaryTypeFilter] = useState('all');
+  const [salaryPeriod, setSalaryPeriod] = useState(getCurrentPeriod());
   const [salaryEditDialog, setSalaryEditDialog] = useState(false);
   const [salaryEditForm, setSalaryEditForm] = useState({
     _id: '', baseSalary: '', rate: '', bonus: '', overtime: '', charge: '',
@@ -142,6 +146,30 @@ export default function SalaryPage() {
     if (ceFilter !== 'all') list = list.filter((ce: any) => ce.chargeType === ceFilter);
     return list;
   }, [chargedEmployees, ceFilter]);
+
+  // --- Salary filtered ---
+  const filteredSalary = useMemo(() => {
+    let list = salaryData as any[];
+    if (salarySearch) list = list.filter((w: any) => w.name.toLowerCase().includes(salarySearch.toLowerCase()));
+    if (salaryTypeFilter !== 'all') list = list.filter((w: any) => (w.salaryType || '').toLowerCase() === salaryTypeFilter);
+    return list;
+  }, [salaryData, salarySearch, salaryTypeFilter]);
+
+  // --- Export handlers (per table) ---
+  const exportSalaryOverview = () => {
+    exportCsv('salary-overview', ['Worker', 'Base Salary', 'Rate', 'Efficiency', 'Bonus', 'Overtime', 'Charge', 'Total Payroll'],
+      filteredSalary.map((w: any) => [w.name, w.baseSalary, w.rate, w.efficiency, w.bonus, w.overtime, w.charge, w.totalPayroll]));
+  };
+
+  const exportOvertime = () => {
+    exportCsv('overtime-records', ['Name', 'Salary Type', 'Overtime Hours', 'Bonus Amount', 'Status'],
+      filteredOvertime.map((r: any) => [r.name, r.salaryType, r.overtimeHours, r.bonusAmount, r.status]));
+  };
+
+  const exportChargedEmployees = () => {
+    exportCsv('charged-employees', ['Employee', 'Charge Type', 'Category', 'Amount', 'Date', 'Note'],
+      filteredCharges.map((ce: any) => [ce.employee, ce.chargeType, ce.chargeCategory, ce.amount, ce.date, ce.note]));
+  };
 
   // --- Handlers: Overall Salary ---
   const handleEditSalary = (w: any) => {
@@ -258,11 +286,22 @@ export default function SalaryPage() {
 
       {/* Tabs Card */}
       <Card sx={{ borderRadius: 2 }}>
-        <Tabs value={tab} onChange={(_, v) => setTab(v)} sx={{ px: 2.5, pt: 1 }}>
-          <Tab label="Overall Salary" />
-          <Tab label="Overtime Hours" />
-          <Tab label="Charged Employees" />
-        </Tabs>
+        <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ pr: 2 }}>
+          <Tabs value={tab} onChange={(_, v) => setTab(v)} sx={{ px: 2.5, pt: 1 }}>
+            <Tab label="Overall Salary" />
+            <Tab label="Overtime Hours" />
+            <Tab label="Charged Employees" />
+          </Tabs>
+          <Tooltip title="Export CSV">
+            <IconButton
+              size="small"
+              sx={{ color: 'text.secondary' }}
+              onClick={tab === 0 ? exportSalaryOverview : tab === 1 ? exportOvertime : exportChargedEmployees}
+            >
+              <Iconify icon="solar:download-minimalistic-bold-duotone" width={22} />
+            </IconButton>
+          </Tooltip>
+        </Stack>
 
         {/* ============================================================ */}
         {/* TAB 0: OVERALL SALARY */}
@@ -271,6 +310,54 @@ export default function SalaryPage() {
           salaryLoading ? (
             <Box sx={{ display: 'flex', justifyContent: 'center', py: 6 }}><CircularProgress /></Box>
           ) : (
+            <Box>
+              <Stack
+                direction="row"
+                spacing={2}
+                flexWrap="wrap"
+                alignItems="center"
+                sx={{ px: 3, py: 2.5, borderBottom: (t) => `1px solid ${t.palette.divider}` }}
+              >
+                  <TextField
+                    size="small"
+                    placeholder="Search worker..."
+                    value={salarySearch}
+                    onChange={(e) => setSalarySearch(e.target.value)}
+                    sx={{ minWidth: 220 }}
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <Iconify icon="solar:magnifer-bold-duotone" width={20} sx={{ color: 'text.disabled' }} />
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
+                  <TextField
+                    select
+                    size="small"
+                    label="Salary Type"
+                    value={salaryTypeFilter}
+                    onChange={(e) => setSalaryTypeFilter(e.target.value)}
+                    sx={{ minWidth: 160 }}
+                  >
+                    <MenuItem value="all">All Types</MenuItem>
+                    <MenuItem value="hourly">Hourly</MenuItem>
+                    <MenuItem value="percentage">Percentage</MenuItem>
+                    <MenuItem value="flat">Flat</MenuItem>
+                  </TextField>
+                  <TextField
+                    select
+                    size="small"
+                    label="Period"
+                    value={salaryPeriod}
+                    onChange={(e) => setSalaryPeriod(e.target.value)}
+                    sx={{ minWidth: 160 }}
+                  >
+                    {PERIOD_OPTIONS.map((p) => (
+                      <MenuItem key={p} value={p}>{formatPeriodLabel(p)}</MenuItem>
+                    ))}
+                  </TextField>
+              </Stack>
             <TableContainer>
               <Table>
                 <TableHead>
@@ -287,7 +374,7 @@ export default function SalaryPage() {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {salaryData.map((w: any) => (
+                  {filteredSalary.map((w: any) => (
                     <TableRow
                       key={w._id}
                       hover
@@ -344,24 +431,24 @@ export default function SalaryPage() {
                     <TableCell><Typography variant="subtitle1" sx={{ fontWeight: 700 }}>Total</Typography></TableCell>
                     <TableCell align="right">
                       <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
-                        ${salaryData.reduce((s: number, w: any) => s + (w.baseSalary || 0), 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                        ${filteredSalary.reduce((s: number, w: any) => s + (w.baseSalary || 0), 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}
                       </Typography>
                     </TableCell>
                     <TableCell />
                     <TableCell />
                     <TableCell align="right">
                       <Typography variant="subtitle2" sx={{ fontWeight: 700, color: '#22C55E' }}>
-                        ${salaryData.reduce((s: number, w: any) => s + (w.bonus || 0), 0).toFixed(2)}
+                        ${filteredSalary.reduce((s: number, w: any) => s + (w.bonus || 0), 0).toFixed(2)}
                       </Typography>
                     </TableCell>
                     <TableCell align="right">
                       <Typography variant="subtitle2" sx={{ fontWeight: 700, color: '#FFAB00' }}>
-                        ${salaryData.reduce((s: number, w: any) => s + (w.overtime || 0), 0).toFixed(2)}
+                        ${filteredSalary.reduce((s: number, w: any) => s + (w.overtime || 0), 0).toFixed(2)}
                       </Typography>
                     </TableCell>
                     <TableCell align="right">
                       <Typography variant="subtitle2" sx={{ fontWeight: 700, color: '#FF5630' }}>
-                        ${salaryData.reduce((s: number, w: any) => s + (w.charge || 0), 0).toFixed(2)}
+                        ${filteredSalary.reduce((s: number, w: any) => s + (w.charge || 0), 0).toFixed(2)}
                       </Typography>
                     </TableCell>
                     <TableCell align="right">
@@ -374,6 +461,7 @@ export default function SalaryPage() {
                 </TableBody>
               </Table>
             </TableContainer>
+            </Box>
           )
         )}
 
@@ -381,47 +469,53 @@ export default function SalaryPage() {
         {/* TAB 1: OVERTIME HOURS */}
         {/* ============================================================ */}
         {tab === 1 && (
-          <Box sx={{ p: 2.5 }}>
-            <Stack direction="row" spacing={2} sx={{ mb: 2 }} flexWrap="wrap">
-              <TextField
-                size="small"
-                placeholder="Search worker..."
-                value={otSearch}
-                onChange={(e) => setOtSearch(e.target.value)}
-                sx={{ minWidth: 220 }}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <Iconify icon="solar:magnifer-bold-duotone" width={20} sx={{ color: 'text.disabled' }} />
-                    </InputAdornment>
-                  ),
-                }}
-              />
-              <TextField
-                select
-                size="small"
-                label="Salary Type"
-                value={otFilter}
-                onChange={(e) => setOtFilter(e.target.value)}
-                sx={{ minWidth: 160 }}
-              >
-                <MenuItem value="all">All Types</MenuItem>
-                <MenuItem value="hourly">Hourly</MenuItem>
-                <MenuItem value="percentage">Percentage</MenuItem>
-                <MenuItem value="flat">Flat</MenuItem>
-              </TextField>
-              <TextField
-                select
-                size="small"
-                label="Period"
-                value={otPeriod}
-                onChange={(e) => setOtPeriod(e.target.value)}
-                sx={{ minWidth: 160 }}
-              >
-                {PERIOD_OPTIONS.map((p) => (
-                  <MenuItem key={p} value={p}>{formatPeriodLabel(p)}</MenuItem>
-                ))}
-              </TextField>
+          <Box>
+            <Stack
+              direction="row"
+              spacing={2}
+              flexWrap="wrap"
+              alignItems="center"
+              sx={{ px: 3, py: 2.5, borderBottom: (t) => `1px solid ${t.palette.divider}` }}
+            >
+                <TextField
+                  size="small"
+                  placeholder="Search worker..."
+                  value={otSearch}
+                  onChange={(e) => setOtSearch(e.target.value)}
+                  sx={{ minWidth: 220 }}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <Iconify icon="solar:magnifer-bold-duotone" width={20} sx={{ color: 'text.disabled' }} />
+                      </InputAdornment>
+                    ),
+                  }}
+                />
+                <TextField
+                  select
+                  size="small"
+                  label="Salary Type"
+                  value={otFilter}
+                  onChange={(e) => setOtFilter(e.target.value)}
+                  sx={{ minWidth: 160 }}
+                >
+                  <MenuItem value="all">All Types</MenuItem>
+                  <MenuItem value="hourly">Hourly</MenuItem>
+                  <MenuItem value="percentage">Percentage</MenuItem>
+                  <MenuItem value="flat">Flat</MenuItem>
+                </TextField>
+                <TextField
+                  select
+                  size="small"
+                  label="Period"
+                  value={otPeriod}
+                  onChange={(e) => setOtPeriod(e.target.value)}
+                  sx={{ minWidth: 160 }}
+                >
+                  {PERIOD_OPTIONS.map((p) => (
+                    <MenuItem key={p} value={p}>{formatPeriodLabel(p)}</MenuItem>
+                  ))}
+                </TextField>
             </Stack>
 
             {otLoading ? (
@@ -499,8 +593,15 @@ export default function SalaryPage() {
         {/* TAB 2: CHARGED EMPLOYEES */}
         {/* ============================================================ */}
         {tab === 2 && (
-          <Box sx={{ p: 2.5 }}>
-            <Stack direction="row" spacing={2} sx={{ mb: 2 }} flexWrap="wrap" justifyContent="space-between">
+          <Box>
+            <Stack
+              direction="row"
+              spacing={2}
+              flexWrap="wrap"
+              justifyContent="space-between"
+              alignItems="center"
+              sx={{ px: 3, py: 2.5, borderBottom: (t) => `1px solid ${t.palette.divider}` }}
+            >
               <Stack direction="row" spacing={2}>
                 <TextField
                   select
@@ -528,7 +629,7 @@ export default function SalaryPage() {
                   ))}
                 </TextField>
               </Stack>
-              <Button variant="soft" startIcon={<Iconify icon="solar:add-circle-bold" />} onClick={() => handleOpenCeDialog()}>
+              <Button variant="soft" size="small" startIcon={<Iconify icon="solar:add-circle-bold" />} onClick={() => handleOpenCeDialog()}>
                 Add Charge
               </Button>
             </Stack>

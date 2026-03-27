@@ -33,7 +33,6 @@ const EZMetricDashboard = lazy(() => import('src/pages/dashboard/ez-metric/dashb
 const WorkersPage = lazy(() => import('src/pages/dashboard/ez-metric/workers'));
 const ClockPage = lazy(() => import('src/pages/dashboard/ez-metric/clock'));
 const ShiftsPage = lazy(() => import('src/pages/dashboard/ez-metric/shifts'));
-const FaceIdPage = lazy(() => import('src/pages/dashboard/ez-metric/face-id'));
 const EfficiencyPage = lazy(() => import('src/pages/dashboard/ez-metric/efficiency'));
 const BonusRulesPage = lazy(() => import('src/pages/dashboard/ez-metric/bonus-rules'));
 const SalaryPage = lazy(() => import('src/pages/dashboard/ez-metric/salary'));
@@ -68,10 +67,6 @@ export const dashboardRoutes = [
       {
         path: 'shifts',
         element: <ShiftsPage />,
-      },
-      {
-        path: 'face-id',
-        element: <FaceIdPage />,
       },
       {
         path: 'efficiency',

@@ -35,11 +35,6 @@ export function useNavData() {
             path: paths.dashboard.shifts,
             icon: <Iconify icon="solar:calendar-bold-duotone" width={24} />,
           },
-          {
-            title: 'Face ID',
-            path: paths.dashboard.faceId,
-            icon: <Iconify icon="solar:face-scan-circle-bold-duotone" width={24} />,
-          },
         ],
       },
       {

@@ -17,7 +17,6 @@ const paths = {
     workers: `${ROOTS.DASHBOARD}/workers`,
     clock: `${ROOTS.DASHBOARD}/clock`,
     shifts: `${ROOTS.DASHBOARD}/shifts`,
-    faceId: `${ROOTS.DASHBOARD}/face-id`,
     efficiency: `${ROOTS.DASHBOARD}/efficiency`,
     bonusRules: `${ROOTS.DASHBOARD}/bonus-rules`,
     salary: `${ROOTS.DASHBOARD}/salary`,

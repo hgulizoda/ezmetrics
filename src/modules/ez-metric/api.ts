@@ -3,18 +3,18 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 // ============ MOCK DATA ============
 
 const MOCK_WORKERS = [
-  { _id: '1', name: 'Justin Naranjo', phone: '(555) 101-2001', position: 'Lead Technician', salaryType: 'Hourly', rate: 30, status: 'active', hours: 42.5, efficiency: 112, language: 'English', faceIdStatus: 'verified', faceIdLastVerified: '2026-03-23T14:30:00Z' },
-  { _id: '2', name: 'Emilio Rivera', phone: '(555) 101-2002', position: 'Technician', salaryType: 'Hourly', rate: 28, status: 'active', hours: 38.2, efficiency: 98, language: 'Spanish', faceIdStatus: 'verified', faceIdLastVerified: '2026-03-23T08:15:00Z' },
-  { _id: '3', name: 'Jeffrey Alvarez', phone: '(555) 101-2003', position: 'Technician', salaryType: 'Hourly', rate: 27, status: 'active', hours: 40.0, efficiency: 105, language: 'English', faceIdStatus: 'verified', faceIdLastVerified: '2026-03-22T07:55:00Z' },
-  { _id: '4', name: 'Miguel Retana', phone: '(555) 101-2004', position: 'Senior Technician', salaryType: 'Percentage', rate: 35, status: 'active', hours: 45.3, efficiency: 95, language: 'Spanish', faceIdStatus: 'pending', faceIdLastVerified: null },
-  { _id: '5', name: 'Bernardo Grossi', phone: '(555) 101-2005', position: 'Technician', salaryType: 'Hourly', rate: 25, status: 'active', hours: 36.8, efficiency: 88, language: 'English', faceIdStatus: 'verified', faceIdLastVerified: '2026-03-23T07:45:00Z' },
-  { _id: '6', name: 'Islam Abdullaev', phone: '(555) 101-2006', position: 'Technician', salaryType: 'Hourly', rate: 26, status: 'active', hours: 39.5, efficiency: 102, language: 'English', faceIdStatus: 'not_verified', faceIdLastVerified: null },
-  { _id: '7', name: 'Carlos Mendez', phone: '(555) 101-2007', position: 'Apprentice', salaryType: 'Hourly', rate: 18, status: 'active', hours: 32.0, efficiency: 72, language: 'Spanish', faceIdStatus: 'pending', faceIdLastVerified: null },
-  { _id: '8', name: 'David Kim', phone: '(555) 101-2008', position: 'Fleet Technician', salaryType: 'Flat', rate: 2400, status: 'inactive', hours: 0, efficiency: null, language: 'English', faceIdStatus: 'not_verified', faceIdLastVerified: null },
-  { _id: '9', name: 'Alex Thompson', phone: '(555) 101-2009', position: 'Technician', salaryType: 'Hourly', rate: 27, status: 'active', hours: 41.0, efficiency: 110, language: 'English', faceIdStatus: 'verified', faceIdLastVerified: '2026-03-23T08:00:00Z' },
-  { _id: '10', name: 'Roberto Sanchez', phone: '(555) 101-2010', position: 'Technician', salaryType: 'Hourly', rate: 26, status: 'active', hours: 37.5, efficiency: 92, language: 'Spanish', faceIdStatus: 'verified', faceIdLastVerified: '2026-03-23T07:50:00Z' },
-  { _id: '11', name: 'James Wilson', phone: '(555) 101-2011', position: 'Technician', salaryType: 'Hourly', rate: 25, status: 'active', hours: 34.0, efficiency: 85, language: 'English', faceIdStatus: 'verified', faceIdLastVerified: '2026-03-22T14:20:00Z' },
-  { _id: '12', name: 'Marco Lopez', phone: '(555) 101-2012', position: 'Technician', salaryType: 'Hourly', rate: 28, status: 'active', hours: 43.0, efficiency: 108, language: 'Spanish', faceIdStatus: 'verified', faceIdLastVerified: '2026-03-23T07:40:00Z' },
+  { _id: '1', name: 'Justin Naranjo', phone: '(555) 101-2001', position: 'Lead Technician', salaryType: 'Hourly', rate: 30, status: 'active', hours: 42.5, efficiency: 112, language: 'English' },
+  { _id: '2', name: 'Emilio Rivera', phone: '(555) 101-2002', position: 'Technician', salaryType: 'Hourly', rate: 28, status: 'active', hours: 38.2, efficiency: 98, language: 'Spanish' },
+  { _id: '3', name: 'Jeffrey Alvarez', phone: '(555) 101-2003', position: 'Technician', salaryType: 'Hourly', rate: 27, status: 'active', hours: 40.0, efficiency: 105, language: 'English' },
+  { _id: '4', name: 'Miguel Retana', phone: '(555) 101-2004', position: 'Senior Technician', salaryType: 'Percentage', rate: 35, status: 'active', hours: 45.3, efficiency: 95, language: 'Spanish' },
+  { _id: '5', name: 'Bernardo Grossi', phone: '(555) 101-2005', position: 'Technician', salaryType: 'Hourly', rate: 25, status: 'active', hours: 36.8, efficiency: 88, language: 'English' },
+  { _id: '6', name: 'Islam Abdullaev', phone: '(555) 101-2006', position: 'Technician', salaryType: 'Hourly', rate: 26, status: 'active', hours: 39.5, efficiency: 102, language: 'English' },
+  { _id: '7', name: 'Carlos Mendez', phone: '(555) 101-2007', position: 'Apprentice', salaryType: 'Hourly', rate: 18, status: 'active', hours: 32.0, efficiency: 72, language: 'Spanish' },
+  { _id: '8', name: 'David Kim', phone: '(555) 101-2008', position: 'Fleet Technician', salaryType: 'Flat', rate: 2400, status: 'inactive', hours: 0, efficiency: null, language: 'English' },
+  { _id: '9', name: 'Alex Thompson', phone: '(555) 101-2009', position: 'Technician', salaryType: 'Hourly', rate: 27, status: 'active', hours: 41.0, efficiency: 110, language: 'English' },
+  { _id: '10', name: 'Roberto Sanchez', phone: '(555) 101-2010', position: 'Technician', salaryType: 'Hourly', rate: 26, status: 'active', hours: 37.5, efficiency: 92, language: 'Spanish' },
+  { _id: '11', name: 'James Wilson', phone: '(555) 101-2011', position: 'Technician', salaryType: 'Hourly', rate: 25, status: 'active', hours: 34.0, efficiency: 85, language: 'English' },
+  { _id: '12', name: 'Marco Lopez', phone: '(555) 101-2012', position: 'Technician', salaryType: 'Hourly', rate: 28, status: 'active', hours: 43.0, efficiency: 108, language: 'Spanish' },
 ];
 
 const MOCK_DASHBOARD_SUMMARY = {
@@ -158,7 +158,7 @@ export function useCreateWorker() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (body: any) => {
-      const newWorker = { _id: `w${Date.now()}`, ...body, status: 'active', hours: 0, efficiency: null, faceIdStatus: 'not_verified', faceIdLastVerified: null };
+      const newWorker = { _id: `w${Date.now()}`, ...body, status: 'active', hours: 0, efficiency: null };
       MOCK_WORKERS.push(newWorker);
       return newWorker;
     },
@@ -365,18 +365,3 @@ export function useUpdateSetting() {
   });
 }
 
-// ============ FACE ID ============
-export function useVerifyFaceId() {
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: async (workerId: string) => {
-      const worker = MOCK_WORKERS.find((w) => w._id === workerId);
-      if (worker) {
-        worker.faceIdStatus = 'verified';
-        worker.faceIdLastVerified = new Date().toISOString();
-      }
-      return worker;
-    },
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['workers'] }),
-  });
-}

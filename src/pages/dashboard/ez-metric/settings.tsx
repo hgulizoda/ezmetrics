@@ -140,10 +140,6 @@ export default function SettingsPage() {
                 <TextField fullWidth label="Auto Clock-Out After (hours)" type="number" defaultValue={12} helperText="Automatically clock out workers after this many hours" />
                 <FormControlLabel
                   control={<Switch defaultChecked />}
-                  label="Require Face ID for clock-in"
-                />
-                <FormControlLabel
-                  control={<Switch defaultChecked />}
                   label="Allow manual clock edits (admin only)"
                 />
                 <FormControlLabel

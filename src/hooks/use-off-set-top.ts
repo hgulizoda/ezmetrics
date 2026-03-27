@@ -1,5 +1,5 @@
 import { useScroll } from 'framer-motion';
-import { useMemo, useState, useEffect, useCallback } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 
 // ----------------------------------------------------------------------
 
@@ -15,19 +15,13 @@ export function useOffSetTop(top = 0, options?: UseScrollOptions): ReturnType {
 
   const [value, setValue] = useState(false);
 
-  const onOffSetTop = useCallback(() => {
-    scrollY.on('change', (scrollHeight) => {
-      if (scrollHeight > top) {
-        setValue(true);
-      } else {
-        setValue(false);
-      }
-    });
-  }, [scrollY, top]);
-
   useEffect(() => {
-    onOffSetTop();
-  }, [onOffSetTop]);
+    const unsubscribe = scrollY.on('change', (scrollHeight) => {
+      setValue(scrollHeight > top);
+    });
+
+    return () => unsubscribe();
+  }, [scrollY, top]);
 
   const memoizedValue = useMemo(() => value, [value]);
 

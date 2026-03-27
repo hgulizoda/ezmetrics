@@ -104,9 +104,6 @@ export const endpoints = {
   dashboard: {
     summary: '/dashboard/summary',
   },
-  faceId: {
-    verify: '/faceid/verify',
-  },
   settings: {
     list: '/admin/settings',
     detail: (key: string) => `/admin/settings/${key}`,

@@ -77,7 +77,7 @@ export default function CustomersList({ onSelectChat }: CustomersListProps) {
       (onlineUsers &&
         data?.data
           .filter((el: any) => searchExistingChat(el, searchContact))
-          .map((user: ICustomerRes) => {
+          .map((user: any) => {
             const isUserOnline = onlineUsers?.some((u) => u?.user_id === user?.user?._id);
             return {
               ...user,

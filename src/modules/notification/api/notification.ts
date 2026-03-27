@@ -1,5 +1,4 @@
 import { IFilterProps } from 'src/modules/package/types/Filter';
-
 import { delay, fakeRes, MOCK_NOTIFICATIONS } from 'src/_mock/fake-backend';
 
 import { NotificationFormType } from '../libs/notificationScheme';

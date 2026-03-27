@@ -53,7 +53,7 @@ function useActiveChatUser() {
 
   useEffect(() => {
     if (chats?.data) {
-      setSingleUser(chats.data.find((el: any) => el._id === chatId));
+      setSingleUser(chats.data.find((el: any) => el._id === chatId) as ICustomerRes | undefined);
     }
   }, [chatId, chats]);
 

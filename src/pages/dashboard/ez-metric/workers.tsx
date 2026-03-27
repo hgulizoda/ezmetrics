@@ -1,32 +1,32 @@
 import { useState } from 'react';
 
-import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import Chip from '@mui/material/Chip';
-import CircularProgress from '@mui/material/CircularProgress';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogTitle from '@mui/material/DialogTitle';
 import Grid from '@mui/material/Grid';
-import IconButton from '@mui/material/IconButton';
-import InputAdornment from '@mui/material/InputAdornment';
-import MenuItem from '@mui/material/MenuItem';
 import Stack from '@mui/material/Stack';
 import Table from '@mui/material/Table';
+import Avatar from '@mui/material/Avatar';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import Tooltip from '@mui/material/Tooltip';
+import MenuItem from '@mui/material/MenuItem';
+import TableRow from '@mui/material/TableRow';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
 import TextField from '@mui/material/TextField';
-import Tooltip from '@mui/material/Tooltip';
+import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
+import DialogTitle from '@mui/material/DialogTitle';
 import { alpha, useTheme } from '@mui/material/styles';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import InputAdornment from '@mui/material/InputAdornment';
+import TableContainer from '@mui/material/TableContainer';
+import CircularProgress from '@mui/material/CircularProgress';
 
-import { useCreateWorker, useWorkers } from 'src/modules/ez-metric/api';
+import { useWorkers, useCreateWorker, useUpdateWorker } from 'src/modules/ez-metric/api';
 
 import Iconify from 'src/components/iconify';
 
@@ -48,13 +48,31 @@ function getEfficiencyColor(eff: number): string {
   return '#FF5630';
 }
 
+const DEPARTMENTS = ['Shop', 'Fleet', 'Office', 'Warehouse', 'Dispatch'];
+
+function getRateLabel(salaryType: string): string {
+  if (salaryType === 'Hourly') return 'Hourly Rate';
+  if (salaryType === 'Percentage') return 'Rate (%)';
+  return 'Monthly Salary';
+}
+
+function getRateAdornment(salaryType: string): { start?: string; end?: string } {
+  if (salaryType === 'Hourly') return { start: '$', end: '/hr' };
+  if (salaryType === 'Percentage') return { end: '%' };
+  return { start: '$', end: '/mo' };
+}
+
 const INITIAL_FORM = {
-  name: '',
+  firstName: '',
+  lastName: '',
   phone: '',
   position: '',
   language: 'English',
   salaryType: 'Hourly',
   rate: '',
+  department: '',
+  shiftStart: '',
+  shiftEnd: '',
 };
 
 export default function WorkersPage() {
@@ -63,8 +81,11 @@ export default function WorkersPage() {
   const [openDialog, setOpenDialog] = useState(false);
   const [formData, setFormData] = useState(INITIAL_FORM);
 
+  const [editingWorkerId, setEditingWorkerId] = useState<string | null>(null);
+
   const { data: workers = [], isLoading } = useWorkers();
   const createWorker = useCreateWorker();
+  const updateWorker = useUpdateWorker();
 
   const filtered = workers.filter((w: any) =>
     w.name.toLowerCase().includes(search.toLowerCase())
@@ -82,21 +103,72 @@ export default function WorkersPage() {
   const handleCloseDialog = () => {
     setOpenDialog(false);
     setFormData(INITIAL_FORM);
+    setEditingWorkerId(null);
+  };
+
+  const handleEditWorker = (worker: any) => {
+    const nameParts = worker.name.split(' ');
+    const shiftParts = (worker.shiftPeriod || '').split('-');
+    setFormData({
+      firstName: nameParts[0] || '',
+      lastName: nameParts.slice(1).join(' ') || '',
+      phone: worker.phone || '',
+      position: worker.position || '',
+      language: worker.language || 'English',
+      salaryType: worker.salaryType || 'Hourly',
+      rate: String(worker.rate || ''),
+      department: worker.department || '',
+      shiftStart: shiftParts[0] || '',
+      shiftEnd: shiftParts[1] || '',
+    });
+    setEditingWorkerId(worker._id);
+    setOpenDialog(true);
+  };
+
+  const handleDownloadReport = () => {
+    const headers = ['Name', 'Phone', 'Position', 'Department', 'Salary Type', 'Rate', 'Hours Worked', 'Efficiency', 'Shift Period', 'Status'];
+    const rows = filtered.map((w: any) => [
+      w.name,
+      w.phone,
+      w.position,
+      w.department || '',
+      w.salaryType,
+      formatRate(w.salaryType, w.rate),
+      w.hours != null ? Number(w.hours).toFixed(2) : 'N/A',
+      w.efficiency != null ? `${w.efficiency}%` : 'N/A',
+      w.shiftPeriod || '',
+      w.status,
+    ]);
+    const csv = [headers, ...rows].map((r) => r.map((c: string) => `"${c}"`).join(',')).join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `workers-report-${new Date().toISOString().split('T')[0]}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
   };
 
   const handleSubmit = async () => {
+    const workerData = {
+      name: `${formData.firstName} ${formData.lastName}`.trim(),
+      phone: formData.phone,
+      position: formData.position,
+      language: formData.language,
+      salaryType: formData.salaryType,
+      rate: Number(formData.rate),
+      department: formData.department,
+      shiftPeriod: `${formData.shiftStart}-${formData.shiftEnd}`,
+    };
     try {
-      await createWorker.mutateAsync({
-        name: formData.name,
-        phone: formData.phone,
-        position: formData.position,
-        language: formData.language,
-        salaryType: formData.salaryType,
-        rate: Number(formData.rate),
-      });
+      if (editingWorkerId) {
+        await updateWorker.mutateAsync({ id: editingWorkerId, body: workerData });
+      } else {
+        await createWorker.mutateAsync(workerData);
+      }
       handleCloseDialog();
     } catch (error) {
-      console.error('Failed to create worker:', error);
+      console.error('Failed to save worker:', error);
     }
   };
 
@@ -110,22 +182,12 @@ export default function WorkersPage() {
 
   return (
     <Box sx={{ p: 3 }}>
-      <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mb: 3 }}>
-        <Box>
-          <Typography variant="h4">Workers Management</Typography>
-          <Typography variant="body2" sx={{ color: 'text.secondary', mt: 0.5 }}>
-            {workers.length} workers registered
-          </Typography>
-        </Box>
-        <Button
-          variant="contained"
-          startIcon={<Iconify icon="solar:add-circle-bold" />}
-          onClick={handleOpenDialog}
-          sx={{ borderRadius: 1.5 }}
-        >
-          Add Worker
-        </Button>
-      </Stack>
+      <Box sx={{ mb: 3 }}>
+        <Typography variant="h4">Workers Management</Typography>
+        <Typography variant="body2" sx={{ color: 'text.secondary', mt: 0.5 }}>
+          {workers.length} workers registered
+        </Typography>
+      </Box>
 
       {/* Stats */}
       <Grid container spacing={2} sx={{ mb: 3 }}>
@@ -153,7 +215,7 @@ export default function WorkersPage() {
 
       {/* Table */}
       <Card sx={{ borderRadius: 2 }}>
-        <Stack direction="row" alignItems="center" sx={{ p: 2.5 }}>
+        <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ p: 2.5 }}>
           <TextField
             placeholder="Search workers..."
             size="small"
@@ -168,6 +230,24 @@ export default function WorkersPage() {
               ),
             }}
           />
+          <Stack direction="row" spacing={1.5}>
+            <Button
+              variant="outlined"
+              startIcon={<Iconify icon="solar:download-minimalistic-bold-duotone" />}
+              onClick={handleDownloadReport}
+              sx={{ borderRadius: 1.5 }}
+            >
+              Download Report
+            </Button>
+            <Button
+              variant="contained"
+              startIcon={<Iconify icon="solar:add-circle-bold" />}
+              onClick={handleOpenDialog}
+              sx={{ borderRadius: 1.5 }}
+            >
+              Add Worker
+            </Button>
+          </Stack>
         </Stack>
         <TableContainer>
           <Table>
@@ -250,7 +330,7 @@ export default function WorkersPage() {
                   </TableCell>
                   <TableCell align="center">
                     <Tooltip title="Edit">
-                      <IconButton size="small">
+                      <IconButton size="small" onClick={() => handleEditWorker(worker)}>
                         <Iconify icon="solar:pen-bold-duotone" width={18} />
                       </IconButton>
                     </Tooltip>
@@ -269,11 +349,14 @@ export default function WorkersPage() {
 
       {/* Add Worker Dialog */}
       <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="sm" fullWidth>
-        <DialogTitle>Add New Worker</DialogTitle>
+        <DialogTitle>{editingWorkerId ? 'Edit Worker' : 'Add New Worker'}</DialogTitle>
         <DialogContent sx={{ pt: '20px !important' }}>
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6}>
-              <TextField fullWidth label="Full Name" value={formData.name} onChange={handleChange('name')} />
+              <TextField fullWidth label="First Name" value={formData.firstName} onChange={handleChange('firstName')} />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField fullWidth label="Last Name" value={formData.lastName} onChange={handleChange('lastName')} />
             </Grid>
             <Grid item xs={12} sm={6}>
               <TextField fullWidth label="Phone" value={formData.phone} onChange={handleChange('phone')} />
@@ -289,6 +372,13 @@ export default function WorkersPage() {
               </TextField>
             </Grid>
             <Grid item xs={12} sm={6}>
+              <TextField fullWidth select label="Department" value={formData.department} onChange={handleChange('department')}>
+                {DEPARTMENTS.map((dept) => (
+                  <MenuItem key={dept} value={dept}>{dept}</MenuItem>
+                ))}
+              </TextField>
+            </Grid>
+            <Grid item xs={12} sm={6}>
               <TextField fullWidth select label="Salary Type" value={formData.salaryType} onChange={handleChange('salaryType')}>
                 <MenuItem value="Hourly">Hourly</MenuItem>
                 <MenuItem value="Percentage">Percentage</MenuItem>
@@ -296,7 +386,27 @@ export default function WorkersPage() {
               </TextField>
             </Grid>
             <Grid item xs={12} sm={6}>
-              <TextField fullWidth label="Rate" type="number" value={formData.rate} onChange={handleChange('rate')} />
+              <TextField
+                fullWidth
+                label={getRateLabel(formData.salaryType)}
+                type="number"
+                value={formData.rate}
+                onChange={handleChange('rate')}
+                InputProps={{
+                  startAdornment: getRateAdornment(formData.salaryType).start ? (
+                    <InputAdornment position="start">{getRateAdornment(formData.salaryType).start}</InputAdornment>
+                  ) : undefined,
+                  endAdornment: getRateAdornment(formData.salaryType).end ? (
+                    <InputAdornment position="end">{getRateAdornment(formData.salaryType).end}</InputAdornment>
+                  ) : undefined,
+                }}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField fullWidth label="Shift Start" type="time" value={formData.shiftStart} onChange={handleChange('shiftStart')} InputLabelProps={{ shrink: true }} />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField fullWidth label="Shift End" type="time" value={formData.shiftEnd} onChange={handleChange('shiftEnd')} InputLabelProps={{ shrink: true }} />
             </Grid>
             <Grid item xs={12}>
               <Box
@@ -323,9 +433,13 @@ export default function WorkersPage() {
           <Button
             variant="contained"
             onClick={handleSubmit}
-            disabled={createWorker.isPending || !formData.name || !formData.phone}
+            disabled={(createWorker.isPending || updateWorker.isPending) || !formData.firstName || !formData.lastName || !formData.phone}
           >
-            {createWorker.isPending ? 'Adding...' : 'Add Worker'}
+            {(() => {
+              if (createWorker.isPending || updateWorker.isPending) return 'Saving...';
+              if (editingWorkerId) return 'Save Changes';
+              return 'Add Worker';
+            })()}
           </Button>
         </DialogActions>
       </Dialog>

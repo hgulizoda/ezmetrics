@@ -14,7 +14,7 @@ import { NavProps, NavGroupProps } from '../types';
 function NavSectionVertical({ data, slotProps, ...other }: NavProps) {
   const { user } = useAdminRole();
   const filteredData = data.filter(
-    (group) => group.roles && group.roles.includes(user?.role ?? '')
+    (group) => !group.roles || group.roles.length === 0 || group.roles.includes(user?.role ?? '')
   );
   return (
     <Stack component="nav" id="nav-section-vertical" {...other}>

@@ -1,4 +1,4 @@
-import { delay, fakeRes, paginated, MOCK_BONUS_LIMIT, MOCK_BONUSES, MOCK_ORDERS } from 'src/_mock/fake-backend';
+import { delay, fakeRes, paginated, MOCK_ORDERS, MOCK_BONUSES, MOCK_BONUS_LIMIT } from 'src/_mock/fake-backend';
 
 import { IFilters } from '../types/Filters';
 import { IUpdateLimit } from '../types/Limit';

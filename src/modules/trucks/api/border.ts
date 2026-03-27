@@ -1,8 +1,8 @@
-import { delay, fakeRes, MOCK_TRUCK_ORDERS, paginated } from 'src/_mock/fake-backend';
+import { delay, fakeRes, paginated, MOCK_TRUCK_ORDERS } from 'src/_mock/fake-backend';
 
-import { IFilterProps } from '../../package/types/Filter';
 import { SendTransitType } from '../libs/sendTransit';
 import { SeparateFormType } from '../libs/separateScheme';
+import { IFilterProps } from '../../package/types/Filter';
 
 export const chinaborderTruck = {
   get: async (params: IFilterProps, _status: string) => {

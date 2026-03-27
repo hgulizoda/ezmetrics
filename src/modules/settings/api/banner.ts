@@ -11,7 +11,7 @@ export const banner = {
     await delay();
     return { data: MOCK_BANNERS } as any;
   },
-  reOrder: async (data: { id: string; order: number }) => {
+  reOrder: async (_data: { id: string; order: number }) => {
     await delay();
     return { success: true };
   },

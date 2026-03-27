@@ -1,7 +1,7 @@
-import { delay, fakeRes, MOCK_PROFILES, MOCK_USERS, paginated } from 'src/_mock/fake-backend';
+import { delay, fakeRes, paginated, MOCK_USERS, MOCK_PROFILES } from 'src/_mock/fake-backend';
 
-import { IFilterProps } from '../../package/types/Filter';
 import { UserFormType } from '../libs/userScheme';
+import { IFilterProps } from '../../package/types/Filter';
 import { UserFormTypeRequired } from '../libs/useSchemeRequired';
 
 export const user = {

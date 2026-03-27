@@ -1,5 +1,5 @@
-import { delay, fakeRes, MOCK_PRICES } from 'src/_mock/fake-backend';
 import { IFilterProps } from 'src/modules/package/types/Filter';
+import { delay, fakeRes, MOCK_PRICES } from 'src/_mock/fake-backend';
 
 import { PriceSchemeType } from '../libs/priceScheme';
 

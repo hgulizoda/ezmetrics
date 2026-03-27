@@ -30,7 +30,7 @@ export default function CustomerProfile() {
   const { data: chats } = useGetChatLists();
   useEffect(() => {
     if (chats && chats.data) {
-      setSingleUser(chats.data.find((el: any) => el._id === chatId));
+      setSingleUser(chats.data.find((el: any) => el._id === chatId) as ICustomerRes | undefined);
     }
   }, [chatId, chats]);
 

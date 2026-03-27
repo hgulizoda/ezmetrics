@@ -1,4 +1,4 @@
-import { delay, MOCK_ORDERS, MOCK_STATISTICS_USERS, MOCK_USER_STATS, paginated } from 'src/_mock/fake-backend';
+import { delay, paginated, MOCK_ORDERS, MOCK_USER_STATS, MOCK_STATISTICS_USERS } from 'src/_mock/fake-backend';
 
 export const statistics = {
   get: async (params: { page: number; limit: number; search: string }) => {

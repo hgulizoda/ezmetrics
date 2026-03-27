@@ -1,34 +1,41 @@
-import { useCallback, useState } from 'react';
+import { useState, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 
-import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import Card from '@mui/material/Card';
-import Chip from '@mui/material/Chip';
-import CircularProgress from '@mui/material/CircularProgress';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogTitle from '@mui/material/DialogTitle';
-import Grid from '@mui/material/Grid';
-import IconButton from '@mui/material/IconButton';
-import Stack from '@mui/material/Stack';
 import Tab from '@mui/material/Tab';
+import Card from '@mui/material/Card';
+import Grid from '@mui/material/Grid';
+import Tabs from '@mui/material/Tabs';
+import Stack from '@mui/material/Stack';
 import Table from '@mui/material/Table';
+import Avatar from '@mui/material/Avatar';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import Tooltip from '@mui/material/Tooltip';
+import { alpha } from '@mui/material/styles';
+import TableRow from '@mui/material/TableRow';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Tabs from '@mui/material/Tabs';
 import TextField from '@mui/material/TextField';
-import Tooltip from '@mui/material/Tooltip';
+import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
-import { alpha } from '@mui/material/styles';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import TableContainer from '@mui/material/TableContainer';
+import CircularProgress from '@mui/material/CircularProgress';
 
-import { useClockRecords, useUpdateClockRecord } from 'src/modules/ez-metric/api';
+import { useWorkers, useClockRecords, useUpdateClockRecord } from 'src/modules/ez-metric/api';
 
 import Iconify from 'src/components/iconify';
+
+function getEffColor(eff: number | null): string {
+  if (eff === null) return 'text.disabled';
+  if (eff >= 100) return '#22C55E';
+  if (eff >= 90) return '#FFAB00';
+  return '#FF5630';
+}
 
 const today = new Date().toISOString().split('T')[0];
 
@@ -44,11 +51,12 @@ export default function ClockPage() {
   const [editClockIn, setEditClockIn] = useState('');
   const [editClockOut, setEditClockOut] = useState('');
   const [editDate, setEditDate] = useState('');
-  const [editShiftPeriod, setEditShiftPeriod] = useState('');
   const [editNote, setEditNote] = useState('');
-  const [origValues, setOrigValues] = useState({ clockIn: '', clockOut: '', date: '', shiftPeriod: '' });
+  const [origValues, setOrigValues] = useState({ clockIn: '', clockOut: '', date: '' });
 
+  const navigate = useNavigate();
   const { data: records = [], isLoading } = useClockRecords();
+  const { data: workers = [] } = useWorkers();
   const updateClockRecord = useUpdateClockRecord();
 
   const todayRecords = records.filter((r: any) => {
@@ -62,15 +70,13 @@ export default function ClockPage() {
     const clockInVal = record.clockIn ? new Date(record.clockIn).toTimeString().slice(0, 5) : '';
     const clockOutVal = record.clockOut ? new Date(record.clockOut).toTimeString().slice(0, 5) : '';
     const dateVal = record.date ? new Date(record.date).toISOString().split('T')[0] : today;
-    const shiftVal = record.shiftPeriod || '';
 
     setEditRecord(record);
     setEditClockIn(clockInVal);
     setEditClockOut(clockOutVal);
     setEditDate(dateVal);
-    setEditShiftPeriod(shiftVal);
     setEditNote('');
-    setOrigValues({ clockIn: clockInVal, clockOut: clockOutVal, date: dateVal, shiftPeriod: shiftVal });
+    setOrigValues({ clockIn: clockInVal, clockOut: clockOutVal, date: dateVal });
     setEditDialog(true);
   }, []);
 
@@ -82,8 +88,7 @@ export default function ClockPage() {
   const hasChanges =
     editClockIn !== origValues.clockIn ||
     editClockOut !== origValues.clockOut ||
-    editDate !== origValues.date ||
-    editShiftPeriod !== origValues.shiftPeriod;
+    editDate !== origValues.date;
 
   const canSave = !hasChanges || editNote.trim().length > 0;
 
@@ -93,22 +98,21 @@ export default function ClockPage() {
     const body: any = {
       note: editNote,
       status: 'manual',
-      shiftPeriod: editShiftPeriod,
-      date: new Date(`${editDate}T00:00:00`).toISOString(),
+      date: `${editDate}T00:00:00Z`,
     };
 
     if (editClockIn) {
-      body.clockIn = new Date(`${editDate}T${editClockIn}:00`).toISOString();
+      body.clockIn = `${editDate}T${editClockIn}:00Z`;
     }
     if (editClockOut) {
-      body.clockOut = new Date(`${editDate}T${editClockOut}:00`).toISOString();
+      body.clockOut = `${editDate}T${editClockOut}:00Z`;
     }
 
     updateClockRecord.mutate(
       { id: editRecord._id, body },
       { onSuccess: () => handleCloseEdit() }
     );
-  }, [editRecord, editClockIn, editClockOut, editDate, editShiftPeriod, editNote, updateClockRecord, handleCloseEdit]);
+  }, [editRecord, editClockIn, editClockOut, editDate, editNote, updateClockRecord, handleCloseEdit]);
 
   return (
     <Box sx={{ p: 3 }}>
@@ -185,6 +189,7 @@ export default function ClockPage() {
                 <TableRow>
                   <TableCell sx={{ pl: 3, width: 48 }}>#</TableCell>
                   <TableCell>Name</TableCell>
+                  {tab === 1 && <TableCell>Date</TableCell>}
                   <TableCell>Clock in</TableCell>
                   <TableCell>Clock out</TableCell>
                   <TableCell>Time efficiency</TableCell>
@@ -197,14 +202,7 @@ export default function ClockPage() {
               <TableBody>
                 {displayedRecords.map((record: any, index: number) => {
                   const eff = record.efficiency;
-                  const effColor =
-                    eff === null
-                      ? 'text.disabled'
-                      : eff >= 100
-                        ? '#22C55E'
-                        : eff >= 90
-                          ? '#FFAB00'
-                          : '#FF5630';
+                  const effColor = getEffColor(eff);
                   const initials = (record.worker?.name || '')
                     .split(' ')
                     .map((n: string) => n[0])
@@ -214,7 +212,16 @@ export default function ClockPage() {
                     <TableRow key={record._id} hover>
                       <TableCell sx={{ pl: 3 }}>{index + 1}</TableCell>
                       <TableCell>
-                        <Stack direction="row" alignItems="center" spacing={1.5}>
+                        <Stack
+                          direction="row"
+                          alignItems="center"
+                          spacing={1.5}
+                          onClick={() => {
+                            const matched = (workers as any[]).find((w) => w.name === record.worker?.name);
+                            if (matched) navigate(`/dashboard/clock/${matched._id}`);
+                          }}
+                          sx={{ cursor: 'pointer', '&:hover': { opacity: 0.7 } }}
+                        >
                           <Avatar
                             sx={{
                               width: 32,
@@ -227,11 +234,22 @@ export default function ClockPage() {
                           >
                             {initials}
                           </Avatar>
-                          <Typography variant="subtitle2">
+                          <Typography variant="subtitle2" sx={{ '&:hover': { textDecoration: 'underline' } }}>
                             {record.worker?.name || '—'}
                           </Typography>
                         </Stack>
                       </TableCell>
+                      {tab === 1 && (
+                        <TableCell>
+                          {record.date
+                            ? new Date(record.date).toLocaleDateString('en', {
+                                month: 'short',
+                                day: 'numeric',
+                                year: 'numeric',
+                              })
+                            : '—'}
+                        </TableCell>
+                      )}
                       <TableCell>
                         {formatTime(record.clockIn) || '—'}
                       </TableCell>
@@ -273,23 +291,13 @@ export default function ClockPage() {
             <Grid item xs={12}>
               <TextField fullWidth label="Worker" value={editRecord?.worker?.name || ''} disabled />
             </Grid>
-            <Grid item xs={6}>
+            <Grid item xs={12}>
               <TextField
                 fullWidth
                 label="Date"
                 type="date"
                 value={editDate}
                 onChange={(e) => setEditDate(e.target.value)}
-                InputLabelProps={{ shrink: true }}
-              />
-            </Grid>
-            <Grid item xs={6}>
-              <TextField
-                fullWidth
-                label="Shift Period"
-                placeholder="e.g. 7AM-4PM"
-                value={editShiftPeriod}
-                onChange={(e) => setEditShiftPeriod(e.target.value)}
                 InputLabelProps={{ shrink: true }}
               />
             </Grid>

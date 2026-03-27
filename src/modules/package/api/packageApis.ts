@@ -1,8 +1,8 @@
 import { delay, fakeRes, paginated, MOCK_ORDERS } from 'src/_mock/fake-backend';
 
 import { IFilterProps } from '../types/Filter';
-import { CreatePackageFormType } from '../libs/createPackageScheme';
 import { IChinaBorderUpdate } from '../types/ResiduePackage';
+import { CreatePackageFormType } from '../libs/createPackageScheme';
 
 // All packages
 export const allPackages = {

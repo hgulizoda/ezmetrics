@@ -43,7 +43,12 @@
       "Bash(find 'C:\\\\Users\\\\Hasanova\\\\utility\\\\global move\\\\EzMertrics\\\\src\\\\modules\\\\ez-metric' -type f \\\\\\(-name *.ts -o -name *.tsx \\\\\\))",
       "Bash(grep -r I18nProvider 'C:/Users/Hasanova/utility/global move/EzMertrics/src' --include=*.tsx --include=*.ts)",
       "Bash(grep -r \"from.*app.tsx\\\\|from.*main.tsx\" 'C:/Users/Hasanova/utility/global move/EzMertrics/src' --include=*.tsx --include=*.ts)",
-      "Bash(grep -r \"checkin\\\\|check-in\\\\|check_in\" 'C:\\\\Users\\\\Hasanova\\\\utility\\\\global move\\\\EzMertrics/src' --include=*.tsx --include=*.ts -l)"
+      "Bash(grep -r \"checkin\\\\|check-in\\\\|check_in\" 'C:\\\\Users\\\\Hasanova\\\\utility\\\\global move\\\\EzMertrics/src' --include=*.tsx --include=*.ts -l)",
+      "Bash(grep -r \"bonus-rules\\\\|BonusRules\\\\|shifts\\\\|Shifts\\\\|reports\\\\|Reports\" 'C:/Users/Hasanova/utility/global move/EzMertrics/src' --include=*.ts --include=*.tsx -l)",
+      "Bash(npx eslint:*)",
+      "Bash(python3:*)",
+      "Bash(echo \"EXIT:$?\")",
+      "Bash(grep -v \"^$\")"
     ],
     "deny": [],
     "ask": []

@@ -19,7 +19,6 @@ const paths = {
     efficiency: `${ROOTS.DASHBOARD}/efficiency`,
     salary: `${ROOTS.DASHBOARD}/salary`,
     settings: `${ROOTS.DASHBOARD}/settings`,
-    progress: `${ROOTS.DASHBOARD}/progress`,
     // Legacy paths (keep for backward compatibility)
     users: `${ROOTS.DASHBOARD}/users`,
     statistics: `${ROOTS.DASHBOARD}/statistics`,

@@ -51,17 +51,6 @@ export function useNavData() {
         ],
       },
       {
-        subheader: 'Analytics',
-        roles: [],
-        items: [
-          {
-            title: 'Progress',
-            path: paths.dashboard.progress,
-            icon: <Iconify icon="solar:graph-up-bold-duotone" width={24} />,
-          },
-        ],
-      },
-      {
         subheader: 'Admin',
         roles: [],
         items: [

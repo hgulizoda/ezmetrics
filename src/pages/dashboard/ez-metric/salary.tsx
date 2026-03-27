@@ -1,34 +1,75 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 
 import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
+import Tab from '@mui/material/Tab';
 import Card from '@mui/material/Card';
 import Chip from '@mui/material/Chip';
-import CircularProgress from '@mui/material/CircularProgress';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogTitle from '@mui/material/DialogTitle';
 import Grid from '@mui/material/Grid';
-import IconButton from '@mui/material/IconButton';
-import MenuItem from '@mui/material/MenuItem';
+import Tabs from '@mui/material/Tabs';
 import Stack from '@mui/material/Stack';
-import Tab from '@mui/material/Tab';
 import Table from '@mui/material/Table';
+import Dialog from '@mui/material/Dialog';
+import Button from '@mui/material/Button';
+import Tooltip from '@mui/material/Tooltip';
+import { alpha } from '@mui/material/styles';
+import TableRow from '@mui/material/TableRow';
+import MenuItem from '@mui/material/MenuItem';
+import TextField from '@mui/material/TextField';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Tabs from '@mui/material/Tabs';
-import TextField from '@mui/material/TextField';
-import Tooltip from '@mui/material/Tooltip';
+import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
-import { alpha } from '@mui/material/styles';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import TableContainer from '@mui/material/TableContainer';
+import InputAdornment from '@mui/material/InputAdornment';
+import CircularProgress from '@mui/material/CircularProgress';
 
-import { useCreateLoan, useLoans, useSalary } from 'src/modules/ez-metric/api';
+import {
+  useSalary,
+  useWorkers,
+  useChargeTypes,
+  useUpdateSalary,
+  useCreateCharge,
+  useUpdateCharge,
+  useDeleteCharge,
+  useUpdateOvertime,
+  useOvertimeRecords,
+  useChargedEmployees,
+} from 'src/modules/ez-metric/api';
 
 import Iconify from 'src/components/iconify';
+
+// ----------------------------------------------------------------------
+
+const SALARY_TYPE_COLORS: Record<string, string> = {
+  hourly: '#2065D1',
+  percentage: '#7635DC',
+  flat: '#22C55E',
+};
+
+function getCurrentPeriod() {
+  const now = new Date();
+  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+}
+
+function formatPeriodLabel(period: string) {
+  const [y, m] = period.split('-');
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  return `${months[parseInt(m, 10) - 1]} ${y}`;
+}
+
+const PERIOD_OPTIONS = (() => {
+  const periods: string[] = [];
+  const now = new Date();
+  for (let i = 0; i < 6; i += 1) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    periods.push(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`);
+  }
+  return periods;
+})();
 
 function getEfficiencyChipColor(efficiency: string): 'success' | 'info' | 'warning' {
   const val = parseInt(efficiency, 10);
@@ -37,69 +78,167 @@ function getEfficiencyChipColor(efficiency: string): 'success' | 'info' | 'warni
   return 'warning';
 }
 
+// ======================================================================
+// MAIN COMPONENT
+// ======================================================================
+
 export default function SalaryPage() {
   const [tab, setTab] = useState(0);
-  const [loanDialog, setLoanDialog] = useState(false);
-  const [loanForm, setLoanForm] = useState({ worker: '', type: 'loan', amount: '', notes: '' });
 
+  // --- Overall Salary edit state ---
+  const [salaryEditDialog, setSalaryEditDialog] = useState(false);
+  const [salaryEditForm, setSalaryEditForm] = useState({
+    _id: '', baseSalary: '', rate: '', bonus: '', overtime: '', charge: '',
+  });
+
+  // --- Overtime state ---
+  const [otPeriod, setOtPeriod] = useState(getCurrentPeriod());
+  const [otSearch, setOtSearch] = useState('');
+  const [otFilter, setOtFilter] = useState('all');
+  const [otEditDialog, setOtEditDialog] = useState(false);
+  const [otEditForm, setOtEditForm] = useState({ _id: '', overtimeHours: '', bonusAmount: '' });
+
+  // --- Charged Employees state ---
+  const [cePeriod, setCePeriod] = useState(getCurrentPeriod());
+  const [ceFilter, setCeFilter] = useState('all');
+  const [ceDialog, setCeDialog] = useState(false);
+  const [ceEditId, setCeEditId] = useState<string | null>(null);
+  const [ceForm, setCeForm] = useState({ workerId: '', chargeType: '', amount: '', date: '', note: '' });
+
+  // --- Data hooks ---
   const { data: salaryData = [], isLoading: salaryLoading } = useSalary();
-  const { data: loansData = [], isLoading: loansLoading } = useLoans();
-  const createLoan = useCreateLoan();
+  const updateSalary = useUpdateSalary();
+  const { data: overtimeRecords = [], isLoading: otLoading } = useOvertimeRecords(otPeriod);
+  const updateOT = useUpdateOvertime();
 
+  const { data: chargeTypes = [] } = useChargeTypes();
+
+  const { data: chargedEmployees = [], isLoading: ceLoading } = useChargedEmployees(cePeriod);
+  const createCE = useCreateCharge();
+  const updateCE = useUpdateCharge();
+  const deleteCE = useDeleteCharge();
+
+  const { data: workers = [] } = useWorkers();
+
+  // --- Summary calculations ---
   const totalPayroll = salaryData.reduce((s: number, w: any) => s + (w.totalPayroll || 0), 0);
   const totalBonuses = salaryData.reduce((s: number, w: any) => s + Math.max(w.bonus || 0, 0), 0);
-  const totalCharges = salaryData.reduce((s: number, w: any) => s + (w.charge || 0), 0);
-  const totalDebt = salaryData.reduce((s: number, w: any) => s + (w.debtLeft || 0), 0);
+  const totalCharges = chargedEmployees
+    .filter((ce: any) => ce.chargeCategory === 'Deduction')
+    .reduce((s: number, ce: any) => s + (ce.amount || 0), 0);
+  const totalOvertime = overtimeRecords.reduce((s: number, r: any) => s + (r.bonusAmount || 0), 0);
 
-  const handleAddLoan = async () => {
-    try {
-      await createLoan.mutateAsync({
-        worker: loanForm.worker,
-        type: loanForm.type,
-        amount: Number(loanForm.amount),
-        notes: loanForm.notes,
-      });
-      setLoanDialog(false);
-      setLoanForm({ worker: '', type: 'loan', amount: '', notes: '' });
-    } catch (error) {
-      console.error('Failed to create loan:', error);
-    }
+  // --- Overtime filtered ---
+  const filteredOvertime = useMemo(() => {
+    let list = overtimeRecords as any[];
+    if (otSearch) list = list.filter((r: any) => r.name.toLowerCase().includes(otSearch.toLowerCase()));
+    if (otFilter !== 'all') list = list.filter((r: any) => r.salaryType.toLowerCase() === otFilter);
+    return list;
+  }, [overtimeRecords, otSearch, otFilter]);
+
+  // --- Charged Employees filtered ---
+  const filteredCharges = useMemo(() => {
+    let list = chargedEmployees as any[];
+    if (ceFilter !== 'all') list = list.filter((ce: any) => ce.chargeType === ceFilter);
+    return list;
+  }, [chargedEmployees, ceFilter]);
+
+  // --- Handlers: Overall Salary ---
+  const handleEditSalary = (w: any) => {
+    setSalaryEditForm({
+      _id: w._id,
+      baseSalary: String(w.baseSalary || 0),
+      rate: String(w.rate || 0),
+      bonus: String(w.bonus || 0),
+      overtime: String(w.overtime || 0),
+      charge: String(w.charge || 0),
+    });
+    setSalaryEditDialog(true);
   };
+
+  const handleSaveSalary = async () => {
+    const baseSalary = Number(salaryEditForm.baseSalary);
+    const bonus = Number(salaryEditForm.bonus);
+    const overtime = Number(salaryEditForm.overtime);
+    const charge = Number(salaryEditForm.charge);
+    const totalPayrollCalc = baseSalary + bonus + overtime - charge;
+    await updateSalary.mutateAsync({
+      id: salaryEditForm._id,
+      body: {
+        baseSalary,
+        rate: Number(salaryEditForm.rate),
+        bonus,
+        overtime,
+        charge,
+        totalPayroll: totalPayrollCalc,
+      },
+    });
+    setSalaryEditDialog(false);
+  };
+
+  // --- Handlers: Overtime ---
+  const handleEditOT = (item: any) => {
+    setOtEditForm({ _id: item._id, overtimeHours: String(item.overtimeHours), bonusAmount: String(item.bonusAmount) });
+    setOtEditDialog(true);
+  };
+
+  const handleSaveOT = async () => {
+    await updateOT.mutateAsync({
+      id: otEditForm._id,
+      body: {
+        overtimeHours: Number(otEditForm.overtimeHours),
+        bonusAmount: Number(otEditForm.bonusAmount),
+        status: Number(otEditForm.overtimeHours) > 0 ? 'Calculated' : 'No overtime',
+      },
+    });
+    setOtEditDialog(false);
+  };
+
+  // --- Handlers: Charged Employees ---
+  const handleOpenCeDialog = (item?: any) => {
+    if (item) {
+      setCeEditId(item._id);
+      setCeForm({ workerId: item.workerId, chargeType: item.chargeType, amount: String(item.amount), date: item.date, note: item.note || '' });
+    } else {
+      setCeEditId(null);
+      setCeForm({ workerId: '', chargeType: '', amount: '', date: '', note: '' });
+    }
+    setCeDialog(true);
+  };
+
+  const handleSaveCE = async () => {
+    const body = { workerId: ceForm.workerId, chargeType: ceForm.chargeType, amount: Number(ceForm.amount), date: ceForm.date, note: ceForm.note };
+    if (ceEditId) {
+      await updateCE.mutateAsync({ id: ceEditId, body });
+    } else {
+      await createCE.mutateAsync(body);
+    }
+    setCeDialog(false);
+  };
+
+  // ======================================================================
+  // RENDER
+  // ======================================================================
 
   return (
     <Box sx={{ p: 3 }}>
+      {/* Header */}
       <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mb: 3 }}>
         <Box>
           <Typography variant="h4">Salary Calculation</Typography>
           <Typography variant="body2" sx={{ color: 'text.secondary', mt: 0.5 }}>
-            Manage payroll, rates, deductions, and loans
+            Manage payroll, overtime, charges, and deductions
           </Typography>
         </Box>
-        <Stack direction="row" spacing={1.5}>
-          <Button
-            variant="soft"
-            startIcon={<Iconify icon="solar:money-bag-bold-duotone" />}
-            onClick={() => setLoanDialog(true)}
-          >
-            Add Loan
-          </Button>
-          <Button
-            variant="soft"
-            color="info"
-            startIcon={<Iconify icon="solar:download-minimalistic-bold-duotone" />}
-          >
-            Export Excel
-          </Button>
-        </Stack>
       </Stack>
 
-      {/* Summary */}
+      {/* Summary Cards */}
       <Grid container spacing={2} sx={{ mb: 3 }}>
         {[
           { label: 'Total Payroll', value: `$${totalPayroll.toLocaleString(undefined, { minimumFractionDigits: 2 })}`, color: '#2065D1', icon: 'solar:wallet-money-bold-duotone' },
-          { label: 'Total Bonuses', value: `$${totalBonuses.toLocaleString()}`, color: '#22C55E', icon: 'solar:gift-bold-duotone' },
-          { label: 'Total Charges', value: `$${totalCharges.toLocaleString()}`, color: '#FF5630', icon: 'solar:bill-list-bold-duotone' },
-          { label: 'Outstanding Debt', value: `$${totalDebt.toLocaleString()}`, color: '#FFAB00', icon: 'solar:banknote-2-bold-duotone' },
+          { label: 'Total Bonuses', value: `$${totalBonuses.toLocaleString(undefined, { minimumFractionDigits: 2 })}`, color: '#22C55E', icon: 'solar:gift-bold-duotone' },
+          { label: 'Total Overtime', value: `$${totalOvertime.toLocaleString(undefined, { minimumFractionDigits: 2 })}`, color: '#7635DC', icon: 'solar:clock-circle-bold-duotone' },
+          { label: 'Total Charges', value: `$${totalCharges.toLocaleString(undefined, { minimumFractionDigits: 2 })}`, color: '#FF5630', icon: 'solar:bill-list-bold-duotone' },
         ].map((s) => (
           <Grid item xs={6} md={3} key={s.label}>
             <Card sx={{ p: 2.5, borderRadius: 2, border: `1px solid ${alpha(s.color, 0.2)}` }}>
@@ -117,35 +256,33 @@ export default function SalaryPage() {
         ))}
       </Grid>
 
+      {/* Tabs Card */}
       <Card sx={{ borderRadius: 2 }}>
         <Tabs value={tab} onChange={(_, v) => setTab(v)} sx={{ px: 2.5, pt: 1 }}>
-          <Tab label="Salary Overview" />
-          <Tab label="Rate Configuration" />
-          <Tab label="Loans & Deductions" />
+          <Tab label="Overall Salary" />
+          <Tab label="Overtime Hours" />
+          <Tab label="Charged Employees" />
         </Tabs>
 
-        {/* Salary Overview Tab */}
+        {/* ============================================================ */}
+        {/* TAB 0: OVERALL SALARY */}
+        {/* ============================================================ */}
         {tab === 0 && (
           salaryLoading ? (
-            <Box sx={{ display: 'flex', justifyContent: 'center', py: 6 }}>
-              <CircularProgress />
-            </Box>
+            <Box sx={{ display: 'flex', justifyContent: 'center', py: 6 }}><CircularProgress /></Box>
           ) : (
             <TableContainer>
               <Table>
                 <TableHead>
                   <TableRow>
                     <TableCell>Worker</TableCell>
-                    <TableCell align="right">Actual Hrs</TableCell>
-                    <TableCell align="right">Billed Hrs</TableCell>
+                    <TableCell align="right">Base Salary</TableCell>
+                    <TableCell align="right">Rate</TableCell>
                     <TableCell align="center">Efficiency</TableCell>
                     <TableCell align="right">Bonus</TableCell>
-                    <TableCell align="right">Salary</TableCell>
-                    <TableCell align="right">Rate</TableCell>
                     <TableCell align="right">Overtime</TableCell>
                     <TableCell align="right">Charge</TableCell>
                     <TableCell align="right">Total Payroll</TableCell>
-                    <TableCell align="right">Debt Left</TableCell>
                     <TableCell align="center">Actions</TableCell>
                   </TableRow>
                 </TableHead>
@@ -159,8 +296,10 @@ export default function SalaryPage() {
                       }}
                     >
                       <TableCell><Typography variant="subtitle2">{w.name}</Typography></TableCell>
-                      <TableCell align="right">{w.actualHours}</TableCell>
-                      <TableCell align="right">{w.billedHours}</TableCell>
+                      <TableCell align="right">
+                        ${(w.baseSalary || 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                      </TableCell>
+                      <TableCell align="right">${w.rate}</TableCell>
                       <TableCell align="center">
                         {w.efficiency && w.efficiency !== 'N/A' ? (
                           <Chip label={w.efficiency} size="small" variant="soft" color={getEfficiencyChipColor(w.efficiency)} />
@@ -176,8 +315,6 @@ export default function SalaryPage() {
                           {(w.bonus || 0) >= 0 ? '' : '-'}${Math.abs(w.bonus || 0).toFixed(2)}
                         </Typography>
                       </TableCell>
-                      <TableCell align="right">${(w.baseSalary || 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}</TableCell>
-                      <TableCell align="right">${w.rate}</TableCell>
                       <TableCell align="right">
                         {(w.overtime || 0) > 0 ? (
                           <Chip label={`$${w.overtime}`} size="small" color="warning" variant="soft" />
@@ -193,116 +330,270 @@ export default function SalaryPage() {
                           ${(w.totalPayroll || 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}
                         </Typography>
                       </TableCell>
-                      <TableCell align="right">
-                        {(w.debtLeft || 0) > 0 ? (
-                          <Typography variant="subtitle2" sx={{ color: '#FFAB00' }}>${(w.debtLeft || 0).toLocaleString()}</Typography>
-                        ) : '-'}
-                      </TableCell>
                       <TableCell align="center">
                         <Tooltip title="Edit Salary">
-                          <IconButton size="small"><Iconify icon="solar:pen-bold-duotone" width={18} /></IconButton>
+                          <IconButton size="small" onClick={() => handleEditSalary(w)}>
+                            <Iconify icon="solar:pen-bold-duotone" width={18} />
+                          </IconButton>
                         </Tooltip>
                       </TableCell>
                     </TableRow>
                   ))}
+                  {/* Totals row */}
+                  <TableRow sx={{ bgcolor: alpha('#2065D1', 0.04) }}>
+                    <TableCell><Typography variant="subtitle1" sx={{ fontWeight: 700 }}>Total</Typography></TableCell>
+                    <TableCell align="right">
+                      <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
+                        ${salaryData.reduce((s: number, w: any) => s + (w.baseSalary || 0), 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                      </Typography>
+                    </TableCell>
+                    <TableCell />
+                    <TableCell />
+                    <TableCell align="right">
+                      <Typography variant="subtitle2" sx={{ fontWeight: 700, color: '#22C55E' }}>
+                        ${salaryData.reduce((s: number, w: any) => s + (w.bonus || 0), 0).toFixed(2)}
+                      </Typography>
+                    </TableCell>
+                    <TableCell align="right">
+                      <Typography variant="subtitle2" sx={{ fontWeight: 700, color: '#FFAB00' }}>
+                        ${salaryData.reduce((s: number, w: any) => s + (w.overtime || 0), 0).toFixed(2)}
+                      </Typography>
+                    </TableCell>
+                    <TableCell align="right">
+                      <Typography variant="subtitle2" sx={{ fontWeight: 700, color: '#FF5630' }}>
+                        ${salaryData.reduce((s: number, w: any) => s + (w.charge || 0), 0).toFixed(2)}
+                      </Typography>
+                    </TableCell>
+                    <TableCell align="right">
+                      <Typography variant="h6" sx={{ fontWeight: 700 }}>
+                        ${totalPayroll.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                      </Typography>
+                    </TableCell>
+                    <TableCell />
+                  </TableRow>
                 </TableBody>
               </Table>
             </TableContainer>
           )
         )}
 
-        {/* Rate Configuration Tab */}
+        {/* ============================================================ */}
+        {/* TAB 1: OVERTIME HOURS */}
+        {/* ============================================================ */}
         {tab === 1 && (
-          <Box sx={{ p: 3 }}>
-            <Grid container spacing={3}>
-              {[
-                { type: 'Hourly Rate', desc: 'Pay per hour worked', icon: 'solar:clock-circle-bold-duotone', color: '#2065D1', workers: 10, example: '$25 - $30/hr' },
-                { type: 'Percentage Rate', desc: 'Percentage of billed revenue', icon: 'solar:graph-up-bold-duotone', color: '#7635DC', workers: 1, example: '35% of revenue' },
-                { type: 'Flat Rate', desc: 'Fixed monthly salary', icon: 'solar:wallet-money-bold-duotone', color: '#22C55E', workers: 1, example: '$2,400/month' },
-              ].map((rt) => (
-                <Grid item xs={12} md={4} key={rt.type}>
-                  <Card
-                    sx={{
-                      p: 3,
-                      borderRadius: 2,
-                      border: `1px solid ${alpha(rt.color, 0.2)}`,
-                      '&:hover': { borderColor: rt.color, boxShadow: `0 0 0 1px ${alpha(rt.color, 0.3)}` },
-                      transition: 'all 0.2s',
-                    }}
-                  >
-                    <Box sx={{ p: 1.5, borderRadius: 2, bgcolor: alpha(rt.color, 0.1), width: 'fit-content', mb: 2 }}>
-                      <Iconify icon={rt.icon} width={28} sx={{ color: rt.color }} />
-                    </Box>
-                    <Typography variant="h6" sx={{ mb: 0.5 }}>{rt.type}</Typography>
-                    <Typography variant="body2" sx={{ color: 'text.secondary', mb: 2 }}>{rt.desc}</Typography>
-                    <Stack direction="row" alignItems="center" justifyContent="space-between">
-                      <Chip label={`${rt.workers} workers`} size="small" variant="soft" />
-                      <Typography variant="caption" sx={{ color: 'text.secondary' }}>{rt.example}</Typography>
-                    </Stack>
-                    <Button fullWidth variant="soft" sx={{ mt: 2 }} startIcon={<Iconify icon="solar:settings-bold" />}>
-                      Configure
-                    </Button>
-                  </Card>
-                </Grid>
-              ))}
-            </Grid>
+          <Box sx={{ p: 2.5 }}>
+            <Stack direction="row" spacing={2} sx={{ mb: 2 }} flexWrap="wrap">
+              <TextField
+                size="small"
+                placeholder="Search worker..."
+                value={otSearch}
+                onChange={(e) => setOtSearch(e.target.value)}
+                sx={{ minWidth: 220 }}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Iconify icon="solar:magnifer-bold-duotone" width={20} sx={{ color: 'text.disabled' }} />
+                    </InputAdornment>
+                  ),
+                }}
+              />
+              <TextField
+                select
+                size="small"
+                label="Salary Type"
+                value={otFilter}
+                onChange={(e) => setOtFilter(e.target.value)}
+                sx={{ minWidth: 160 }}
+              >
+                <MenuItem value="all">All Types</MenuItem>
+                <MenuItem value="hourly">Hourly</MenuItem>
+                <MenuItem value="percentage">Percentage</MenuItem>
+                <MenuItem value="flat">Flat</MenuItem>
+              </TextField>
+              <TextField
+                select
+                size="small"
+                label="Period"
+                value={otPeriod}
+                onChange={(e) => setOtPeriod(e.target.value)}
+                sx={{ minWidth: 160 }}
+              >
+                {PERIOD_OPTIONS.map((p) => (
+                  <MenuItem key={p} value={p}>{formatPeriodLabel(p)}</MenuItem>
+                ))}
+              </TextField>
+            </Stack>
 
-            <Card sx={{ p: 3, mt: 3, borderRadius: 2, bgcolor: alpha('#FFAB00', 0.04), border: `1px solid ${alpha('#FFAB00', 0.2)}` }}>
-              <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 1 }}>
-                <Iconify icon="solar:alarm-bold-duotone" width={20} sx={{ color: '#FFAB00' }} />
-                <Typography variant="subtitle1">Late Penalty Configuration</Typography>
-              </Stack>
-              <Typography variant="body2" sx={{ color: 'text.secondary', mb: 2 }}>
-                Charge $1 per minute for late arrivals. This is deducted from the worker&apos;s salary.
-              </Typography>
-              <Stack direction="row" spacing={2}>
-                <TextField size="small" label="Penalty per minute ($)" defaultValue="1.00" sx={{ width: 200 }} />
-                <TextField size="small" label="Grace period (min)" defaultValue="5" sx={{ width: 200 }} />
-                <Button variant="contained" size="small">Update</Button>
-              </Stack>
-            </Card>
-          </Box>
-        )}
-
-        {/* Loans Tab */}
-        {tab === 2 && (
-          <Box sx={{ p: 3 }}>
-            {loansLoading ? (
-              <Box sx={{ display: 'flex', justifyContent: 'center', py: 6 }}>
-                <CircularProgress />
-              </Box>
+            {otLoading ? (
+              <Box sx={{ display: 'flex', justifyContent: 'center', py: 6 }}><CircularProgress /></Box>
             ) : (
               <TableContainer>
                 <Table>
                   <TableHead>
                     <TableRow>
-                      <TableCell>Worker</TableCell>
-                      <TableCell>Type</TableCell>
-                      <TableCell align="right">Amount</TableCell>
-                      <TableCell align="right">Paid</TableCell>
-                      <TableCell align="right">Remaining</TableCell>
-                      <TableCell>Date</TableCell>
+                      <TableCell>Name</TableCell>
+                      <TableCell>Salary Type</TableCell>
+                      <TableCell align="right">Overtime Hours</TableCell>
+                      <TableCell align="right">Bonus Amount</TableCell>
                       <TableCell align="center">Status</TableCell>
+                      <TableCell align="center">Actions</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {loansData.map((loan: any) => (
-                      <TableRow key={loan._id} hover>
-                        <TableCell><Typography variant="subtitle2">{loan.worker?.name}</Typography></TableCell>
-                        <TableCell><Chip label={loan.type} size="small" variant="soft" color={loan.type === 'Loan' ? 'error' : 'warning'} /></TableCell>
-                        <TableCell align="right">${(loan.amount || 0).toLocaleString()}</TableCell>
-                        <TableCell align="right">${(loan.paid || 0).toLocaleString()}</TableCell>
-                        <TableCell align="right">
-                          <Typography variant="subtitle2" sx={{ color: (loan.remaining || 0) > 0 ? '#FF5630' : '#22C55E' }}>
-                            ${(loan.remaining || 0).toLocaleString()}
-                          </Typography>
+                    {filteredOvertime.map((r: any) => (
+                      <TableRow key={r._id} hover>
+                        <TableCell><Typography variant="subtitle2">{r.name}</Typography></TableCell>
+                        <TableCell>
+                          <Chip
+                            label={r.salaryType}
+                            size="small"
+                            variant="soft"
+                            sx={{
+                              bgcolor: alpha(SALARY_TYPE_COLORS[r.salaryType.toLowerCase()] || '#2065D1', 0.1),
+                              color: SALARY_TYPE_COLORS[r.salaryType.toLowerCase()] || '#2065D1',
+                            }}
+                          />
                         </TableCell>
-                        <TableCell>{loan.date}</TableCell>
+                        <TableCell align="right">
+                          {r.overtimeHours > 0 ? `${r.overtimeHours} hrs` : '-'}
+                        </TableCell>
+                        <TableCell align="right">
+                          {r.bonusAmount > 0 ? (
+                            <Typography variant="subtitle2" sx={{ color: '#22C55E' }}>
+                              ${r.bonusAmount.toFixed(2)}
+                            </Typography>
+                          ) : '-'}
+                        </TableCell>
                         <TableCell align="center">
-                          <Chip label={loan.status === 'active' ? 'Active' : 'Paid'} size="small" color={loan.status === 'active' ? 'warning' : 'success'} variant="soft" />
+                          <Chip
+                            label={r.status}
+                            size="small"
+                            variant="soft"
+                            color={r.status === 'Calculated' ? 'success' : 'default'}
+                          />
+                        </TableCell>
+                        <TableCell align="center">
+                          <Tooltip title="Edit Overtime">
+                            <IconButton size="small" onClick={() => handleEditOT(r)}>
+                              <Iconify icon="solar:pen-bold-duotone" width={18} />
+                            </IconButton>
+                          </Tooltip>
                         </TableCell>
                       </TableRow>
                     ))}
+                    {filteredOvertime.length === 0 && (
+                      <TableRow>
+                        <TableCell colSpan={6} align="center" sx={{ py: 4 }}>
+                          <Typography variant="body2" sx={{ color: 'text.secondary' }}>No overtime records found</Typography>
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            )}
+          </Box>
+        )}
+
+        {/* ============================================================ */}
+        {/* TAB 2: CHARGED EMPLOYEES */}
+        {/* ============================================================ */}
+        {tab === 2 && (
+          <Box sx={{ p: 2.5 }}>
+            <Stack direction="row" spacing={2} sx={{ mb: 2 }} flexWrap="wrap" justifyContent="space-between">
+              <Stack direction="row" spacing={2}>
+                <TextField
+                  select
+                  size="small"
+                  label="Charge Type"
+                  value={ceFilter}
+                  onChange={(e) => setCeFilter(e.target.value)}
+                  sx={{ minWidth: 180 }}
+                >
+                  <MenuItem value="all">All Types</MenuItem>
+                  {chargeTypes.map((ct: any) => (
+                    <MenuItem key={ct._id} value={ct.name}>{ct.name}</MenuItem>
+                  ))}
+                </TextField>
+                <TextField
+                  select
+                  size="small"
+                  label="Period"
+                  value={cePeriod}
+                  onChange={(e) => setCePeriod(e.target.value)}
+                  sx={{ minWidth: 160 }}
+                >
+                  {PERIOD_OPTIONS.map((p) => (
+                    <MenuItem key={p} value={p}>{formatPeriodLabel(p)}</MenuItem>
+                  ))}
+                </TextField>
+              </Stack>
+              <Button variant="soft" startIcon={<Iconify icon="solar:add-circle-bold" />} onClick={() => handleOpenCeDialog()}>
+                Add Charge
+              </Button>
+            </Stack>
+
+            {ceLoading ? (
+              <Box sx={{ display: 'flex', justifyContent: 'center', py: 6 }}><CircularProgress /></Box>
+            ) : (
+              <TableContainer>
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Employee</TableCell>
+                      <TableCell>Charge Type</TableCell>
+                      <TableCell align="right">Amount</TableCell>
+                      <TableCell>Date</TableCell>
+                      <TableCell>Note</TableCell>
+                      <TableCell align="center">Actions</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {filteredCharges.map((ce: any) => (
+                      <TableRow key={ce._id} hover>
+                        <TableCell><Typography variant="subtitle2">{ce.employee}</Typography></TableCell>
+                        <TableCell>
+                          <Chip
+                            label={ce.chargeType}
+                            size="small"
+                            variant="soft"
+                            color={ce.chargeCategory === 'Deduction' ? 'error' : 'warning'}
+                          />
+                        </TableCell>
+                        <TableCell align="right">
+                          <Typography variant="subtitle2" sx={{ color: ce.chargeCategory === 'Deduction' ? '#FF5630' : '#FFAB00' }}>
+                            ${ce.amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                          </Typography>
+                        </TableCell>
+                        <TableCell>{ce.date}</TableCell>
+                        <TableCell>
+                          <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                            {ce.note || '-'}
+                          </Typography>
+                        </TableCell>
+                        <TableCell align="center">
+                          <Stack direction="row" justifyContent="center" spacing={0.5}>
+                            <Tooltip title="Edit">
+                              <IconButton size="small" onClick={() => handleOpenCeDialog(ce)}>
+                                <Iconify icon="solar:pen-bold-duotone" width={18} />
+                              </IconButton>
+                            </Tooltip>
+                            <Tooltip title="Delete">
+                              <IconButton size="small" color="error" onClick={() => deleteCE.mutate(ce._id)}>
+                                <Iconify icon="solar:trash-bin-trash-bold-duotone" width={18} />
+                              </IconButton>
+                            </Tooltip>
+                          </Stack>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                    {filteredCharges.length === 0 && (
+                      <TableRow>
+                        <TableCell colSpan={6} align="center" sx={{ py: 4 }}>
+                          <Typography variant="body2" sx={{ color: 'text.secondary' }}>No charges found for this period</Typography>
+                        </TableCell>
+                      </TableRow>
+                    )}
                   </TableBody>
                 </Table>
               </TableContainer>
@@ -311,32 +602,151 @@ export default function SalaryPage() {
         )}
       </Card>
 
-      {/* Loan Dialog */}
-      <Dialog open={loanDialog} onClose={() => setLoanDialog(false)} maxWidth="sm" fullWidth>
-        <DialogTitle>Add Loan / Pre-payment</DialogTitle>
+      {/* ============================================================ */}
+      {/* DIALOGS */}
+      {/* ============================================================ */}
+
+      {/* Salary Edit Dialog */}
+      <Dialog open={salaryEditDialog} onClose={() => setSalaryEditDialog(false)} maxWidth="sm" fullWidth>
+        <DialogTitle>Edit Salary</DialogTitle>
+        <DialogContent sx={{ pt: '20px !important' }}>
+          <Grid container spacing={2}>
+            <Grid item xs={6}>
+              <TextField
+                fullWidth
+                label="Base Salary ($)"
+                type="number"
+                value={salaryEditForm.baseSalary}
+                onChange={(e) => setSalaryEditForm((p) => ({ ...p, baseSalary: e.target.value }))}
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <TextField
+                fullWidth
+                label="Rate ($)"
+                type="number"
+                value={salaryEditForm.rate}
+                onChange={(e) => setSalaryEditForm((p) => ({ ...p, rate: e.target.value }))}
+              />
+            </Grid>
+            <Grid item xs={4}>
+              <TextField
+                fullWidth
+                label="Bonus ($)"
+                type="number"
+                value={salaryEditForm.bonus}
+                onChange={(e) => setSalaryEditForm((p) => ({ ...p, bonus: e.target.value }))}
+              />
+            </Grid>
+            <Grid item xs={4}>
+              <TextField
+                fullWidth
+                label="Overtime ($)"
+                type="number"
+                value={salaryEditForm.overtime}
+                onChange={(e) => setSalaryEditForm((p) => ({ ...p, overtime: e.target.value }))}
+              />
+            </Grid>
+            <Grid item xs={4}>
+              <TextField
+                fullWidth
+                label="Charge ($)"
+                type="number"
+                value={salaryEditForm.charge}
+                onChange={(e) => setSalaryEditForm((p) => ({ ...p, charge: e.target.value }))}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <Card sx={{ p: 2, bgcolor: alpha('#2065D1', 0.04), border: `1px solid ${alpha('#2065D1', 0.12)}` }}>
+                <Typography variant="subtitle2">
+                  Total Payroll: $
+                  {(
+                    Number(salaryEditForm.baseSalary || 0) +
+                    Number(salaryEditForm.bonus || 0) +
+                    Number(salaryEditForm.overtime || 0) -
+                    Number(salaryEditForm.charge || 0)
+                  ).toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                </Typography>
+                <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                  Base + Bonus + Overtime - Charge
+                </Typography>
+              </Card>
+            </Grid>
+          </Grid>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setSalaryEditDialog(false)} color="inherit">Cancel</Button>
+          <Button variant="contained" onClick={handleSaveSalary} disabled={updateSalary.isPending}>
+            {updateSalary.isPending ? 'Saving...' : 'Update'}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Overtime Edit Dialog */}
+      <Dialog open={otEditDialog} onClose={() => setOtEditDialog(false)} maxWidth="xs" fullWidth>
+        <DialogTitle>Edit Overtime</DialogTitle>
+        <DialogContent sx={{ pt: '20px !important' }}>
+          <Grid container spacing={2}>
+            <Grid item xs={6}>
+              <TextField
+                fullWidth
+                label="Overtime Hours"
+                type="number"
+                value={otEditForm.overtimeHours}
+                onChange={(e) => setOtEditForm((p) => ({ ...p, overtimeHours: e.target.value }))}
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <TextField
+                fullWidth
+                label="Bonus Amount ($)"
+                type="number"
+                value={otEditForm.bonusAmount}
+                onChange={(e) => setOtEditForm((p) => ({ ...p, bonusAmount: e.target.value }))}
+              />
+            </Grid>
+          </Grid>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOtEditDialog(false)} color="inherit">Cancel</Button>
+          <Button variant="contained" onClick={handleSaveOT}>Update</Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Add/Edit Charge Dialog */}
+      <Dialog open={ceDialog} onClose={() => setCeDialog(false)} maxWidth="sm" fullWidth>
+        <DialogTitle>{ceEditId ? 'Edit Charge' : 'Add Charge'}</DialogTitle>
         <DialogContent sx={{ pt: '20px !important' }}>
           <Grid container spacing={2}>
             <Grid item xs={12}>
               <TextField
                 fullWidth
                 select
-                label="Worker"
-                value={loanForm.worker}
-                onChange={(e) => setLoanForm((prev) => ({ ...prev, worker: e.target.value }))}
+                label="Employee"
+                value={ceForm.workerId}
+                onChange={(e) => setCeForm((p) => ({ ...p, workerId: e.target.value }))}
               >
-                {salaryData.map((w: any) => <MenuItem key={w._id} value={w._id}>{w.name}</MenuItem>)}
+                {workers.map((w: any) => <MenuItem key={w._id} value={w._id}>{w.name}</MenuItem>)}
               </TextField>
             </Grid>
             <Grid item xs={6}>
               <TextField
                 fullWidth
                 select
-                label="Type"
-                value={loanForm.type}
-                onChange={(e) => setLoanForm((prev) => ({ ...prev, type: e.target.value }))}
+                label="Charge Type"
+                value={ceForm.chargeType}
+                onChange={(e) => {
+                  const ct = chargeTypes.find((c: any) => c.name === e.target.value);
+                  setCeForm((p) => ({
+                    ...p,
+                    chargeType: e.target.value,
+                    amount: ct?.defaultAmount ? String(ct.defaultAmount) : p.amount,
+                  }));
+                }}
               >
-                <MenuItem value="loan">Loan</MenuItem>
-                <MenuItem value="prepayment">Pre-payment</MenuItem>
+                {chargeTypes.filter((ct: any) => ct.status === 'active').map((ct: any) => (
+                  <MenuItem key={ct._id} value={ct.name}>{ct.name}</MenuItem>
+                ))}
               </TextField>
             </Grid>
             <Grid item xs={6}>
@@ -344,30 +754,38 @@ export default function SalaryPage() {
                 fullWidth
                 label="Amount ($)"
                 type="number"
-                value={loanForm.amount}
-                onChange={(e) => setLoanForm((prev) => ({ ...prev, amount: e.target.value }))}
+                value={ceForm.amount}
+                onChange={(e) => setCeForm((p) => ({ ...p, amount: e.target.value }))}
               />
             </Grid>
-            <Grid item xs={12}>
+            <Grid item xs={6}>
               <TextField
                 fullWidth
-                multiline
-                rows={2}
-                label="Notes"
-                value={loanForm.notes}
-                onChange={(e) => setLoanForm((prev) => ({ ...prev, notes: e.target.value }))}
+                label="Date"
+                type="date"
+                value={ceForm.date}
+                onChange={(e) => setCeForm((p) => ({ ...p, date: e.target.value }))}
+                InputLabelProps={{ shrink: true }}
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <TextField
+                fullWidth
+                label="Note"
+                value={ceForm.note}
+                onChange={(e) => setCeForm((p) => ({ ...p, note: e.target.value }))}
               />
             </Grid>
           </Grid>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setLoanDialog(false)} color="inherit">Cancel</Button>
+          <Button onClick={() => setCeDialog(false)} color="inherit">Cancel</Button>
           <Button
             variant="contained"
-            onClick={handleAddLoan}
-            disabled={createLoan.isPending || !loanForm.worker || !loanForm.amount}
+            onClick={handleSaveCE}
+            disabled={!ceForm.workerId || !ceForm.chargeType || !ceForm.amount}
           >
-            {createLoan.isPending ? 'Adding...' : 'Add'}
+            {ceEditId ? 'Update' : 'Add Charge'}
           </Button>
         </DialogActions>
       </Dialog>

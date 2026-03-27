@@ -1,32 +1,37 @@
 import { useMemo } from 'react';
 
-import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Chip from '@mui/material/Chip';
-import CircularProgress from '@mui/material/CircularProgress';
 import Grid from '@mui/material/Grid';
-import IconButton from '@mui/material/IconButton';
 import Stack from '@mui/material/Stack';
+import Avatar from '@mui/material/Avatar';
 import Tooltip from '@mui/material/Tooltip';
+import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import { alpha, useTheme } from '@mui/material/styles';
+import CircularProgress from '@mui/material/CircularProgress';
 
-import { useDashboardSummary, useWorkers } from 'src/modules/ez-metric/api';
+import { useWorkers, useDashboardSummary } from 'src/modules/ez-metric/api';
 
 import Chart from 'src/components/chart';
 import Iconify from 'src/components/iconify';
+
+function getEffBg(eff: number): string {
+  if (eff >= 105) return '#22C55E';
+  if (eff >= 100) return '#00B8D9';
+  return '#FFAB00';
+}
 
 // ---------- mock chart data (no dedicated API yet) ----------
 const BILLED = [52, 58, 62, 55, 68, 42];
 const CLOCKED = [48, 55, 58, 50, 64, 38];
 const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
+const EFF = DAYS.map((_, i) => (CLOCKED[i] ? Math.round((BILLED[i] / CLOCKED[i]) * 100) : 0));
+
 const WEEKLY_HOURS = {
-  categories: DAYS.map((day, i) => {
-    const eff = CLOCKED[i] ? Math.round((BILLED[i] / CLOCKED[i]) * 100) : 0;
-    return `${day} (${eff}%)`;
-  }),
+  categories: DAYS,
   series: [
     { name: 'Billed Hours', data: BILLED },
     { name: 'Clocked Hours', data: CLOCKED },
@@ -192,6 +197,26 @@ export default function EZMetricDashboard() {
               legend: { position: 'top', horizontalAlign: 'right' },
               grid: { strokeDashArray: 3 },
               tooltip: { y: { formatter: (val: number) => `${val} hrs` } },
+              annotations: {
+                points: DAYS.map((day, i) => ({
+                  x: day,
+                  y: Math.max(BILLED[i], CLOCKED[i]) + 3,
+                  seriesIndex: 0,
+                  marker: { size: 0 },
+                  label: {
+                    text: `${EFF[i]}%`,
+                    borderWidth: 0,
+                    style: {
+                      background: getEffBg(EFF[i]),
+                      color: '#fff',
+                      fontSize: '11px',
+                      fontWeight: 700,
+                      padding: { left: 8, right: 8, top: 4, bottom: 4 },
+                    },
+                    borderRadius: 6,
+                  },
+                })),
+              },
             }}
             height={320}
           />
@@ -260,6 +285,78 @@ export default function EZMetricDashboard() {
                           variant="soft"
                           sx={{ fontSize: 11 }}
                         />
+                      </Stack>
+
+                      <Stack
+                        direction="row"
+                        alignItems="center"
+                        justifyContent="space-between"
+                        sx={{
+                          mt: 1.5,
+                          px: 1.5,
+                          py: 0.75,
+                          borderRadius: 1.5,
+                          bgcolor: alpha(theme.palette.text.primary, 0.04),
+                        }}
+                      >
+                        <Stack direction="row" alignItems="center" spacing={0.5}>
+                          <Iconify
+                            icon="solar:login-3-bold-duotone"
+                            width={14}
+                            sx={{ color: worker.clockIn ? '#22C55E' : 'text.disabled' }}
+                          />
+                          <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                            In:
+                          </Typography>
+                          <Typography
+                            variant="caption"
+                            sx={{
+                              fontWeight: 600,
+                              color: worker.clockIn ? 'text.primary' : 'text.disabled',
+                            }}
+                          >
+                            {worker.clockIn
+                              ? new Date(worker.clockIn).toLocaleTimeString([], {
+                                  hour: '2-digit',
+                                  minute: '2-digit',
+                                })
+                              : '—'}
+                          </Typography>
+                        </Stack>
+
+                        <Box
+                          sx={{
+                            width: 4,
+                            height: 4,
+                            borderRadius: '50%',
+                            bgcolor: alpha(theme.palette.text.disabled, 0.4),
+                          }}
+                        />
+
+                        <Stack direction="row" alignItems="center" spacing={0.5}>
+                          <Iconify
+                            icon="solar:logout-3-bold-duotone"
+                            width={14}
+                            sx={{ color: worker.clockOut ? '#FF5630' : 'text.disabled' }}
+                          />
+                          <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                            Out:
+                          </Typography>
+                          <Typography
+                            variant="caption"
+                            sx={{
+                              fontWeight: 600,
+                              color: worker.clockOut ? 'text.primary' : 'text.disabled',
+                            }}
+                          >
+                            {worker.clockOut
+                              ? new Date(worker.clockOut).toLocaleTimeString([], {
+                                  hour: '2-digit',
+                                  minute: '2-digit',
+                                })
+                              : '—'}
+                          </Typography>
+                        </Stack>
                       </Stack>
                     </Card>
                   </Grid>

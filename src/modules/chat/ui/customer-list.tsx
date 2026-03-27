@@ -113,7 +113,7 @@ export default function CustomersList({ onSelectChat }: CustomersListProps) {
   ) => {
     event.preventDefault();
     if (value?.value) {
-      await createAsync(value.value).then((res) => handleSelectChat(res.data._id));
+      await createAsync(value.value).then((res) => handleSelectChat(res._id));
     }
   };
 

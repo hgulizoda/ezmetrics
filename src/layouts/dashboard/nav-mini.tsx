@@ -5,7 +5,6 @@ import { useAdminRole } from 'src/hooks/use-mocked-user';
 
 import { hideScroll } from 'src/theme/css';
 import Logo from 'src/components/logo';
-
 import { NavSectionMini } from 'src/components/nav-section';
 
 import { NAV } from '../config-layout';

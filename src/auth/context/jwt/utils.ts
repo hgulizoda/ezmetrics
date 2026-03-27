@@ -1,7 +1,5 @@
 import { paths } from 'src/routes/paths';
 
-import axios from 'src/utils/axios';
-
 // ----------------------------------------------------------------------
 
 function jwtDecode(token: string) {
@@ -40,8 +38,6 @@ export const tokenExpired = (exp: number) => {
 
   const currentTime = Date.now();
 
-  // Test token expires after 10s
-  // const timeLeft = currentTime + 10000 - currentTime; // ~10s
   const timeLeft = exp * 1000 - currentTime;
 
   clearTimeout(expiredTimer);
@@ -60,15 +56,8 @@ export const tokenExpired = (exp: number) => {
 export const setSession = (accessToken: string | null) => {
   if (accessToken) {
     localStorage.setItem('accessToken', accessToken);
-
-    axios.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
-
-    // This function below will handle when token is expired
-    // const { exp } = jwtDecode(accessToken); // ~3 days by minimals server
-    // tokenExpired(exp);
+    // No axios headers to set in mock mode
   } else {
     localStorage.removeItem('accessToken');
-
-    delete axios.defaults.headers.common.Authorization;
   }
 };

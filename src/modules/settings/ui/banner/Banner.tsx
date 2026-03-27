@@ -59,9 +59,9 @@ const Banner = () => {
 
     await creatingBanner({
       image_url: {
-        uz: imageUrlUz.url,
-        ru: imageUrlRu.url,
-        en: imageUrlEn.url,
+        uz: imageUrlUz.url as string,
+        ru: imageUrlRu.url as string,
+        en: imageUrlEn.url as string,
       },
     });
 

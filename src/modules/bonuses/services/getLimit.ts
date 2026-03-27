@@ -27,7 +27,7 @@ export const useGetBonusLimit = (): UseGetBonusLimitResult => {
     { limits: ReturnType<typeof getLimitAdapter> }
   >({
     queryKey: ['limit'],
-    queryFn: bonusesAPI.getLimit,
+    queryFn: bonusesAPI.getLimit as () => Promise<IApiResponse<ILimit>>,
     select: (response) => ({
       // @ts-expect-error
       limits: getLimitAdapter(get(response, 'data')),

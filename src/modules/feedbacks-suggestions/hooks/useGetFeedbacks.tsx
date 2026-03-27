@@ -18,7 +18,7 @@ export const useGetFeedbacks = ({ params }: Props) => {
     select: (res) => {
       try {
         const rawData = get(res, 'data', []);
-        const mappedFeedbacks = feedbacksMapper(rawData);
+        const mappedFeedbacks = feedbacksMapper(rawData as any);
         
         return {
           feedbacks: mappedFeedbacks,

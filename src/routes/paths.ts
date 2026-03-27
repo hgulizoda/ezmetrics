@@ -16,11 +16,8 @@ const paths = {
     // EZ Metric paths
     workers: `${ROOTS.DASHBOARD}/workers`,
     clock: `${ROOTS.DASHBOARD}/clock`,
-    shifts: `${ROOTS.DASHBOARD}/shifts`,
     efficiency: `${ROOTS.DASHBOARD}/efficiency`,
-    bonusRules: `${ROOTS.DASHBOARD}/bonus-rules`,
     salary: `${ROOTS.DASHBOARD}/salary`,
-    reports: `${ROOTS.DASHBOARD}/reports`,
     settings: `${ROOTS.DASHBOARD}/settings`,
     progress: `${ROOTS.DASHBOARD}/progress`,
     // Legacy paths (keep for backward compatibility)

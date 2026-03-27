@@ -1,17 +1,14 @@
 import { useQuery } from '@tanstack/react-query';
 
-import axiosInstance from 'src/utils/axios';
-
-import { IMessageRes } from '../types/messages';
+import { MOCK_MESSAGES } from 'src/_mock/fake-backend';
 
 export const useGetMessages = (chatId: string) => {
   const { data, isLoading } = useQuery({
     queryKey: ['messages', chatId],
-    queryFn: () =>
-      axiosInstance
-        .get<{ data: IMessageRes[] }>(`/chat/${chatId}/messages`)
-        .then((res) => res.data),
+    queryFn: async () => {
+      await new Promise((r) => setTimeout(r, 300));
+      return { data: MOCK_MESSAGES[chatId] || [] };
+    },
   });
-
   return { data, isLoading };
 };

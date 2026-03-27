@@ -1,16 +1,28 @@
+import { delay, fakeRes, MOCK_PRICES } from 'src/_mock/fake-backend';
 import { IFilterProps } from 'src/modules/package/types/Filter';
 
-import { IPriceRes } from '../types/Price';
-import axiosInstance from '../../../utils/axios';
 import { PriceSchemeType } from '../libs/priceScheme';
 
 export const price = {
-  get: (params: IFilterProps) =>
-    axiosInstance.get<{ data: IPriceRes[] }>('calculator', { params }).then((res) => res.data),
-  delete: (id: string) => axiosInstance.delete(`calculator/${id}`).then((res) => res),
-  getById: (id: string) =>
-    axiosInstance.get<{ data: IPriceRes }>(`calculator/${id}`).then((res) => res.data),
-  update: (value: PriceSchemeType, id: string) =>
-    axiosInstance.put(`calculator/${id}`, value).then((res) => res),
-  create: (values: PriceSchemeType) => axiosInstance.post('calculator', values),
+  get: async (_params: IFilterProps) => {
+    await delay();
+    return { data: MOCK_PRICES } as any;
+  },
+  delete: async (_id: string) => {
+    await delay();
+    return fakeRes({ success: true });
+  },
+  getById: async (id: string) => {
+    await delay();
+    const item = MOCK_PRICES.find((p) => p._id === id) || MOCK_PRICES[0];
+    return { data: item } as any;
+  },
+  update: async (_value: PriceSchemeType, _id: string) => {
+    await delay();
+    return fakeRes({ success: true });
+  },
+  create: async (values: PriceSchemeType) => {
+    await delay();
+    return fakeRes({ _id: `pr_new_${Date.now()}`, ...values });
+  },
 };

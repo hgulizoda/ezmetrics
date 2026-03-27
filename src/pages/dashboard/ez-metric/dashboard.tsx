@@ -1,32 +1,46 @@
 import { useMemo } from 'react';
+
+import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
-import Grid from '@mui/material/Grid';
-import Stack from '@mui/material/Stack';
-import Typography from '@mui/material/Typography';
-import Avatar from '@mui/material/Avatar';
 import Chip from '@mui/material/Chip';
 import CircularProgress from '@mui/material/CircularProgress';
-import { alpha, useTheme } from '@mui/material/styles';
+import Grid from '@mui/material/Grid';
 import IconButton from '@mui/material/IconButton';
+import Stack from '@mui/material/Stack';
 import Tooltip from '@mui/material/Tooltip';
-import Iconify from 'src/components/iconify';
-import Chart from 'src/components/chart';
+import Typography from '@mui/material/Typography';
+import { alpha, useTheme } from '@mui/material/styles';
+
 import { useDashboardSummary, useWorkers } from 'src/modules/ez-metric/api';
 
+import Chart from 'src/components/chart';
+import Iconify from 'src/components/iconify';
+
 // ---------- mock chart data (no dedicated API yet) ----------
+const BILLED = [52, 58, 62, 55, 68, 42];
+const CLOCKED = [48, 55, 58, 50, 64, 38];
+const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
 const WEEKLY_HOURS = {
-  categories: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+  categories: DAYS.map((day, i) => {
+    const eff = CLOCKED[i] ? Math.round((BILLED[i] / CLOCKED[i]) * 100) : 0;
+    return `${day} (${eff}%)`;
+  }),
   series: [
-    { name: 'Billed Hours', data: [52, 58, 62, 55, 68, 42] },
-    { name: 'Clocked Hours', data: [48, 55, 58, 50, 64, 38] },
+    { name: 'Billed Hours', data: BILLED },
+    { name: 'Clocked Hours', data: CLOCKED },
   ],
 };
 
 export default function EZMetricDashboard() {
   const theme = useTheme();
 
-  const { data: summary, isLoading: loadingSummary, refetch: refetchSummary } = useDashboardSummary();
+  const {
+    data: summary,
+    isLoading: loadingSummary,
+    refetch: refetchSummary,
+  } = useDashboardSummary();
   const { data: workers, isLoading: loadingWorkers, refetch: refetchWorkers } = useWorkers();
 
   const handleRefresh = () => {
@@ -74,7 +88,7 @@ export default function EZMetricDashboard() {
   // ---------- derive attendance donut from API ----------
   const onShiftCount = summary?.onShift ?? 0;
   const totalWorkers = summary?.totalWorkers ?? 0;
-  const offShiftCount = totalWorkers - onShiftCount;
+  const _offShiftCount = totalWorkers - onShiftCount;
 
   // ---------- derive active count for workers section ----------
   const activeWorkerCount = useMemo(() => {
@@ -85,7 +99,15 @@ export default function EZMetricDashboard() {
   // ---------- loading state ----------
   if (loadingSummary || loadingWorkers) {
     return (
-      <Box sx={{ p: 3, display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 400 }}>
+      <Box
+        sx={{
+          p: 3,
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          minHeight: 400,
+        }}
+      >
         <CircularProgress />
       </Box>
     );
@@ -141,7 +163,10 @@ export default function EZMetricDashboard() {
                   </Typography>
                 </Box>
               </Stack>
-              <Typography variant="caption" sx={{ color: 'text.disabled', mt: 1.5, display: 'block' }}>
+              <Typography
+                variant="caption"
+                sx={{ color: 'text.disabled', mt: 1.5, display: 'block' }}
+              >
                 {card.change}
               </Typography>
             </Card>
@@ -149,71 +174,38 @@ export default function EZMetricDashboard() {
         ))}
       </Grid>
 
-      <Grid container spacing={3}>
-        {/* Weekly Hours Chart */}
-        <Grid item xs={12} md={8}>
-          <Card sx={{ p: 3, borderRadius: 2 }}>
-            <Typography variant="h6" sx={{ mb: 3 }}>
-              Weekly Hours Overview
-            </Typography>
-            <Chart
-              type="bar"
-              series={WEEKLY_HOURS.series}
-              options={{
-                chart: { stacked: false, toolbar: { show: false } },
-                plotOptions: {
-                  bar: { columnWidth: '40%', borderRadius: 4 },
-                },
-                xaxis: { categories: WEEKLY_HOURS.categories },
-                colors: [theme.palette.primary.main, alpha(theme.palette.primary.main, 0.3)],
-                legend: { position: 'top', horizontalAlign: 'right' },
-                grid: { strokeDashArray: 3 },
-                tooltip: { y: { formatter: (val: number) => `${val} hrs` } },
-              }}
-              height={320}
-            />
-          </Card>
-        </Grid>
-
-        {/* Attendance Pie */}
-        <Grid item xs={12} md={4}>
-          <Card sx={{ p: 3, borderRadius: 2, height: '100%' }}>
-            <Typography variant="h6" sx={{ mb: 3 }}>
-              Today&apos;s Attendance
-            </Typography>
-            <Chart
-              type="donut"
-              series={[onShiftCount, offShiftCount]}
-              options={{
-                labels: ['On Shift', 'Off Shift'],
-                colors: ['#22C55E', '#FF5630'],
-                legend: { position: 'bottom' },
-                plotOptions: {
-                  pie: {
-                    donut: {
-                      size: '72%',
-                      labels: {
-                        show: true,
-                        total: {
-                          show: true,
-                          label: 'Total',
-                          formatter: () => String(totalWorkers),
-                        },
-                      },
-                    },
-                  },
-                },
-                stroke: { width: 0 },
-              }}
-              height={280}
-            />
-          </Card>
-        </Grid>
+      <Grid item xs={12} md={8} width="100%">
+        <Card sx={{ p: 3, borderRadius: 2 }}>
+          <Typography variant="h6" sx={{ mb: 3 }}>
+            Weekly Hours Overview
+          </Typography>
+          <Chart
+            type="bar"
+            series={WEEKLY_HOURS.series}
+            options={{
+              chart: { stacked: false, toolbar: { show: false } },
+              plotOptions: {
+                bar: { columnWidth: '40%', borderRadius: 4 },
+              },
+              xaxis: { categories: WEEKLY_HOURS.categories },
+              colors: [theme.palette.primary.main, alpha(theme.palette.primary.main, 0.3)],
+              legend: { position: 'top', horizontalAlign: 'right' },
+              grid: { strokeDashArray: 3 },
+              tooltip: { y: { formatter: (val: number) => `${val} hrs` } },
+            }}
+            height={320}
+          />
+        </Card>
 
         {/* Worker Status Cards */}
         <Grid item xs={12}>
           <Card sx={{ p: 3, borderRadius: 2 }}>
-            <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mb: 3 }}>
+            <Stack
+              direction="row"
+              alignItems="center"
+              justifyContent="space-between"
+              sx={{ mb: 3 }}
+            >
               <Typography variant="h6">Worker Status</Typography>
               <Chip
                 label={`${activeWorkerCount} Active`}
@@ -233,12 +225,8 @@ export default function EZMetricDashboard() {
                       sx={{
                         p: 2,
                         borderRadius: 1.5,
-                        borderColor: isActive
-                          ? alpha('#22C55E', 0.3)
-                          : alpha('#FF5630', 0.2),
-                        bgcolor: isActive
-                          ? alpha('#22C55E', 0.04)
-                          : alpha('#FF5630', 0.02),
+                        borderColor: isActive ? alpha('#22C55E', 0.3) : alpha('#FF5630', 0.2),
+                        bgcolor: isActive ? alpha('#22C55E', 0.04) : alpha('#FF5630', 0.02),
                       }}
                     >
                       <Stack direction="row" alignItems="center" spacing={1.5}>
@@ -246,9 +234,7 @@ export default function EZMetricDashboard() {
                           sx={{
                             width: 40,
                             height: 40,
-                            bgcolor: isActive
-                              ? alpha('#22C55E', 0.12)
-                              : alpha('#FF5630', 0.12),
+                            bgcolor: isActive ? alpha('#22C55E', 0.12) : alpha('#FF5630', 0.12),
                             color: isActive ? '#22C55E' : '#FF5630',
                             fontSize: 14,
                             fontWeight: 700,
@@ -274,15 +260,6 @@ export default function EZMetricDashboard() {
                           variant="soft"
                           sx={{ fontSize: 11 }}
                         />
-                      </Stack>
-
-                      <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mt: 1.5 }}>
-                        <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-                          {worker.salaryType ?? '—'} &middot; ${worker.rate ?? 'N/A'}/hr
-                        </Typography>
-                        <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-                          Eff: N/A
-                        </Typography>
                       </Stack>
                     </Card>
                   </Grid>

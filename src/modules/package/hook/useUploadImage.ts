@@ -1,12 +1,10 @@
 import { useMutation } from '@tanstack/react-query';
 
-import axiosInstance from 'src/utils/axios';
-
 const upload = async ({ file }: { file: File }) => {
-  const formData = new FormData();
-  formData.append('file', file);
-
-  return axiosInstance.post('/upload/minio', formData).then((f) => f.data);
+  // Mock upload - return a fake URL after a short delay
+  await new Promise((r) => setTimeout(r, 500));
+  const fakeUrl = URL.createObjectURL(file);
+  return { url: fakeUrl };
 };
 
 export const useUploadImage = () => {

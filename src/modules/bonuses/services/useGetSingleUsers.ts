@@ -17,7 +17,7 @@ export const useGetSingleUsers = ({ id, params }: Props) => {
     queryKey: ['single-bonuses', id, params],
     queryFn: () => bonusesAPI.getSingleUserBonus({ id, params }),
     select: (res) => ({
-      orders: singleBonusMapper(get(res, 'data', [])),
+      orders: singleBonusMapper(get(res, 'data', []) as any),
       total_records: get(res, 'pagination.total_records'),
     }),
   });

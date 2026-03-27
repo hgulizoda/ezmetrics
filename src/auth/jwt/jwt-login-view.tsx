@@ -17,10 +17,10 @@ import { showErrorSnackbar } from 'src/utils/showErrorSnackbar';
 import { useAuthContext } from 'src/auth/hooks';
 import { PATH_AFTER_LOGIN } from 'src/config-global';
 
+import logoImg from 'src/assets/data/logo.jpg';
+
 import Iconify from 'src/components/iconify';
 import FormProvider, { RHFTextField } from 'src/components/hook-form';
-
-import logoImg from 'src/assets/data/logo.jpg';
 
 // ----------------------------------------------------------------------
 

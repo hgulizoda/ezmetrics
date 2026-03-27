@@ -1,120 +1,124 @@
-import useSWR from 'swr';
 import { useMemo } from 'react';
+import { useQuery } from '@tanstack/react-query';
 
-import { fetcher, endpoints } from 'src/utils/axios';
 // ----------------------------------------------------------------------
 export type IPostComment = {
+  id: string;
+  name: string;
+  avatarUrl: string;
+  message: string;
+  postedAt: Date;
+  users: { id: string; name: string; avatarUrl: string }[];
+  replyComment: {
     id: string;
-    name: string;
-    avatarUrl: string;
+    userId: string;
     message: string;
     postedAt: Date;
-    users: {
-      id: string;
-      name: string;
-      avatarUrl: string;
-    }[];
-    replyComment: {
-      id: string;
-      userId: string;
-      message: string;
-      postedAt: Date;
-      tagUser?: string;
-    }[];
-  };
-export type IPostItem = {
-    id: string;
-    title: string;
-    tags: string[];
-    publish: string;
-    content: string;
-    coverUrl: string;
-    metaTitle: string;
-    totalViews: number;
-    totalShares: number;
-    description: string;
-    totalComments: number;
-    totalFavorites: number;
-    metaKeywords: string[];
-    metaDescription: string;
-    comments: IPostComment[];
-    createdAt: Date;
-    favoritePerson: {
-      name: string;
-      avatarUrl: string;
-    }[];
-    author: {
-      name: string;
-      avatarUrl: string;
-    };
-  };
-export function useGetPosts() {
-  const URL = endpoints.post.list;
+    tagUser?: string;
+  }[];
+};
 
-  const { data, isLoading, error, isValidating } = useSWR(URL, fetcher);
+export type IPostItem = {
+  id: string;
+  title: string;
+  tags: string[];
+  publish: string;
+  content: string;
+  coverUrl: string;
+  metaTitle: string;
+  totalViews: number;
+  totalShares: number;
+  description: string;
+  totalComments: number;
+  totalFavorites: number;
+  metaKeywords: string[];
+  metaDescription: string;
+  comments: IPostComment[];
+  createdAt: Date;
+  favoritePerson: { name: string; avatarUrl: string }[];
+  author: { name: string; avatarUrl: string };
+};
+
+const MOCK_POSTS: IPostItem[] = [];
+
+export function useGetPosts() {
+  const { data, isLoading, error } = useQuery({
+    queryKey: ['posts'],
+    queryFn: async () => {
+      await new Promise((r) => setTimeout(r, 300));
+      return { posts: MOCK_POSTS };
+    },
+  });
 
   const memoizedValue = useMemo(
     () => ({
       posts: (data?.posts as IPostItem[]) || [],
       postsLoading: isLoading,
       postsError: error,
-      postsValidating: isValidating,
+      postsValidating: false,
       postsEmpty: !isLoading && !data?.posts.length,
     }),
-    [data?.posts, error, isLoading, isValidating]
+    [data?.posts, error, isLoading]
   );
 
   return memoizedValue;
 }
 
-// ----------------------------------------------------------------------
-
 export function useGetPost(title: string) {
-  const URL = title ? [endpoints.post.details, { params: { title } }] : '';
-
-  const { data, isLoading, error, isValidating } = useSWR(URL, fetcher);
+  const { data, isLoading, error } = useQuery({
+    queryKey: ['post', title],
+    queryFn: async () => {
+      await new Promise((r) => setTimeout(r, 300));
+      return { post: MOCK_POSTS.find((p) => p.title === title) || null };
+    },
+    enabled: !!title,
+  });
 
   const memoizedValue = useMemo(
     () => ({
       post: data?.post as IPostItem,
       postLoading: isLoading,
       postError: error,
-      postValidating: isValidating,
+      postValidating: false,
     }),
-    [data?.post, error, isLoading, isValidating]
+    [data?.post, error, isLoading]
   );
 
   return memoizedValue;
 }
 
-// ----------------------------------------------------------------------
-
 export function useGetLatestPosts(title: string) {
-  const URL = title ? [endpoints.post.latest, { params: { title } }] : '';
-
-  const { data, isLoading, error, isValidating } = useSWR(URL, fetcher);
+  const { data, isLoading, error } = useQuery({
+    queryKey: ['latestPosts', title],
+    queryFn: async () => {
+      await new Promise((r) => setTimeout(r, 300));
+      return { latestPosts: MOCK_POSTS };
+    },
+    enabled: !!title,
+  });
 
   const memoizedValue = useMemo(
     () => ({
       latestPosts: (data?.latestPosts as IPostItem[]) || [],
       latestPostsLoading: isLoading,
       latestPostsError: error,
-      latestPostsValidating: isValidating,
+      latestPostsValidating: false,
       latestPostsEmpty: !isLoading && !data?.latestPosts.length,
     }),
-    [data?.latestPosts, error, isLoading, isValidating]
+    [data?.latestPosts, error, isLoading]
   );
 
   return memoizedValue;
 }
 
-// ----------------------------------------------------------------------
-
 export function useSearchPosts(query: string) {
-  const URL = query ? [endpoints.post.search, { params: { query } }] : '';
-
-  const { data, isLoading, error, isValidating } = useSWR(URL, fetcher, {
-    keepPreviousData: true,
+  const { data, isLoading, error } = useQuery({
+    queryKey: ['searchPosts', query],
+    queryFn: async () => {
+      await new Promise((r) => setTimeout(r, 300));
+      return { results: MOCK_POSTS.filter((p) => p.title.toLowerCase().includes(query.toLowerCase())) };
+    },
+    enabled: !!query,
   });
 
   const memoizedValue = useMemo(
@@ -122,10 +126,10 @@ export function useSearchPosts(query: string) {
       searchResults: (data?.results as IPostItem[]) || [],
       searchLoading: isLoading,
       searchError: error,
-      searchValidating: isValidating,
+      searchValidating: false,
       searchEmpty: !isLoading && !data?.results.length,
     }),
-    [data?.results, error, isLoading, isValidating]
+    [data?.results, error, isLoading]
   );
 
   return memoizedValue;

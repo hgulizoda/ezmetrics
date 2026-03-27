@@ -1,30 +1,34 @@
-import { useState, useCallback } from 'react';
+import { useCallback, useState } from 'react';
+
+import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
+import Chip from '@mui/material/Chip';
+import CircularProgress from '@mui/material/CircularProgress';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
 import Grid from '@mui/material/Grid';
+import IconButton from '@mui/material/IconButton';
 import Stack from '@mui/material/Stack';
+import Tab from '@mui/material/Tab';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
-import Typography from '@mui/material/Typography';
-import Button from '@mui/material/Button';
-import Chip from '@mui/material/Chip';
-import TextField from '@mui/material/TextField';
-import IconButton from '@mui/material/IconButton';
-import Tooltip from '@mui/material/Tooltip';
-import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
-import DialogActions from '@mui/material/DialogActions';
-import CircularProgress from '@mui/material/CircularProgress';
+import TextField from '@mui/material/TextField';
+import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
 import { alpha } from '@mui/material/styles';
-import Iconify from 'src/components/iconify';
+
 import { useClockRecords, useUpdateClockRecord } from 'src/modules/ez-metric/api';
+
+import Iconify from 'src/components/iconify';
 
 const today = new Date().toISOString().split('T')[0];
 
@@ -39,7 +43,10 @@ export default function ClockPage() {
   const [editRecord, setEditRecord] = useState<any>(null);
   const [editClockIn, setEditClockIn] = useState('');
   const [editClockOut, setEditClockOut] = useState('');
+  const [editDate, setEditDate] = useState('');
+  const [editShiftPeriod, setEditShiftPeriod] = useState('');
   const [editNote, setEditNote] = useState('');
+  const [origValues, setOrigValues] = useState({ clockIn: '', clockOut: '', date: '', shiftPeriod: '' });
 
   const { data: records = [], isLoading } = useClockRecords();
   const updateClockRecord = useUpdateClockRecord();
@@ -52,10 +59,18 @@ export default function ClockPage() {
   const displayedRecords = tab === 0 ? todayRecords : records;
 
   const handleOpenEdit = useCallback((record: any) => {
+    const clockInVal = record.clockIn ? new Date(record.clockIn).toTimeString().slice(0, 5) : '';
+    const clockOutVal = record.clockOut ? new Date(record.clockOut).toTimeString().slice(0, 5) : '';
+    const dateVal = record.date ? new Date(record.date).toISOString().split('T')[0] : today;
+    const shiftVal = record.shiftPeriod || '';
+
     setEditRecord(record);
-    setEditClockIn(record.clockIn ? new Date(record.clockIn).toTimeString().slice(0, 5) : '');
-    setEditClockOut(record.clockOut ? new Date(record.clockOut).toTimeString().slice(0, 5) : '');
+    setEditClockIn(clockInVal);
+    setEditClockOut(clockOutVal);
+    setEditDate(dateVal);
+    setEditShiftPeriod(shiftVal);
     setEditNote('');
+    setOrigValues({ clockIn: clockInVal, clockOut: clockOutVal, date: dateVal, shiftPeriod: shiftVal });
     setEditDialog(true);
   }, []);
 
@@ -64,30 +79,36 @@ export default function ClockPage() {
     setEditRecord(null);
   }, []);
 
+  const hasChanges =
+    editClockIn !== origValues.clockIn ||
+    editClockOut !== origValues.clockOut ||
+    editDate !== origValues.date ||
+    editShiftPeriod !== origValues.shiftPeriod;
+
+  const canSave = !hasChanges || editNote.trim().length > 0;
+
   const handleSaveEdit = useCallback(() => {
     if (!editRecord) return;
-
-    const recordDate = editRecord.date
-      ? new Date(editRecord.date).toISOString().split('T')[0]
-      : today;
 
     const body: any = {
       note: editNote,
       status: 'manual',
+      shiftPeriod: editShiftPeriod,
+      date: new Date(`${editDate}T00:00:00`).toISOString(),
     };
 
     if (editClockIn) {
-      body.clockIn = new Date(`${recordDate}T${editClockIn}:00`).toISOString();
+      body.clockIn = new Date(`${editDate}T${editClockIn}:00`).toISOString();
     }
     if (editClockOut) {
-      body.clockOut = new Date(`${recordDate}T${editClockOut}:00`).toISOString();
+      body.clockOut = new Date(`${editDate}T${editClockOut}:00`).toISOString();
     }
 
     updateClockRecord.mutate(
       { id: editRecord._id, body },
       { onSuccess: () => handleCloseEdit() }
     );
-  }, [editRecord, editClockIn, editClockOut, editNote, updateClockRecord, handleCloseEdit]);
+  }, [editRecord, editClockIn, editClockOut, editDate, editShiftPeriod, editNote, updateClockRecord, handleCloseEdit]);
 
   return (
     <Box sx={{ p: 3 }}>
@@ -162,69 +183,82 @@ export default function ClockPage() {
             <Table>
               <TableHead>
                 <TableRow>
-                  <TableCell>Worker</TableCell>
-                  <TableCell>Date</TableCell>
-                  <TableCell>Clock In</TableCell>
-                  <TableCell>Clock Out</TableCell>
-                  <TableCell>Total Hours</TableCell>
-                  <TableCell align="center">Type</TableCell>
-                  <TableCell>Note</TableCell>
-                  <TableCell align="center">Actions</TableCell>
+                  <TableCell sx={{ pl: 3, width: 48 }}>#</TableCell>
+                  <TableCell>Name</TableCell>
+                  <TableCell>Clock in</TableCell>
+                  <TableCell>Clock out</TableCell>
+                  <TableCell>Time efficiency</TableCell>
+                  <TableCell>Shift Period</TableCell>
+                  <TableCell>Type</TableCell>
+                  <TableCell>Department</TableCell>
+                  <TableCell align="center">Edit</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {displayedRecords.map((record: any) => (
-                  <TableRow key={record._id} hover>
-                    <TableCell>
-                      <Typography variant="subtitle2">{record.worker?.name || '-'}</Typography>
-                    </TableCell>
-                    <TableCell>
-                      {record.date ? new Date(record.date).toISOString().split('T')[0] : '-'}
-                    </TableCell>
-                    <TableCell>
-                      <Chip
-                        label={formatTime(record.clockIn) || '-'}
-                        size="small"
-                        variant="soft"
-                        color="success"
-                        sx={{ fontWeight: 600 }}
-                      />
-                    </TableCell>
-                    <TableCell>
-                      {record.clockOut ? (
-                        <Chip label={formatTime(record.clockOut)} size="small" variant="soft" color="error" sx={{ fontWeight: 600 }} />
-                      ) : (
-                        <Chip label="In Progress" size="small" variant="soft" color="warning" />
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      <Typography variant="subtitle2">
-                        {record.totalHours != null ? `${record.totalHours}h` : '-'}
-                      </Typography>
-                    </TableCell>
-                    <TableCell align="center">
-                      <Chip
-                        label={record.status === 'auto' ? 'Auto' : 'Manual'}
-                        size="small"
-                        variant="soft"
-                        color={record.status === 'auto' ? 'info' : 'warning'}
-                        icon={<Iconify icon={record.status === 'auto' ? 'solar:clock-circle-bold' : 'solar:pen-bold'} width={14} />}
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-                        {record.note || '-'}
-                      </Typography>
-                    </TableCell>
-                    <TableCell align="center">
-                      <Tooltip title="Edit Record">
-                        <IconButton size="small" onClick={() => handleOpenEdit(record)}>
-                          <Iconify icon="solar:pen-bold-duotone" width={18} />
-                        </IconButton>
-                      </Tooltip>
-                    </TableCell>
-                  </TableRow>
-                ))}
+                {displayedRecords.map((record: any, index: number) => {
+                  const eff = record.efficiency;
+                  const effColor =
+                    eff === null
+                      ? 'text.disabled'
+                      : eff >= 100
+                        ? '#22C55E'
+                        : eff >= 90
+                          ? '#FFAB00'
+                          : '#FF5630';
+                  const initials = (record.worker?.name || '')
+                    .split(' ')
+                    .map((n: string) => n[0])
+                    .join('');
+
+                  return (
+                    <TableRow key={record._id} hover>
+                      <TableCell sx={{ pl: 3 }}>{index + 1}</TableCell>
+                      <TableCell>
+                        <Stack direction="row" alignItems="center" spacing={1.5}>
+                          <Avatar
+                            sx={{
+                              width: 32,
+                              height: 32,
+                              fontSize: 13,
+                              fontWeight: 700,
+                              bgcolor: alpha('#2065D1', 0.08),
+                              color: '#2065D1',
+                            }}
+                          >
+                            {initials}
+                          </Avatar>
+                          <Typography variant="subtitle2">
+                            {record.worker?.name || '—'}
+                          </Typography>
+                        </Stack>
+                      </TableCell>
+                      <TableCell>
+                        {formatTime(record.clockIn) || '—'}
+                      </TableCell>
+                      <TableCell>
+                        {record.clockOut ? formatTime(record.clockOut) : '—'}
+                      </TableCell>
+                      <TableCell>
+                        <Typography
+                          variant="body2"
+                          sx={{ fontWeight: 600, color: effColor }}
+                        >
+                          {eff != null ? `${eff}%` : '—'}
+                        </Typography>
+                      </TableCell>
+                      <TableCell>{record.shiftPeriod ?? '—'}</TableCell>
+                      <TableCell>{record.type ?? '—'}</TableCell>
+                      <TableCell>{record.department ?? '—'}</TableCell>
+                      <TableCell align="center">
+                        <Tooltip title="Edit Record">
+                          <IconButton size="small" onClick={() => handleOpenEdit(record)}>
+                            <Iconify icon="solar:pen-bold" width={18} />
+                          </IconButton>
+                        </Tooltip>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
               </TableBody>
             </Table>
           </TableContainer>
@@ -238,6 +272,26 @@ export default function ClockPage() {
           <Grid container spacing={2}>
             <Grid item xs={12}>
               <TextField fullWidth label="Worker" value={editRecord?.worker?.name || ''} disabled />
+            </Grid>
+            <Grid item xs={6}>
+              <TextField
+                fullWidth
+                label="Date"
+                type="date"
+                value={editDate}
+                onChange={(e) => setEditDate(e.target.value)}
+                InputLabelProps={{ shrink: true }}
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <TextField
+                fullWidth
+                label="Shift Period"
+                placeholder="e.g. 7AM-4PM"
+                value={editShiftPeriod}
+                onChange={(e) => setEditShiftPeriod(e.target.value)}
+                InputLabelProps={{ shrink: true }}
+              />
             </Grid>
             <Grid item xs={6}>
               <TextField
@@ -264,10 +318,16 @@ export default function ClockPage() {
                 fullWidth
                 multiline
                 rows={3}
-                label="Reason for edit (required)"
+                label={hasChanges ? 'Reason for change (required)' : 'Reason for change'}
                 placeholder="Explain why this record needs manual adjustment..."
                 value={editNote}
                 onChange={(e) => setEditNote(e.target.value)}
+                error={hasChanges && editNote.trim().length === 0}
+                helperText={
+                  hasChanges && editNote.trim().length === 0
+                    ? 'A reason is required when making changes'
+                    : ''
+                }
               />
             </Grid>
           </Grid>
@@ -277,7 +337,7 @@ export default function ClockPage() {
           <Button
             variant="contained"
             onClick={handleSaveEdit}
-            disabled={updateClockRecord.isPending}
+            disabled={!canSave || updateClockRecord.isPending}
           >
             {updateClockRecord.isPending ? 'Saving...' : 'Save Changes'}
           </Button>

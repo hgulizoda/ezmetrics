@@ -1,30 +1,34 @@
-import axiosInstance from '../../../utils/axios';
-import { ITruckRes } from '../types/ChinaBorder';
-import { IApiResponse } from '../../../types/ApiRes';
-import { SendTransitType } from '../libs/sendTransit';
+import { delay, fakeRes, MOCK_TRUCK_ORDERS, paginated } from 'src/_mock/fake-backend';
+
 import { IFilterProps } from '../../package/types/Filter';
+import { SendTransitType } from '../libs/sendTransit';
 import { SeparateFormType } from '../libs/separateScheme';
 
 export const chinaborderTruck = {
-  get: (params: IFilterProps, status: string) =>
-    axiosInstance
-      .get<IApiResponse<ITruckRes>>(`orders/by-truck?status=${status}`, { params })
-      .then((response) => response.data),
+  get: async (params: IFilterProps, _status: string) => {
+    await delay();
+    return paginated(MOCK_TRUCK_ORDERS, params.page, params.limit) as any;
+  },
 };
 
 export const truckPackage = {
-  separate: (value: SeparateFormType, id: string) =>
-    axiosInstance.post(`orders/${id}/partial-order`, value).then((response) => response),
-  takeDown: (truckID: string, id: string) =>
-    axiosInstance.put(`orders/${truckID}/remove-order/${id}`).then((res) => res),
+  separate: async (_value: SeparateFormType, _id: string) => {
+    await delay();
+    return fakeRes({ success: true, _id: `ord_sep_${Date.now()}` });
+  },
+  takeDown: async (_truckID: string, _id: string) => {
+    await delay();
+    return fakeRes({ success: true });
+  },
 };
 
 export const sendTrucktoNextStep = {
-  send: (truckID: string, status: string, value?: SendTransitType) =>
-    axiosInstance
-      .put(`orders/${truckID}/order_status/${status}`, value)
-      .then((response) => response),
-
-  back: (truckID: string, status: string) =>
-    axiosInstance.put(`orders/${truckID}/order_status/${status}`).then((response) => response),
+  send: async (_truckID: string, _status: string, _value?: SendTransitType) => {
+    await delay();
+    return fakeRes({ success: true });
+  },
+  back: async (_truckID: string, _status: string) => {
+    await delay();
+    return fakeRes({ success: true });
+  },
 };

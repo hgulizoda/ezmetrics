@@ -1,31 +1,34 @@
 import { useState } from 'react';
+
 import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
+import Chip from '@mui/material/Chip';
+import CircularProgress from '@mui/material/CircularProgress';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
 import Grid from '@mui/material/Grid';
+import IconButton from '@mui/material/IconButton';
+import MenuItem from '@mui/material/MenuItem';
 import Stack from '@mui/material/Stack';
+import Tab from '@mui/material/Tab';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
-import Typography from '@mui/material/Typography';
-import Button from '@mui/material/Button';
-import Chip from '@mui/material/Chip';
-import TextField from '@mui/material/TextField';
-import MenuItem from '@mui/material/MenuItem';
-import IconButton from '@mui/material/IconButton';
-import Tooltip from '@mui/material/Tooltip';
-import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
-import DialogActions from '@mui/material/DialogActions';
-import CircularProgress from '@mui/material/CircularProgress';
+import TextField from '@mui/material/TextField';
+import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
 import { alpha } from '@mui/material/styles';
+
+import { useCreateLoan, useLoans, useSalary } from 'src/modules/ez-metric/api';
+
 import Iconify from 'src/components/iconify';
-import { useSalary, useLoans, useCreateLoan } from 'src/modules/ez-metric/api';
 
 function getEfficiencyChipColor(efficiency: string): 'success' | 'info' | 'warning' {
   const val = parseInt(efficiency, 10);

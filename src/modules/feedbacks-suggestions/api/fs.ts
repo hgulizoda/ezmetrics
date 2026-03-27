@@ -1,4 +1,4 @@
-import axiosInstance from 'src/utils/axios';
+import { delay, paginated, MOCK_FEEDBACKS, MOCK_SUGGESTIONS } from 'src/_mock/fake-backend';
 
 interface Props {
   params: {
@@ -8,13 +8,21 @@ interface Props {
 }
 
 export const suggestions = {
-  getAll: ({ params }: Props) =>
-    axiosInstance.get('/complaint-suggestion', { params }).then((res) => res.data),
-  delete: (id: string) => axiosInstance.delete(`/complaint-suggestion/${id}`).then(),
+  getAll: async ({ params }: Props) => {
+    await delay();
+    return paginated(MOCK_SUGGESTIONS, params.page, params.limit);
+  },
+  delete: async (_id: string) => {
+    await delay();
+  },
 };
 
 export const feedbacks = {
-  getAll: ({ params }: Props) =>
-    axiosInstance.get('/delivery-feedback', { params }).then((res) => res.data),
-  delete: (id: string) => axiosInstance.delete(`/delivery-feedback/${id}`).then(),
+  getAll: async ({ params }: Props) => {
+    await delay();
+    return paginated(MOCK_FEEDBACKS, params.page, params.limit);
+  },
+  delete: async (_id: string) => {
+    await delay();
+  },
 };

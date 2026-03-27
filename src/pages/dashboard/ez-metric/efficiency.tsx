@@ -1,7 +1,12 @@
 import { useState } from 'react';
+
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
+import Chip from '@mui/material/Chip';
+import CircularProgress from '@mui/material/CircularProgress';
 import Grid from '@mui/material/Grid';
+import LinearProgress from '@mui/material/LinearProgress';
+import MenuItem from '@mui/material/MenuItem';
 import Stack from '@mui/material/Stack';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -9,16 +14,14 @@ import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
-import Typography from '@mui/material/Typography';
-import LinearProgress from '@mui/material/LinearProgress';
-import CircularProgress from '@mui/material/CircularProgress';
-import Chip from '@mui/material/Chip';
 import TextField from '@mui/material/TextField';
-import MenuItem from '@mui/material/MenuItem';
+import Typography from '@mui/material/Typography';
 import { alpha } from '@mui/material/styles';
-import Iconify from 'src/components/iconify';
-import Chart from 'src/components/chart';
+
 import { useEfficiency } from 'src/modules/ez-metric/api';
+
+import Chart from 'src/components/chart';
+import Iconify from 'src/components/iconify';
 
 interface WorkerEff {
   _id: string;

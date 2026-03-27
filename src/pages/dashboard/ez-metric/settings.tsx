@@ -1,25 +1,28 @@
 import { useState } from 'react';
+
 import Box from '@mui/material/Box';
-import Card from '@mui/material/Card';
-import Grid from '@mui/material/Grid';
-import Stack from '@mui/material/Stack';
-import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
-import MenuItem from '@mui/material/MenuItem';
-import Switch from '@mui/material/Switch';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Divider from '@mui/material/Divider';
+import Card from '@mui/material/Card';
 import CircularProgress from '@mui/material/CircularProgress';
+import Divider from '@mui/material/Divider';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Grid from '@mui/material/Grid';
+import MenuItem from '@mui/material/MenuItem';
+import Stack from '@mui/material/Stack';
+import Switch from '@mui/material/Switch';
+import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
 import { alpha, useTheme } from '@mui/material/styles';
-import Iconify from 'src/components/iconify';
+
 import { useSettings, useUpdateSetting } from 'src/modules/ez-metric/api';
+
+import Iconify from 'src/components/iconify';
 
 export default function SettingsPage() {
   const theme = useTheme();
   const [saved, setSaved] = useState(false);
-  const { data: settings, isLoading } = useSettings();
-  const updateSetting = useUpdateSetting();
+  const { data: _settings, isLoading } = useSettings();
+  const _updateSetting = useUpdateSetting();
 
   const handleSave = () => {
     setSaved(true);

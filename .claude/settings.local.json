@@ -42,7 +42,8 @@
       "Bash(cat \"/c/Users/Hasanova/utility/global move/EzMertrics/AGENTS \\(1\\).md\")",
       "Bash(find 'C:\\\\Users\\\\Hasanova\\\\utility\\\\global move\\\\EzMertrics\\\\src\\\\modules\\\\ez-metric' -type f \\\\\\(-name *.ts -o -name *.tsx \\\\\\))",
       "Bash(grep -r I18nProvider 'C:/Users/Hasanova/utility/global move/EzMertrics/src' --include=*.tsx --include=*.ts)",
-      "Bash(grep -r \"from.*app.tsx\\\\|from.*main.tsx\" 'C:/Users/Hasanova/utility/global move/EzMertrics/src' --include=*.tsx --include=*.ts)"
+      "Bash(grep -r \"from.*app.tsx\\\\|from.*main.tsx\" 'C:/Users/Hasanova/utility/global move/EzMertrics/src' --include=*.tsx --include=*.ts)",
+      "Bash(grep -r \"checkin\\\\|check-in\\\\|check_in\" 'C:\\\\Users\\\\Hasanova\\\\utility\\\\global move\\\\EzMertrics/src' --include=*.tsx --include=*.ts -l)"
     ],
     "deny": [],
     "ask": []

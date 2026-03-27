@@ -1,6 +1,8 @@
 import { useMemo } from 'react';
-import Iconify from 'src/components/iconify';
+
 import { paths } from 'src/routes/paths';
+
+import Iconify from 'src/components/iconify';
 
 export function useNavData() {
   return useMemo(
@@ -30,11 +32,6 @@ export function useNavData() {
             path: paths.dashboard.clock,
             icon: <Iconify icon="solar:clock-circle-bold-duotone" width={24} />,
           },
-          {
-            title: 'Shifts',
-            path: paths.dashboard.shifts,
-            icon: <Iconify icon="solar:calendar-bold-duotone" width={24} />,
-          },
         ],
       },
       {
@@ -47,11 +44,6 @@ export function useNavData() {
             icon: <Iconify icon="solar:chart-2-bold-duotone" width={24} />,
           },
           {
-            title: 'Bonus Rules',
-            path: paths.dashboard.bonusRules,
-            icon: <Iconify icon="solar:gift-bold-duotone" width={24} />,
-          },
-          {
             title: 'Salary',
             path: paths.dashboard.salary,
             icon: <Iconify icon="solar:wallet-money-bold-duotone" width={24} />,
@@ -62,11 +54,6 @@ export function useNavData() {
         subheader: 'Analytics',
         roles: [],
         items: [
-          {
-            title: 'Reports',
-            path: paths.dashboard.reports,
-            icon: <Iconify icon="solar:document-bold-duotone" width={24} />,
-          },
           {
             title: 'Progress',
             path: paths.dashboard.progress,

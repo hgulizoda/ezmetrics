@@ -1,16 +1,17 @@
+import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
-import Grid from '@mui/material/Grid';
-import Stack from '@mui/material/Stack';
-import Typography from '@mui/material/Typography';
-import LinearProgress from '@mui/material/LinearProgress';
-import Avatar from '@mui/material/Avatar';
 import Chip from '@mui/material/Chip';
 import CircularProgress from '@mui/material/CircularProgress';
+import Grid from '@mui/material/Grid';
+import LinearProgress from '@mui/material/LinearProgress';
+import Stack from '@mui/material/Stack';
+import Typography from '@mui/material/Typography';
 import { alpha, useTheme } from '@mui/material/styles';
-import Iconify from 'src/components/iconify';
+
+import { useBonusRules, useEfficiency } from 'src/modules/ez-metric/api';
+
 import Chart from 'src/components/chart';
-import { useEfficiency, useBonusRules } from 'src/modules/ez-metric/api';
 
 function getEffColor(eff: number | null): string {
   if (eff === null) return '#919EAB';

@@ -34,12 +34,17 @@ export default function Header({ onOpenNav }: Props) {
 
   const offsetTop = offset && !isNavHorizontal;
 
+  const isDark = settings.themeMode === 'dark';
+
+  const handleToggleMode = () => {
+    settings.onUpdate('themeMode', isDark ? 'light' : 'dark');
+  };
+
   const renderContent = (
     <Toolbar
       sx={{
         height: 1,
         px: { lg: 5 },
-        display: lgUp ? 'none' : 'flex',
       }}
     >
       {!lgUp && onOpenNav && (
@@ -47,6 +52,12 @@ export default function Header({ onOpenNav }: Props) {
           <Iconify icon="eva:menu-2-fill" />
         </IconButton>
       )}
+
+      <div style={{ flexGrow: 1 }} />
+
+      <IconButton onClick={handleToggleMode} sx={{ mr: 1 }}>
+        <Iconify icon={isDark ? 'solar:sun-bold-duotone' : 'solar:moon-bold-duotone'} />
+      </IconButton>
     </Toolbar>
   );
 

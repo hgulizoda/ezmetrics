@@ -1,9 +1,10 @@
-import { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useMemo, useState, useCallback } from 'react';
 
 import Box from '@mui/material/Box';
 import Tab from '@mui/material/Tab';
 import Card from '@mui/material/Card';
+import Chip from '@mui/material/Chip';
 import Grid from '@mui/material/Grid';
 import Tabs from '@mui/material/Tabs';
 import Stack from '@mui/material/Stack';
@@ -14,6 +15,7 @@ import Dialog from '@mui/material/Dialog';
 import Tooltip from '@mui/material/Tooltip';
 import { alpha } from '@mui/material/styles';
 import TableRow from '@mui/material/TableRow';
+import MenuItem from '@mui/material/MenuItem';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableHead from '@mui/material/TableHead';
@@ -44,6 +46,19 @@ function formatTime(value: string | null | undefined): string | null {
   return new Date(value).toLocaleTimeString('en', { hour: '2-digit', minute: '2-digit' });
 }
 
+function formatDateShort(dateStr: string): string {
+  return new Date(dateStr).toLocaleDateString('en', { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
+// Quick period presets
+type PeriodPreset = 'today' | 'yesterday' | 'last3' | 'last7' | 'custom';
+
+function daysAgoDate(n: number): string {
+  const d = new Date();
+  d.setDate(d.getDate() - n);
+  return d.toISOString().split('T')[0];
+}
+
 export default function ClockPage() {
   const [tab, setTab] = useState(0);
   const [editDialog, setEditDialog] = useState(false);
@@ -53,6 +68,12 @@ export default function ClockPage() {
   const [editDate, setEditDate] = useState('');
   const [editNote, setEditNote] = useState('');
   const [origValues, setOrigValues] = useState({ clockIn: '', clockOut: '', date: '' });
+
+  // All Records filters
+  const [periodPreset, setPeriodPreset] = useState<PeriodPreset>('last7');
+  const [customFrom, setCustomFrom] = useState(daysAgoDate(7));
+  const [customTo, setCustomTo] = useState(today);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const navigate = useNavigate();
   const { data: records = [], isLoading } = useClockRecords();
@@ -64,7 +85,71 @@ export default function ClockPage() {
     return recordDate === today;
   });
   const activeWorkers = todayRecords.filter((r: any) => !r.clockOut);
-  const displayedRecords = tab === 0 ? todayRecords : records;
+
+  // Compute date range based on preset
+  const dateRange = useMemo(() => {
+    switch (periodPreset) {
+      case 'today': return { from: today, to: today };
+      case 'yesterday': return { from: daysAgoDate(1), to: daysAgoDate(1) };
+      case 'last3': return { from: daysAgoDate(2), to: today };
+      case 'last7': return { from: daysAgoDate(6), to: today };
+      case 'custom': return { from: customFrom, to: customTo };
+      default: return { from: daysAgoDate(6), to: today };
+    }
+  }, [periodPreset, customFrom, customTo]);
+
+  // Filter records for "All Records" tab
+  const filteredRecords = useMemo(() => {
+    let list = records.filter((r: any) => {
+      const d = r.date ? new Date(r.date).toISOString().split('T')[0] : '';
+      return d >= dateRange.from && d <= dateRange.to;
+    });
+    if (searchQuery) {
+      const q = searchQuery.toLowerCase();
+      list = list.filter((r: any) => (r.worker?.name || '').toLowerCase().includes(q));
+    }
+    // Sort by date descending, then by name
+    list.sort((a: any, b: any) => {
+      const da = a.date || '';
+      const db = b.date || '';
+      if (da !== db) return db.localeCompare(da);
+      return (a.worker?.name || '').localeCompare(b.worker?.name || '');
+    });
+    return list;
+  }, [records, dateRange, searchQuery]);
+
+  // Aggregate stats for the selected period
+  const periodStats = useMemo(() => {
+    const completed = filteredRecords.filter((r: any) => r.clockOut);
+    const totalHours = completed.reduce((s: number, r: any) => s + (r.totalHours || 0), 0);
+    const withEff = completed.filter((r: any) => r.efficiency != null);
+    const avgEff = withEff.length > 0
+      ? Math.round(withEff.reduce((s: number, r: any) => s + r.efficiency, 0) / withEff.length)
+      : 0;
+    const uniqueDates = new Set(filteredRecords.map((r: any) =>
+      r.date ? new Date(r.date).toISOString().split('T')[0] : ''
+    ));
+    return {
+      totalRecords: filteredRecords.length,
+      completedShifts: completed.length,
+      totalHours: totalHours.toFixed(1),
+      avgEfficiency: avgEff,
+      daysCount: uniqueDates.size,
+    };
+  }, [filteredRecords]);
+
+  // Group records by date for display
+  const groupedByDate = useMemo(() => {
+    const groups: Record<string, any[]> = {};
+    filteredRecords.forEach((r: any) => {
+      const d = r.date ? new Date(r.date).toISOString().split('T')[0] : 'unknown';
+      if (!groups[d]) groups[d] = [];
+      groups[d].push(r);
+    });
+    return Object.entries(groups).sort(([a], [b]) => b.localeCompare(a));
+  }, [filteredRecords]);
+
+  const _displayedRecords = tab === 0 ? todayRecords : filteredRecords;
 
   const handleOpenEdit = useCallback((record: any) => {
     const clockInVal = record.clockIn ? new Date(record.clockIn).toTimeString().slice(0, 5) : '';
@@ -113,6 +198,70 @@ export default function ClockPage() {
       { onSuccess: () => handleCloseEdit() }
     );
   }, [editRecord, editClockIn, editClockOut, editDate, editNote, updateClockRecord, handleCloseEdit]);
+
+  // Table row renderer (shared between both tabs)
+  const renderRow = (record: any, index: number, showDate: boolean) => {
+    const eff = record.efficiency;
+    const effColor = getEffColor(eff);
+    const initials = (record.worker?.name || '')
+      .split(' ')
+      .map((n: string) => n[0])
+      .join('');
+
+    return (
+      <TableRow key={record._id} hover>
+        <TableCell sx={{ pl: 3 }}>{index + 1}</TableCell>
+        <TableCell>
+          <Stack
+            direction="row"
+            alignItems="center"
+            spacing={1.5}
+            onClick={() => {
+              const matched = (workers as any[]).find((w) => w.name === record.worker?.name);
+              if (matched) navigate(`/dashboard/clock/${matched._id}`);
+            }}
+            sx={{ cursor: 'pointer', '&:hover': { opacity: 0.7 } }}
+          >
+            <Avatar
+              sx={{
+                width: 32,
+                height: 32,
+                fontSize: 13,
+                fontWeight: 700,
+                bgcolor: alpha('#2065D1', 0.08),
+                color: '#2065D1',
+              }}
+            >
+              {initials}
+            </Avatar>
+            <Typography variant="subtitle2" sx={{ '&:hover': { textDecoration: 'underline' } }}>
+              {record.worker?.name || '—'}
+            </Typography>
+          </Stack>
+        </TableCell>
+        {showDate && (
+          <TableCell>{record.date ? formatDateShort(record.date) : '—'}</TableCell>
+        )}
+        <TableCell>{formatTime(record.clockIn) || '—'}</TableCell>
+        <TableCell>{record.clockOut ? formatTime(record.clockOut) : '—'}</TableCell>
+        <TableCell>
+          <Typography variant="body2" sx={{ fontWeight: 600, color: effColor }}>
+            {eff != null ? `${eff}%` : '—'}
+          </Typography>
+        </TableCell>
+        <TableCell>{record.shiftPeriod ?? '—'}</TableCell>
+        <TableCell>{record.type ?? '—'}</TableCell>
+        <TableCell>{record.department ?? '—'}</TableCell>
+        <TableCell align="center">
+          <Tooltip title="Edit Record">
+            <IconButton size="small" onClick={() => handleOpenEdit(record)}>
+              <Iconify icon="solar:pen-bold" width={18} />
+            </IconButton>
+          </Tooltip>
+        </TableCell>
+      </TableRow>
+    );
+  };
 
   return (
     <Box sx={{ p: 3 }}>
@@ -164,122 +313,250 @@ export default function ClockPage() {
           <Tab label="All Records" />
         </Tabs>
 
-        <Box sx={{ p: 2.5 }}>
-          <Stack direction="row" alignItems="center" spacing={2} sx={{ mb: 2 }}>
-            <TextField
-              size="small"
-              type="date"
-              defaultValue={today}
-              label="Date"
-              InputLabelProps={{ shrink: true }}
-              sx={{ width: 180 }}
-            />
-            <TextField size="small" placeholder="Search worker..." sx={{ width: 240 }} />
-          </Stack>
-        </Box>
-
-        {isLoading ? (
-          <Box sx={{ display: 'flex', justifyContent: 'center', py: 6 }}>
-            <CircularProgress />
-          </Box>
-        ) : (
-          <TableContainer>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell sx={{ pl: 3, width: 48 }}>#</TableCell>
-                  <TableCell>Name</TableCell>
-                  {tab === 1 && <TableCell>Date</TableCell>}
-                  <TableCell>Clock in</TableCell>
-                  <TableCell>Clock out</TableCell>
-                  <TableCell>Time efficiency</TableCell>
-                  <TableCell>Shift Period</TableCell>
-                  <TableCell>Type</TableCell>
-                  <TableCell>Department</TableCell>
-                  <TableCell align="center">Edit</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {displayedRecords.map((record: any, index: number) => {
-                  const eff = record.efficiency;
-                  const effColor = getEffColor(eff);
-                  const initials = (record.worker?.name || '')
-                    .split(' ')
-                    .map((n: string) => n[0])
-                    .join('');
-
-                  return (
-                    <TableRow key={record._id} hover>
-                      <TableCell sx={{ pl: 3 }}>{index + 1}</TableCell>
-                      <TableCell>
-                        <Stack
-                          direction="row"
-                          alignItems="center"
-                          spacing={1.5}
-                          onClick={() => {
-                            const matched = (workers as any[]).find((w) => w.name === record.worker?.name);
-                            if (matched) navigate(`/dashboard/clock/${matched._id}`);
-                          }}
-                          sx={{ cursor: 'pointer', '&:hover': { opacity: 0.7 } }}
-                        >
-                          <Avatar
-                            sx={{
-                              width: 32,
-                              height: 32,
-                              fontSize: 13,
-                              fontWeight: 700,
-                              bgcolor: alpha('#2065D1', 0.08),
-                              color: '#2065D1',
-                            }}
-                          >
-                            {initials}
-                          </Avatar>
-                          <Typography variant="subtitle2" sx={{ '&:hover': { textDecoration: 'underline' } }}>
-                            {record.worker?.name || '—'}
-                          </Typography>
-                        </Stack>
-                      </TableCell>
-                      {tab === 1 && (
-                        <TableCell>
-                          {record.date
-                            ? new Date(record.date).toLocaleDateString('en', {
-                                month: 'short',
-                                day: 'numeric',
-                                year: 'numeric',
-                              })
-                            : '—'}
-                        </TableCell>
-                      )}
-                      <TableCell>
-                        {formatTime(record.clockIn) || '—'}
-                      </TableCell>
-                      <TableCell>
-                        {record.clockOut ? formatTime(record.clockOut) : '—'}
-                      </TableCell>
-                      <TableCell>
-                        <Typography
-                          variant="body2"
-                          sx={{ fontWeight: 600, color: effColor }}
-                        >
-                          {eff != null ? `${eff}%` : '—'}
-                        </Typography>
-                      </TableCell>
-                      <TableCell>{record.shiftPeriod ?? '—'}</TableCell>
-                      <TableCell>{record.type ?? '—'}</TableCell>
-                      <TableCell>{record.department ?? '—'}</TableCell>
-                      <TableCell align="center">
-                        <Tooltip title="Edit Record">
-                          <IconButton size="small" onClick={() => handleOpenEdit(record)}>
-                            <Iconify icon="solar:pen-bold" width={18} />
-                          </IconButton>
-                        </Tooltip>
+        {/* ============================================================ */}
+        {/* TAB 0: TODAY - no date filter, just the table */}
+        {/* ============================================================ */}
+        {tab === 0 && (
+          isLoading ? (
+            <Box sx={{ display: 'flex', justifyContent: 'center', py: 6 }}><CircularProgress /></Box>
+          ) : (
+            <TableContainer>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell sx={{ pl: 3, width: 48 }}>#</TableCell>
+                    <TableCell>Name</TableCell>
+                    <TableCell>Clock in</TableCell>
+                    <TableCell>Clock out</TableCell>
+                    <TableCell>Time efficiency</TableCell>
+                    <TableCell>Shift Period</TableCell>
+                    <TableCell>Type</TableCell>
+                    <TableCell>Department</TableCell>
+                    <TableCell align="center">Edit</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {todayRecords.map((record: any, index: number) => renderRow(record, index, false))}
+                  {todayRecords.length === 0 && (
+                    <TableRow>
+                      <TableCell colSpan={9} align="center" sx={{ py: 4 }}>
+                        <Typography variant="body2" sx={{ color: 'text.secondary' }}>No clock records for today</Typography>
                       </TableCell>
                     </TableRow>
+                  )}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          )
+        )}
+
+        {/* ============================================================ */}
+        {/* TAB 1: ALL RECORDS - period selection + grouped by date */}
+        {/* ============================================================ */}
+        {tab === 1 && (
+          <Box>
+            {/* Filters bar */}
+            <Box sx={{ p: 2.5, pb: 0 }}>
+              <Stack direction="row" spacing={2} flexWrap="wrap" alignItems="center" sx={{ mb: 2 }}>
+                <TextField
+                  select
+                  size="small"
+                  label="Period"
+                  value={periodPreset}
+                  onChange={(e) => setPeriodPreset(e.target.value as PeriodPreset)}
+                  sx={{ minWidth: 160 }}
+                >
+                  <MenuItem value="today">Today</MenuItem>
+                  <MenuItem value="yesterday">Yesterday</MenuItem>
+                  <MenuItem value="last3">Last 3 Days</MenuItem>
+                  <MenuItem value="last7">Last 7 Days</MenuItem>
+                  <MenuItem value="custom">Custom Range</MenuItem>
+                </TextField>
+
+                {periodPreset === 'custom' && (
+                  <>
+                    <TextField
+                      size="small"
+                      type="date"
+                      label="From"
+                      value={customFrom}
+                      onChange={(e) => setCustomFrom(e.target.value)}
+                      InputLabelProps={{ shrink: true }}
+                      sx={{ width: 160 }}
+                    />
+                    <TextField
+                      size="small"
+                      type="date"
+                      label="To"
+                      value={customTo}
+                      onChange={(e) => setCustomTo(e.target.value)}
+                      InputLabelProps={{ shrink: true }}
+                      sx={{ width: 160 }}
+                    />
+                  </>
+                )}
+
+                <TextField
+                  size="small"
+                  placeholder="Search worker..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  sx={{ minWidth: 220 }}
+                />
+              </Stack>
+
+              {/* Period summary bar */}
+              <Stack direction="row" spacing={3} sx={{ mb: 2, px: 1 }}>
+                {[
+                  { label: 'Days', value: periodStats.daysCount, color: '#2065D1' },
+                  { label: 'Records', value: periodStats.totalRecords, color: '#7635DC' },
+                  { label: 'Completed', value: periodStats.completedShifts, color: '#FFAB00' },
+                  { label: 'Total Hours', value: periodStats.totalHours, color: '#22C55E' },
+                  { label: 'Avg Efficiency', value: `${periodStats.avgEfficiency}%`, color: getEffColor(periodStats.avgEfficiency) },
+                ].map((stat) => (
+                  <Stack key={stat.label} direction="row" spacing={0.75} alignItems="center">
+                    <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: stat.color }} />
+                    <Typography variant="caption" sx={{ color: 'text.secondary' }}>{stat.label}:</Typography>
+                    <Typography variant="subtitle2">{stat.value}</Typography>
+                  </Stack>
+                ))}
+              </Stack>
+            </Box>
+
+            {isLoading && (
+              <Box sx={{ display: 'flex', justifyContent: 'center', py: 6 }}><CircularProgress /></Box>
+            )}
+            {!isLoading && groupedByDate.length === 0 && (
+                <Box sx={{ py: 6, textAlign: 'center' }}>
+                  <Typography variant="body2" sx={{ color: 'text.secondary' }}>No records found for the selected period</Typography>
+                </Box>
+            )}
+            {!isLoading && groupedByDate.length > 0 && (
+                groupedByDate.map(([date, dateRecords]) => {
+                  const dayCompleted = dateRecords.filter((r: any) => r.clockOut);
+                  const dayHours = dayCompleted.reduce((s: number, r: any) => s + (r.totalHours || 0), 0);
+                  const dayWithEff = dayCompleted.filter((r: any) => r.efficiency != null);
+                  const dayAvgEff = dayWithEff.length > 0
+                    ? Math.round(dayWithEff.reduce((s: number, r: any) => s + r.efficiency, 0) / dayWithEff.length)
+                    : 0;
+                  const isToday = date === today;
+
+                  return (
+                    <Box key={date}>
+                      {/* Date header */}
+                      <Stack
+                        direction="row"
+                        alignItems="center"
+                        justifyContent="space-between"
+                        sx={{ px: 2.5, py: 1.5, bgcolor: alpha('#2065D1', 0.04), borderTop: '1px solid', borderColor: 'divider' }}
+                      >
+                        <Stack direction="row" alignItems="center" spacing={1.5}>
+                          <Iconify icon="solar:calendar-bold-duotone" width={20} sx={{ color: '#2065D1' }} />
+                          <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
+                            {isToday ? 'Today' : formatDateShort(date)}
+                          </Typography>
+                          <Chip label={`${dateRecords.length} records`} size="small" variant="soft" />
+                        </Stack>
+                        <Stack direction="row" spacing={2.5} alignItems="center">
+                          <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                            Hours: <strong>{dayHours.toFixed(1)}</strong>
+                          </Typography>
+                          <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                            Avg Efficiency:{' '}
+                            <Typography component="span" variant="caption" sx={{ fontWeight: 700, color: getEffColor(dayAvgEff) }}>
+                              {dayAvgEff}%
+                            </Typography>
+                          </Typography>
+                        </Stack>
+                      </Stack>
+
+                      <TableContainer>
+                        <Table>
+                          <TableHead>
+                            <TableRow>
+                              <TableCell sx={{ pl: 3, width: 48 }}>#</TableCell>
+                              <TableCell>Name</TableCell>
+                              <TableCell>Clock in</TableCell>
+                              <TableCell>Clock out</TableCell>
+                              <TableCell>Total Hours</TableCell>
+                              <TableCell>Time efficiency</TableCell>
+                              <TableCell>Shift Period</TableCell>
+                              <TableCell>Type</TableCell>
+                              <TableCell>Department</TableCell>
+                              <TableCell align="center">Edit</TableCell>
+                            </TableRow>
+                          </TableHead>
+                          <TableBody>
+                            {dateRecords.map((record: any, index: number) => {
+                              const eff = record.efficiency;
+                              const effColor = getEffColor(eff);
+                              const initials = (record.worker?.name || '')
+                                .split(' ')
+                                .map((n: string) => n[0])
+                                .join('');
+
+                              return (
+                                <TableRow key={record._id} hover>
+                                  <TableCell sx={{ pl: 3 }}>{index + 1}</TableCell>
+                                  <TableCell>
+                                    <Stack
+                                      direction="row"
+                                      alignItems="center"
+                                      spacing={1.5}
+                                      onClick={() => {
+                                        const matched = (workers as any[]).find((w) => w.name === record.worker?.name);
+                                        if (matched) navigate(`/dashboard/clock/${matched._id}`);
+                                      }}
+                                      sx={{ cursor: 'pointer', '&:hover': { opacity: 0.7 } }}
+                                    >
+                                      <Avatar
+                                        sx={{
+                                          width: 32,
+                                          height: 32,
+                                          fontSize: 13,
+                                          fontWeight: 700,
+                                          bgcolor: alpha('#2065D1', 0.08),
+                                          color: '#2065D1',
+                                        }}
+                                      >
+                                        {initials}
+                                      </Avatar>
+                                      <Typography variant="subtitle2" sx={{ '&:hover': { textDecoration: 'underline' } }}>
+                                        {record.worker?.name || '—'}
+                                      </Typography>
+                                    </Stack>
+                                  </TableCell>
+                                  <TableCell>{formatTime(record.clockIn) || '—'}</TableCell>
+                                  <TableCell>{record.clockOut ? formatTime(record.clockOut) : '—'}</TableCell>
+                                  <TableCell>
+                                    {record.totalHours != null ? `${record.totalHours} hrs` : '—'}
+                                  </TableCell>
+                                  <TableCell>
+                                    <Typography variant="body2" sx={{ fontWeight: 600, color: effColor }}>
+                                      {eff != null ? `${eff}%` : '—'}
+                                    </Typography>
+                                  </TableCell>
+                                  <TableCell>{record.shiftPeriod ?? '—'}</TableCell>
+                                  <TableCell>{record.type ?? '—'}</TableCell>
+                                  <TableCell>{record.department ?? '—'}</TableCell>
+                                  <TableCell align="center">
+                                    <Tooltip title="Edit Record">
+                                      <IconButton size="small" onClick={() => handleOpenEdit(record)}>
+                                        <Iconify icon="solar:pen-bold" width={18} />
+                                      </IconButton>
+                                    </Tooltip>
+                                  </TableCell>
+                                </TableRow>
+                              );
+                            })}
+                          </TableBody>
+                        </Table>
+                      </TableContainer>
+                    </Box>
                   );
-                })}
-              </TableBody>
-            </Table>
-          </TableContainer>
+                })
+            )}
+          </Box>
         )}
       </Card>
 

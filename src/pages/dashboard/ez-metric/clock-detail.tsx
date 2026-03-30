@@ -3,47 +3,27 @@ import { useParams, useNavigate } from 'react-router-dom';
 
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
+import Chip from '@mui/material/Chip';
 import Grid from '@mui/material/Grid';
 import Stack from '@mui/material/Stack';
-import Table from '@mui/material/Table';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import Avatar from '@mui/material/Avatar';
-import Tooltip from '@mui/material/Tooltip';
-import TableRow from '@mui/material/TableRow';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableHead from '@mui/material/TableHead';
+import Divider from '@mui/material/Divider';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import DialogTitle from '@mui/material/DialogTitle';
-import { alpha, useTheme } from '@mui/material/styles';
+import { alpha } from '@mui/material/styles';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
-import TableContainer from '@mui/material/TableContainer';
-import TablePagination from '@mui/material/TablePagination';
-import Chip from '@mui/material/Chip';
 import CircularProgress from '@mui/material/CircularProgress';
 
 import { useWorkers, useClockRecords, useUpdateClockRecord } from 'src/modules/ez-metric/api';
 
-import Chart from 'src/components/chart';
 import Iconify from 'src/components/iconify';
 
-function getEffColor(eff: number | null): string {
-  if (eff == null) return 'text.disabled';
-  if (eff >= 100) return '#22C55E';
-  if (eff >= 90) return '#FFAB00';
-  return '#FF5630';
-}
-
-function getEffChipColor(eff: number | null): 'success' | 'info' | 'warning' | 'default' {
-  if (eff === null) return 'default';
-  if (eff >= 100) return 'success';
-  if (eff >= 80) return 'info';
-  return 'warning';
-}
+// ----------------------------------------------------------------------
 
 const today = new Date().toISOString().split('T')[0];
 
@@ -55,23 +35,22 @@ function formatTime(value: string | null | undefined): string {
 function formatDate(value: string | null | undefined): string {
   if (!value) return '—';
   const d = new Date(value);
-  const isToday = d.toISOString().split('T')[0] === today;
-  if (isToday) return 'Today';
-  return d.toLocaleDateString('en', { day: '2-digit', month: '2-digit', year: 'numeric' });
+  if (d.toISOString().split('T')[0] === today) return 'Today';
+  return d.toLocaleDateString('en', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
 }
 
-const ROWS_PER_PAGE_OPTIONS = [5, 10, 25];
+function formatDateTime(value: string | null | undefined): string {
+  if (!value) return '—';
+  return `${formatDate(value)}, ${formatTime(value)}`;
+}
+
+// ----------------------------------------------------------------------
 
 export default function ClockDetailPage() {
-  const { workerId } = useParams();
+  const { workerId, recordId } = useParams();
   const navigate = useNavigate();
-  const theme = useTheme();
-
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
 
   const [editDialog, setEditDialog] = useState(false);
-  const [editRecord, setEditRecord] = useState<any>(null);
   const [editClockIn, setEditClockIn] = useState('');
   const [editClockOut, setEditClockOut] = useState('');
   const [editDate, setEditDate] = useState('');
@@ -87,53 +66,26 @@ export default function ClockDetailPage() {
     [workers, workerId]
   );
 
-  const workerRecords = useMemo(
-    () =>
-      (records as any[])
-        .filter((r) => r.worker?.name === worker?.name)
-        .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()),
-    [records, worker]
+  const record = useMemo(
+    () => (records as any[]).find((r) => r._id === recordId),
+    [records, recordId]
   );
 
-  // Paginated rows
-  const paginatedRecords = useMemo(
-    () => workerRecords.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage),
-    [workerRecords, page, rowsPerPage]
-  );
-
-  // Chart data synced to current page rows (reversed so oldest is left)
-  const chartData = useMemo(() => {
-    const rows = [...paginatedRecords].reverse();
-    return {
-      categories: rows.map((r) => formatDate(r.date)),
-      series: rows.map((r) => r.efficiency ?? 0),
-    };
-  }, [paginatedRecords]);
-
-  const handleChangePage = (_: unknown, newPage: number) => setPage(newPage);
-  const handleChangeRowsPerPage = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setRowsPerPage(parseInt(e.target.value, 10));
-    setPage(0);
-  };
-
-  const handleOpenEdit = useCallback((record: any) => {
+  const handleOpenEdit = useCallback(() => {
+    if (!record) return;
     const clockInVal = record.clockIn ? new Date(record.clockIn).toTimeString().slice(0, 5) : '';
     const clockOutVal = record.clockOut ? new Date(record.clockOut).toTimeString().slice(0, 5) : '';
     const dateVal = record.date ? new Date(record.date).toISOString().split('T')[0] : today;
 
-    setEditRecord(record);
     setEditClockIn(clockInVal);
     setEditClockOut(clockOutVal);
     setEditDate(dateVal);
     setEditNote('');
     setOrigValues({ clockIn: clockInVal, clockOut: clockOutVal, date: dateVal });
     setEditDialog(true);
-  }, []);
+  }, [record]);
 
-  const handleCloseEdit = useCallback(() => {
-    setEditDialog(false);
-    setEditRecord(null);
-  }, []);
+  const handleCloseEdit = useCallback(() => setEditDialog(false), []);
 
   const hasChanges =
     editClockIn !== origValues.clockIn ||
@@ -143,23 +95,22 @@ export default function ClockDetailPage() {
   const canSave = !hasChanges || editNote.trim().length > 0;
 
   const handleSaveEdit = useCallback(() => {
-    if (!editRecord) return;
-
+    if (!record) return;
     const body: any = {
       note: editNote,
       status: 'manual',
       date: `${editDate}T00:00:00Z`,
     };
-
     if (editClockIn) body.clockIn = `${editDate}T${editClockIn}:00Z`;
     if (editClockOut) body.clockOut = `${editDate}T${editClockOut}:00Z`;
 
     updateClockRecord.mutate(
-      { id: editRecord._id, body },
+      { id: record._id, body },
       { onSuccess: () => handleCloseEdit() }
     );
-  }, [editRecord, editClockIn, editClockOut, editDate, editNote, updateClockRecord, handleCloseEdit]);
+  }, [record, editClockIn, editClockOut, editDate, editNote, updateClockRecord, handleCloseEdit]);
 
+  // Loading
   if (loadingWorkers || loadingRecords) {
     return (
       <Box sx={{ p: 3, display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 400 }}>
@@ -168,194 +119,195 @@ export default function ClockDetailPage() {
     );
   }
 
-  if (!worker) {
+  // Not found
+  if (!worker || !record) {
     return (
       <Box sx={{ p: 3 }}>
+        <IconButton onClick={() => navigate('/dashboard/clock')} sx={{ mb: 2 }}>
+          <Iconify icon="solar:arrow-left-bold" />
+        </IconButton>
         <Typography variant="h6" sx={{ color: 'text.secondary' }}>
-          Worker not found.
+          Record not found.
         </Typography>
       </Box>
     );
   }
 
-  const initials = (worker.name || '')
-    .split(' ')
-    .map((n: string) => n[0])
-    .join('');
+  const initials = (worker.name || '').split(' ').map((n: string) => n[0]).join('');
+  const isCorrected = record.status === 'manual';
+  const isActive = !record.clockOut;
 
-  const withEfficiency = workerRecords.filter((r: any) => r.efficiency != null);
-  const avgEfficiency = withEfficiency.length
-    ? Math.round(withEfficiency.reduce((sum: number, r: any) => sum + r.efficiency, 0) / withEfficiency.length)
-    : 0;
+  // Calculate duration
+  let durationText = '—';
+  if (record.clockIn && record.clockOut) {
+    const diffMs = new Date(record.clockOut).getTime() - new Date(record.clockIn).getTime();
+    const hrs = Math.floor(diffMs / 3600000);
+    const mins = Math.round((diffMs % 3600000) / 60000);
+    durationText = `${hrs}h ${mins}m`;
+  }
 
   return (
-    <Box sx={{ p: 3 }}>
-      {/* Back button */}
-      <IconButton onClick={() => navigate('/dashboard/clock')} sx={{ mb: 2 }}>
-        <Iconify icon="solar:arrow-left-bold" />
-      </IconButton>
+    <Box sx={{ p: 3, maxWidth: 720, mx: 'auto' }}>
+      {/* Header */}
+      <Stack direction="row" alignItems="center" spacing={2} sx={{ mb: 3 }}>
+        <IconButton onClick={() => navigate('/dashboard/clock')}>
+          <Iconify icon="solar:arrow-left-bold" />
+        </IconButton>
+        <Typography variant="h5" sx={{ flex: 1 }}>Clock Detail</Typography>
+        <Chip
+          label={formatDate(record.date)}
+          size="small"
+          variant="soft"
+          color="default"
+          icon={<Iconify icon="solar:calendar-bold" width={16} />}
+        />
+      </Stack>
 
-      {/* Employee Info — full width card at top */}
-      <Card sx={{ p: 2.5, borderRadius: 2, mb: 3 }}>
-        <Stack direction="row" alignItems="center" spacing={2} flexWrap="wrap">
+      {/* Worker card */}
+      <Card sx={{ p: 2.5, borderRadius: 2, mb: 2 }}>
+        <Stack direction="row" alignItems="center" spacing={2}>
           <Avatar
             sx={{
-              width: 52,
-              height: 52,
+              width: 48,
+              height: 48,
               bgcolor: alpha('#2065D1', 0.1),
               color: '#2065D1',
               fontWeight: 700,
-              fontSize: 18,
+              fontSize: 17,
             }}
           >
             {initials}
           </Avatar>
-
-          <Box sx={{ flex: 1, minWidth: 160 }}>
-            <Typography variant="h5">{worker.name}</Typography>
+          <Box sx={{ flex: 1 }}>
+            <Typography variant="subtitle1">{worker.name}</Typography>
             <Typography variant="body2" sx={{ color: 'text.secondary' }}>
               {worker.position} &middot; {worker.department ?? 'N/A'}
             </Typography>
           </Box>
-
-          <Stack direction="row" spacing={3} flexWrap="wrap" sx={{ ml: 'auto' }}>
-            <Box sx={{ textAlign: 'center' }}>
-              <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-                Shift Period
-              </Typography>
-              <Typography variant="subtitle2">{worker.shiftPeriod ?? '—'}</Typography>
-            </Box>
-            <Box sx={{ textAlign: 'center' }}>
-              <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-                Type
-              </Typography>
-              <Typography variant="subtitle2">{worker.type ?? '—'}</Typography>
-            </Box>
-            <Box sx={{ textAlign: 'center' }}>
-              <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block', mb: 0.5 }}>
-                Avg Efficiency
-              </Typography>
-              <Chip label={`${avgEfficiency}%`} size="small" variant="soft" color={getEffChipColor(avgEfficiency)} />
-            </Box>
-            <Box sx={{ textAlign: 'center' }}>
-              <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-                Total Records
-              </Typography>
-              <Typography variant="subtitle2">{workerRecords.length}</Typography>
-            </Box>
-          </Stack>
+          {isActive ? (
+            <Chip label="Currently Active" color="info" variant="soft" size="small" icon={<Iconify icon="svg-spinners:pulse-3" width={14} />} />
+          ) : (
+            <Chip label="Completed" color="success" variant="soft" size="small" />
+          )}
         </Stack>
       </Card>
 
-      {/* Clock Records Table — full width */}
-      <Card sx={{ borderRadius: 2, mb: 3 }}>
-        <Typography variant="h6" sx={{ p: 2.5, pb: 0 }}>
-          Clock Records
-        </Typography>
-        <TableContainer>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>Date</TableCell>
-                <TableCell>Clock In</TableCell>
-                <TableCell>Clock Out</TableCell>
-                <TableCell align="center">Efficiency</TableCell>
-                <TableCell align="right">Worked Hours</TableCell>
-                <TableCell align="center">Type</TableCell>
-                <TableCell align="center">Edit</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {paginatedRecords.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={7} align="center" sx={{ py: 4, color: 'text.secondary' }}>
-                    No records found
-                  </TableCell>
-                </TableRow>
-              ) : (
-                paginatedRecords.map((record: any) => {
-                  const eff = record.efficiency;
+      {/* Clock In / Out visual */}
+      <Card sx={{ borderRadius: 2, mb: 2, overflow: 'visible' }}>
+        <Stack direction="row" divider={<Divider orientation="vertical" flexItem />} sx={{ minHeight: 130 }}>
+          {/* Clock In */}
+          <Box sx={{ flex: 1, p: 3, textAlign: 'center' }}>
+            <Stack alignItems="center" spacing={1}>
+              <Box sx={{ p: 1.5, borderRadius: '50%', bgcolor: alpha('#22C55E', 0.1), display: 'inline-flex' }}>
+                <Iconify icon="solar:login-3-bold-duotone" width={28} sx={{ color: '#22C55E' }} />
+              </Box>
+              <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                Clock In
+              </Typography>
+              <Typography variant="h4" sx={{ fontWeight: 700 }}>
+                {formatTime(record.clockIn)}
+              </Typography>
+            </Stack>
+          </Box>
 
-                  return (
-                    <TableRow key={record._id} hover>
-                      <TableCell>{formatDate(record.date)}</TableCell>
-                      <TableCell>{formatTime(record.clockIn)}</TableCell>
-                      <TableCell>{formatTime(record.clockOut)}</TableCell>
-                      <TableCell align="center">
-                        {eff != null ? (
-                          <Chip label={`${eff}%`} size="small" variant="soft" color={getEffChipColor(eff)} />
-                        ) : '—'}
-                      </TableCell>
-                      <TableCell align="right">
-                        {record.totalHours != null ? `${record.totalHours} hrs` : '—'}
-                      </TableCell>
-                      <TableCell align="center">
-                        {record.status === 'manual' ? (
-                          <Tooltip title={record.note || 'Corrected'} arrow>
-                            <Chip label="Corrected" size="small" variant="soft" color="warning" />
-                          </Tooltip>
-                        ) : (
-                          <Chip label="Normal" size="small" variant="soft" color="success" />
-                        )}
-                      </TableCell>
-                      <TableCell align="center">
-                        <Tooltip title="Edit Record">
-                          <IconButton size="small" onClick={() => handleOpenEdit(record)}>
-                            <Iconify icon="solar:pen-bold" width={18} />
-                          </IconButton>
-                        </Tooltip>
-                      </TableCell>
-                    </TableRow>
-                  );
-                })
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
-        <TablePagination
-          component="div"
-          count={workerRecords.length}
-          page={page}
-          onPageChange={handleChangePage}
-          rowsPerPage={rowsPerPage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-          rowsPerPageOptions={ROWS_PER_PAGE_OPTIONS}
-        />
+          {/* Duration */}
+          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', px: 3, minWidth: 120 }}>
+            <Iconify icon="solar:arrow-right-bold" width={20} sx={{ color: 'text.disabled', mb: 0.5 }} />
+            <Typography variant="h6" sx={{ fontWeight: 700, color: 'text.primary' }}>
+              {isActive ? '—' : durationText}
+            </Typography>
+            <Typography variant="caption" sx={{ color: 'text.disabled' }}>
+              {record.totalHours != null ? `${record.totalHours} hrs logged` : 'In progress'}
+            </Typography>
+          </Box>
+
+          {/* Clock Out */}
+          <Box sx={{ flex: 1, p: 3, textAlign: 'center' }}>
+            <Stack alignItems="center" spacing={1}>
+              <Box sx={{ p: 1.5, borderRadius: '50%', bgcolor: alpha(isActive ? '#919EAB' : '#FF5630', 0.1), display: 'inline-flex' }}>
+                <Iconify icon="solar:logout-3-bold-duotone" width={28} sx={{ color: isActive ? '#919EAB' : '#FF5630' }} />
+              </Box>
+              <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                Clock Out
+              </Typography>
+              <Typography variant="h4" sx={{ fontWeight: 700, color: isActive ? 'text.disabled' : 'text.primary' }}>
+                {isActive ? '—' : formatTime(record.clockOut)}
+              </Typography>
+            </Stack>
+          </Box>
+        </Stack>
+
+        {/* Shift info strip */}
+        <Box sx={{ px: 3, py: 1.5, bgcolor: 'background.neutral', borderTop: '1px dashed', borderColor: 'divider' }}>
+          <Stack direction="row" justifyContent="space-between">
+            <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+              Shift: <strong>{record.shiftPeriod || '—'}</strong>
+            </Typography>
+            <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+              Department: <strong>{record.department || '—'}</strong>
+            </Typography>
+          </Stack>
+        </Box>
       </Card>
 
-      {/* Efficiency Chart — full width at bottom, synced to current table page */}
-      <Card sx={{ p: 2.5, borderRadius: 2 }}>
-        <Typography variant="subtitle1" sx={{ mb: 1 }}>
-          Efficiency
-        </Typography>
-        {chartData.series.length > 0 ? (
-          <Chart
-            type="bar"
-            series={[{ name: 'Efficiency', data: chartData.series }]}
-            options={{
-              chart: { toolbar: { show: false }, sparkline: { enabled: false } },
-              plotOptions: {
-                bar: { columnWidth: '35%', borderRadius: 6 },
-              },
-              xaxis: { categories: chartData.categories },
-              yaxis: { max: 150, labels: { formatter: (v: number) => `${v}%` } },
-              colors: [theme.palette.primary.main],
-              grid: { strokeDashArray: 3 },
-              tooltip: { y: { formatter: (v: number) => `${v}%` } },
-              dataLabels: {
-                enabled: true,
-                formatter: (v: number) => `${v}%`,
-                style: { fontSize: '12px', fontWeight: 700 },
-              },
-            }}
-            height={280}
-          />
-        ) : (
-          <Typography variant="body2" sx={{ color: 'text.secondary', py: 4, textAlign: 'center' }}>
-            No efficiency data
-          </Typography>
-        )}
-      </Card>
+      {/* Correction banner */}
+      {isCorrected && (
+        <Card sx={{ borderRadius: 2, mb: 2, border: '1px solid', borderColor: alpha('#FFAB00', 0.3), bgcolor: alpha('#FFAB00', 0.04) }}>
+          <Box sx={{ p: 2.5 }}>
+            <Stack direction="row" alignItems="flex-start" spacing={1.5}>
+              <Box sx={{ p: 1, borderRadius: '50%', bgcolor: alpha('#FFAB00', 0.12), display: 'inline-flex', flexShrink: 0, mt: 0.2 }}>
+                <Iconify icon="solar:pen-new-round-bold-duotone" width={20} sx={{ color: '#FFAB00' }} />
+              </Box>
+              <Box sx={{ flex: 1 }}>
+                <Typography variant="subtitle2" sx={{ color: 'warning.dark', mb: 0.5 }}>
+                  This record was manually corrected
+                </Typography>
+
+                <Stack spacing={1}>
+                  {record.correctedBy && (
+                    <Stack direction="row" alignItems="center" spacing={1}>
+                      <Iconify icon="solar:user-bold" width={16} sx={{ color: 'text.secondary' }} />
+                      <Typography variant="body2">
+                        <strong>Corrected by:</strong> {record.correctedBy}
+                      </Typography>
+                    </Stack>
+                  )}
+
+                  {record.correctedAt && (
+                    <Stack direction="row" alignItems="center" spacing={1}>
+                      <Iconify icon="solar:clock-circle-bold" width={16} sx={{ color: 'text.secondary' }} />
+                      <Typography variant="body2">
+                        <strong>When:</strong> {formatDateTime(record.correctedAt)}
+                      </Typography>
+                    </Stack>
+                  )}
+
+                  {record.note && (
+                    <Stack direction="row" alignItems="flex-start" spacing={1}>
+                      <Iconify icon="solar:document-text-bold" width={16} sx={{ color: 'text.secondary', mt: 0.3 }} />
+                      <Typography variant="body2">
+                        <strong>Note:</strong> {record.note}
+                      </Typography>
+                    </Stack>
+                  )}
+                </Stack>
+              </Box>
+            </Stack>
+          </Box>
+        </Card>
+      )}
+
+      {/* Edit button */}
+      <Box sx={{ textAlign: 'right' }}>
+        <Button
+          variant="soft"
+          color="primary"
+          startIcon={<Iconify icon="solar:pen-bold" width={18} />}
+          onClick={handleOpenEdit}
+        >
+          Edit Record
+        </Button>
+      </Box>
 
       {/* Edit Dialog */}
       <Dialog open={editDialog} onClose={handleCloseEdit} maxWidth="sm" fullWidth>

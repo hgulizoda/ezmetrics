@@ -1,102 +1,93 @@
-import { delay, fakeRes, paginated, MOCK_ORDERS } from 'src/_mock/fake-backend';
+import axiosInstance from 'src/utils/axios';
+
+import { IApiResponse } from 'src/types/ApiRes';
 
 import { IFilterProps } from '../types/Filter';
-import { IChinaBorderUpdate } from '../types/ResiduePackage';
+import { IAllPackagesRes } from '../types/AllPackages';
+import { IUserProfileRes } from '../types/UserProfileOrders';
+import { IGetChinaWarehouseRes } from '../types/ChinaWarehouse';
 import { CreatePackageFormType } from '../libs/createPackageScheme';
+import { IChinaBorderUpdate, IResiduePackageRes } from '../types/ResiduePackage';
 
-// All packages
+// Create New Package
+
+// Gel all packages for All table
 export const allPackages = {
-  getAll: async (params: IFilterProps) => {
-    await delay();
-    const filtered = params.status
-      ? MOCK_ORDERS.filter((o) => o.status === params.status)
-      : MOCK_ORDERS;
-    const searched = params.search
-      ? filtered.filter((o) => o.order_id.toLowerCase().includes(params.search!.toLowerCase()))
-      : filtered;
-    return paginated(searched, params.page, params.limit) as any;
-  },
+  getAll: (params: IFilterProps) =>
+    axiosInstance.get<IApiResponse<IAllPackagesRes>>('orders', { params }).then((res) => res.data),
 };
 
-// New package
+// Get and Update New package Table
 export const newPackage = {
-  create: async (value: CreatePackageFormType) => {
-    await delay();
-    return fakeRes({ _id: `ord_new_${Date.now()}`, ...value, status: 'pending', order_id: `GM${Date.now()}` });
-  },
+  create: (value: CreatePackageFormType) =>
+    axiosInstance
+      .post('orders', {
+        ...value,
+        user: value.user.value,
+      })
+      .then((res) => res),
 };
 
-// China warehouse
+// Get and Update China Warehouse Table
 export const chinaWarehouse = {
-  getAll: async (params: IFilterProps) => {
-    await delay();
-    const items = MOCK_ORDERS.filter((o) => o.status === 'in_china_warehouse');
-    return paginated(items, params.page, params.limit) as any;
-  },
-  updateStatus: async (_id: string, _userId: string, _data: IChinaBorderUpdate) => {
-    await delay();
-    return fakeRes({ success: true });
-  },
+  getAll: (params: IFilterProps) =>
+    axiosInstance
+      .get<IApiResponse<IGetChinaWarehouseRes>>('orders?status=in_china_warehouse', { params })
+      .then((res) => res.data),
+  updateStatus: (id: string, userId: string, data: IChinaBorderUpdate) =>
+    axiosInstance.put(`orders/${id}/status/${userId}`, data).then((res) => res),
 };
 
-// User profile orders
+// Get User Profile Orders
 export const profileOrders = {
-  getAll: async (id: string, status: string | undefined, params?: IFilterProps) => {
-    await delay();
-    let items = MOCK_ORDERS.filter((o) => o.user._id === id);
-    if (status && status.trim()) items = items.filter((o) => o.status === status);
-    const page = params?.page || 1;
-    const limit = params?.limit || 10;
-    return {
-      ...paginated(items, page, limit),
-      totals: {
-        total_weight: items.reduce((sum, o) => sum + o.order_weight, 0),
-        total_capacity: items.reduce((sum, o) => sum + o.order_capacity, 0),
-        total_counts: items.reduce((sum, o) => sum + o.total_count, 0),
-        total_places: items.reduce((sum, o) => sum + o.total_places, 0),
-      },
-    } as any;
+  getAll: (id: string, status: string | undefined, params?: IFilterProps) => {
+    const queryParams: IFilterProps = { ...params };
+    if (status && status.trim()) {
+      queryParams.status = status;
+    }
+    return axiosInstance
+      .get<
+        IApiResponse<IUserProfileRes> & {
+          totals?: {
+            total_weight: number;
+            total_capacity: number;
+            total_counts: number;
+            total_places: number;
+          };
+        }
+      >(`orders/user/${id}/orders`, { params: queryParams })
+      .then((res) => res.data);
   },
 };
 
-// Single order
+// Get single order
+
 export const singleOrder = {
-  get: async (id: string) => {
-    await delay();
-    const order = MOCK_ORDERS.find((o) => o._id === id) || MOCK_ORDERS[0];
-    return { data: order } as any;
-  },
-  update: async (_value: CreatePackageFormType, _id: string) => {
-    await delay();
-    return fakeRes({ success: true });
-  },
-  goBack: async (_id: string | undefined, _userID: string | undefined, _status: string) => {
-    await delay();
-    return fakeRes({ success: true });
-  },
-  archive: async (_id: string) => {
-    await delay();
-    return fakeRes({ success: true });
-  },
+  get: (id: string) =>
+    axiosInstance.get<{ data: IUserProfileRes }>(`orders/${id}`).then((res) => res.data),
+  update: (value: CreatePackageFormType, id: string) =>
+    axiosInstance
+      .put(`orders/${id}`, {
+        ...value,
+      })
+      .then((res) => res),
+  goBack: (id: string | undefined, userID: string | undefined, status: string) =>
+    axiosInstance.put(`orders/${id}/status/${userID}`, { status }).then((res) => res),
+  archive: (id: string) => axiosInstance.put(`orders/${id}/archive`).then((res) => res),
 };
 
-// Collect package
+// Add package or packages to truck
 export const collectPackage = {
-  add: async (_id: string, _truckID: string) => {
-    await delay();
-    return fakeRes({ success: true });
-  },
+  add: (id: string, truckID: string) =>
+    axiosInstance.put(`orders/${id}/truck/${truckID}`).then((res) => res),
 };
 
-// Without truck packages
+//
 export const witoutTruckPackages = {
-  getAll: async (params: IFilterProps) => {
-    await delay();
-    const items = MOCK_ORDERS.filter((o) => !o.truck);
-    return paginated(items, params.page, params.limit) as any;
-  },
-  delivered: async (_id: string, _userID: string) => {
-    await delay();
-    return fakeRes({ success: true });
-  },
+  getAll: (params: IFilterProps) =>
+    axiosInstance
+      .get<IApiResponse<IResiduePackageRes>>('orders/without-truck', { params })
+      .then((res) => res.data),
+  delivered: (id: string, userID: string) =>
+    axiosInstance.put(`orders/${id}/status/${userID}`, { status: 'delivered' }).then((res) => res),
 };

@@ -26,6 +26,8 @@ import InputAdornment from '@mui/material/InputAdornment';
 import TableContainer from '@mui/material/TableContainer';
 import CircularProgress from '@mui/material/CircularProgress';
 
+import { useNavigate } from 'react-router-dom';
+
 import { useWorkers, useCreateWorker, useUpdateWorker } from 'src/modules/ez-metric/api';
 
 import Iconify from 'src/components/iconify';
@@ -77,6 +79,7 @@ const INITIAL_FORM = {
 
 export default function WorkersPage() {
   const theme = useTheme();
+  const navigate = useNavigate();
   const [search, setSearch] = useState('');
   const [openDialog, setOpenDialog] = useState(false);
   const [formData, setFormData] = useState(INITIAL_FORM);
@@ -349,7 +352,7 @@ export default function WorkersPage() {
                       </IconButton>
                     </Tooltip>
                     <Tooltip title="View Details">
-                      <IconButton size="small">
+                      <IconButton size="small" onClick={() => navigate(`/dashboard/workers/${worker._id}`)}>
                         <Iconify icon="solar:eye-bold-duotone" width={18} />
                       </IconButton>
                     </Tooltip>

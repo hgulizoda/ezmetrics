@@ -1,27 +1,16 @@
-import { delay, fakeRes, MOCK_STORES } from 'src/_mock/fake-backend';
+import axiosInstance from 'src/utils/axios';
 
+import { StoreRes } from '../types/Store';
 import { CreateStoreSchemaType } from '../libs/createStoreScheme';
 
 export const store = {
-  create: async (values: CreateStoreSchemaType) => {
-    await delay();
-    return fakeRes({ _id: `s_new_${Date.now()}`, ...values });
-  },
-  update: async (_values: CreateStoreSchemaType, _id: string) => {
-    await delay();
-    return fakeRes({ success: true });
-  },
-  get: async () => {
-    await delay();
-    return { data: MOCK_STORES } as any;
-  },
-  getId: async (id: string) => {
-    await delay();
-    const item = MOCK_STORES.find((s) => s._id === id) || MOCK_STORES[0];
-    return { data: item } as any;
-  },
-  delete: async (_id: string) => {
-    await delay();
-    return { data: { success: true } } as any;
-  },
+  create: (values: CreateStoreSchemaType) =>
+    axiosInstance.post('store-info', values).then((res) => res),
+  update: (values: CreateStoreSchemaType, id: string) =>
+    axiosInstance.put(`store-info/${id}`, values).then((res) => res),
+  get: () => axiosInstance.get<{ data: StoreRes[] }>('store-info/all').then((res) => res.data),
+  getId: (id: string) =>
+    axiosInstance.get<{ data: StoreRes }>(`store-info/${id}`).then((res) => res.data),
+  delete: (id: string) =>
+    axiosInstance.delete<{ data: StoreRes }>(`store-info/${id}`).then((res) => res.data),
 };

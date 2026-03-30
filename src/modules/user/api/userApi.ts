@@ -1,47 +1,26 @@
-import { delay, fakeRes, paginated, MOCK_USERS, MOCK_PROFILES } from 'src/_mock/fake-backend';
+import axiosInstance from 'src/utils/axios';
 
+import { IApiResponse } from 'src/types/ApiRes';
+
+import { IUserRes } from '../types/User';
+import { IProfileMeRes } from '../types/Profile';
 import { UserFormType } from '../libs/userScheme';
 import { IFilterProps } from '../../package/types/Filter';
 import { UserFormTypeRequired } from '../libs/useSchemeRequired';
 
 export const user = {
-  getAll: async (params?: IFilterProps) => {
-    await delay();
-    const searched = params?.search
-      ? MOCK_USERS.filter((u) =>
-          `${u.profile.first_name} ${u.profile.last_name}`.toLowerCase().includes(params.search!.toLowerCase())
-        )
-      : MOCK_USERS;
-    return paginated(searched, params?.page, params?.limit) as any;
-  },
-  updateStatus: async (_id: string, _status: string) => {
-    await delay();
-    return fakeRes({ success: true });
-  },
-  create: async (values: UserFormTypeRequired) => {
-    await delay();
-    return { data: { _id: `u_new_${Date.now()}`, ...values } };
-  },
-  delete: async (_id: string) => {
-    await delay();
-    return { data: { success: true } };
-  },
+  getAll: (params?: IFilterProps) =>
+    axiosInstance.get<IApiResponse<IUserRes>>('users', { params }).then((res) => res.data),
+  updateStatus: async (id: string, status: string) =>
+    axiosInstance.put(`users/${id}/${status}`).then((res) => res),
+  create: (values: UserFormTypeRequired) =>
+    axiosInstance.post(`users`, values).then((res) => res.data),
+  delete: (id: string) => axiosInstance.delete(`users/soft-delete/${id}`).then((res) => res.data),
 };
 
 export const profile = {
-  getProfile: async (id: string) => {
-    await delay();
-    const p = MOCK_PROFILES[id] || {
-      _id: 'p_unknown', avatar: '', birth_date: '2000-01-01', company_name: 'Unknown',
-      first_name: 'Unknown', last_name: 'User', is_deleted: false,
-      created_at: new Date().toISOString(), updated_at: new Date().toISOString(),
-      isBonusEnabled: false,
-      user: { _id: id, email: 'unknown@example.com', phone_number: '+998900000000', user_id: '0000000', status: 'active' },
-    };
-    return { data: p } as any;
-  },
-  updateProfile: async (_id: string, _data: UserFormType) => {
-    await delay();
-    return { data: { success: true } };
-  },
+  getProfile: (id: string) =>
+    axiosInstance.get<{ data: IProfileMeRes }>(`profile/${id}`).then((res) => res.data),
+  updateProfile: (id: string, data: UserFormType) =>
+    axiosInstance.put(`users/${id}`, data).then((res) => res.data),
 };

@@ -1,41 +1,31 @@
-import { delay, paginated, MOCK_ORDERS, MOCK_USER_STATS, MOCK_STATISTICS_USERS } from 'src/_mock/fake-backend';
+import axiosInstance from 'src/utils/axios';
+
+import { IApiResponse } from 'src/types/ApiRes';
+
+import { IStatRes, UsersResponse } from '../types/Stats';
+import { IUserProfileRes } from '../../package/types/UserProfileOrders';
 
 export const statistics = {
-  get: async (params: { page: number; limit: number; search: string }) => {
-    await delay();
-    let { users } = MOCK_STATISTICS_USERS;
-    if (params.search) {
-      users = users.filter((u) =>
-        `${u.profile.first_name} ${u.profile.last_name}`.toLowerCase().includes(params.search.toLowerCase())
-      );
-    }
-    return {
-      data: {
-        users: users.slice((params.page - 1) * params.limit, params.page * params.limit),
-        pagination: { ...MOCK_STATISTICS_USERS.pagination, current_page: params.page },
-        totals: MOCK_STATISTICS_USERS.totals,
-      },
-    } as any;
-  },
-  getUser: async (id: string) => {
-    await delay();
-    return { data: MOCK_USER_STATS(id) } as any;
-  },
-  getUserOrders: async (
+  get: (params: { page: number; limit: number; search: string }) =>
+    axiosInstance
+      .get<{ data: UsersResponse }>(`/statistics/users/all`, { params })
+      .then((res) => res.data),
+  getUser: (id: string) =>
+    axiosInstance.get<{ data: IStatRes }>(`/statistics/users/${id}`).then((res) => res.data),
+  getUserOrders: (
     userId: string,
     params: { page: number; limit: number; status?: string; search?: string }
-  ) => {
-    await delay();
-    let items = MOCK_ORDERS.filter((o) => o.user._id === userId);
-    if (params.status) items = items.filter((o) => o.status === params.status);
-    return {
-      ...paginated(items, params.page, params.limit),
-      totals: {
-        total_weight: items.reduce((s, o) => s + o.order_weight, 0),
-        total_capacity: items.reduce((s, o) => s + o.order_capacity, 0),
-        total_counts: items.reduce((s, o) => s + o.total_count, 0),
-        total_places: items.reduce((s, o) => s + o.total_places, 0),
-      },
-    } as any;
-  },
+  ) =>
+    axiosInstance
+      .get<
+        IApiResponse<IUserProfileRes> & {
+          totals?: {
+            total_weight: number;
+            total_capacity: number;
+            total_counts: number;
+            total_places: number;
+          };
+        }
+      >(`/orders/user/${userId}/orders`, { params })
+      .then((res) => res.data),
 };

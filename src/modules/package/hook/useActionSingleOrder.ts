@@ -1,4 +1,5 @@
 import { get } from 'lodash';
+import { AxiosResponse } from 'axios';
 import { enqueueSnackbar } from 'notistack';
 import { useQuery, useMutation } from '@tanstack/react-query';
 
@@ -53,7 +54,7 @@ interface IID {
 export const useBackPrevStepSingleOrder = (status: string, query: string, packages: string[]) => {
   const { t } = useTranslate('lang');
   const { isPending, mutateAsync } = useMutation({
-    mutationFn: (data?: IID): Promise<any> => {
+    mutationFn: (data?: IID): Promise<AxiosResponse | AxiosResponse[]> => {
       if (packages.length > 0) {
         return Promise.all(packages.map((p) => singleOrder.goBack(p, data?.userID, status)));
       }

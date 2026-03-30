@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 
-import { MOCK_ADMIN } from 'src/_mock/fake-backend';
+import axiosInstance from 'src/utils/axios';
 
 interface IAdmin {
   branch: string;
@@ -13,8 +13,8 @@ interface IAdmin {
 }
 
 const getAdminInfo = async () => {
-  await new Promise((r) => setTimeout(r, 300));
-  return { data: MOCK_ADMIN as IAdmin[] };
+  const response = await axiosInstance.get<{ data: IAdmin[] }>('admin/me');
+  return response.data;
 };
 
 export const useGetAdminInfo = () => {

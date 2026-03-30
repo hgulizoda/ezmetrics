@@ -1,3 +1,4 @@
+import { AxiosResponse } from 'axios';
 import { enqueueSnackbar } from 'notistack';
 import { useMutation } from '@tanstack/react-query';
 
@@ -17,7 +18,7 @@ export const useDelivered = (packages?: string[]) => {
     }: {
       id: string;
       userID: string;
-    }): Promise<any> => {
+    }): Promise<AxiosResponse | AxiosResponse[]> => {
       if (packages && packages?.length > 0) {
         return Promise.all(packages?.map((p) => witoutTruckPackages.delivered(p, userID)));
       }

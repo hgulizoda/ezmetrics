@@ -1,20 +1,11 @@
-import { delay, fakeRes, paginated, MOCK_USERS } from 'src/_mock/fake-backend';
-
+import axiosInstance from '../../../utils/axios';
+import { IUserRes } from '../../user/types/User';
+import { IApiResponse } from '../../../types/ApiRes';
 import { IFilterProps } from '../../package/types/Filter';
 
-const archivedUsers = MOCK_USERS.slice(0, 2).map((u) => ({ ...u, status: 'archived', is_deleted: true }));
-
 export const users = {
-  get: async (params: IFilterProps) => {
-    await delay();
-    return paginated(archivedUsers, params.page, params.limit) as any;
-  },
-  delete: async (_id: string) => {
-    await delay();
-    return fakeRes({ success: true });
-  },
-  unarchive: async (_id: string) => {
-    await delay();
-    return fakeRes({ success: true });
-  },
+  get: (params: IFilterProps) =>
+    axiosInstance.get<IApiResponse<IUserRes>>('users/archived', { params }).then((res) => res.data),
+  delete: (id: string) => axiosInstance.delete(`users/hard-delete/${id}`).then((res) => res),
+  unarchive: (id: string) => axiosInstance.delete(`users/unarchive/${id}`).then((res) => res),
 };

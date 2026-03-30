@@ -1,19 +1,36 @@
 import { useMemo, useEffect, useReducer, useCallback } from 'react';
 
+import axios, { endpoints } from 'src/utils/axios';
+
+import { setSession } from './utils';
 import { AuthContext } from './auth-context';
 import { AuthUserType, ActionMapType, AuthStateType } from '../../types';
 
+// ----------------------------------------------------------------------
+/**
+ * NOTE:
+ * We only build demo at basic level.
+ * Customer will need to do some extra handling yourself if you want to extend the logic and other features...
+ */
 // ----------------------------------------------------------------------
 
 enum Types {
   INITIAL = 'INITIAL',
   LOGIN = 'LOGIN',
+  REGISTER = 'REGISTER',
   LOGOUT = 'LOGOUT',
 }
 
 type Payload = {
-  [Types.INITIAL]: { user: AuthUserType };
-  [Types.LOGIN]: { user: AuthUserType };
+  [Types.INITIAL]: {
+    user: AuthUserType;
+  };
+  [Types.LOGIN]: {
+    user: AuthUserType;
+  };
+  [Types.REGISTER]: {
+    user: AuthUserType;
+  };
   [Types.LOGOUT]: undefined;
 };
 
@@ -21,35 +38,42 @@ type ActionsType = ActionMapType<Payload>[keyof ActionMapType<Payload>];
 
 // ----------------------------------------------------------------------
 
-const MOCK_ADMIN_USER = {
-  _id: 'admin1',
-  displayName: 'Admin',
-  email: 'admin@ezmertrics.uz',
-  role: 'admin',
-  first_name: 'Admin',
-  last_name: 'Adminov',
-  phone: '+998901000000',
-};
-
 const initialState: AuthStateType = {
-  user: MOCK_ADMIN_USER,
+  user: { displayName: 'Admin', role: 'admin' },
   loading: false,
 };
 
 const reducer = (state: AuthStateType, action: ActionsType) => {
   if (action.type === Types.INITIAL) {
-    return { loading: false, user: action.payload.user };
+    return {
+      loading: false,
+      user: action.payload.user,
+    };
   }
   if (action.type === Types.LOGIN) {
-    return { ...state, user: action.payload.user };
+    return {
+      ...state,
+      user: action.payload.user,
+    };
+  }
+  if (action.type === Types.REGISTER) {
+    return {
+      ...state,
+      user: action.payload.user,
+    };
   }
   if (action.type === Types.LOGOUT) {
-    return { ...state, user: null };
+    return {
+      ...state,
+      user: null,
+    };
   }
   return state;
 };
 
 // ----------------------------------------------------------------------
+
+const STORAGE_KEY = 'accessToken';
 
 type Props = {
   children: React.ReactNode;
@@ -59,9 +83,12 @@ export function AuthProvider({ children }: Props) {
   const [state, dispatch] = useReducer(reducer, initialState);
 
   const initialize = useCallback(async () => {
+    // Skip backend auth check - using mock user
     dispatch({
       type: Types.INITIAL,
-      payload: { user: MOCK_ADMIN_USER },
+      payload: {
+        user: { displayName: 'Admin', role: 'admin' },
+      },
     });
   }, []);
 
@@ -69,21 +96,36 @@ export function AuthProvider({ children }: Props) {
     initialize();
   }, [initialize]);
 
-  // LOGIN - fake, no backend call
-  const login = useCallback(
-    async (_email: string, _password: string) => {
-      await new Promise((r) => setTimeout(r, 500));
-      dispatch({
-        type: Types.LOGIN,
-        payload: { user: MOCK_ADMIN_USER },
-      });
-    },
-    []
-  );
+  // LOGIN
+  const login = useCallback(async (email: string, password: string) => {
+    const loginData = {
+      email,
+      password,
+    };
+
+    const res = await axios.post(endpoints.auth.login, loginData);
+    const { data } = res.data;
+    setSession(data.access_token);
+
+    dispatch({
+      type: Types.LOGIN,
+      payload: {
+        user: {
+          ...data,
+          data,
+        },
+      },
+    });
+
+    initialize();
+  }, [initialize]);
 
   // LOGOUT
   const logout = useCallback(async () => {
-    dispatch({ type: Types.LOGOUT });
+    setSession(null);
+    dispatch({
+      type: Types.LOGOUT,
+    });
   }, []);
 
   // ----------------------------------------------------------------------

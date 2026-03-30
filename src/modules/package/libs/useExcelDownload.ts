@@ -1,25 +1,40 @@
 import { useMutation } from '@tanstack/react-query';
 
+import axiosInstance from '../../../utils/axios';
+import { showErrorSnackbar } from '../../../utils/showErrorSnackbar';
+
 interface IDownloadFile {
   params?: Record<string, any>;
   name?: string;
 }
 
-const handleDownload = async ({ params: _params, name }: IDownloadFile) => {
-  // Mock download - generate a dummy CSV blob
-  const csvContent = 'id,order_id,status,weight\n1,GM10001,pending,5.2\n2,GM10002,delivered,12.8\n';
-  const blob = new Blob([csvContent], { type: 'text/csv' });
-  const downloadFileName = name || 'orders-export.csv';
+const handleDownload = async ({ params, name }: IDownloadFile) => {
+  const url = `${import.meta.env.VITE_BASE_URL}/api/orders/export`;
+  try {
+    const response = await axiosInstance.get(url, {
+      responseType: 'blob',
+      params,
+    });
 
-  const link = document.createElement('a');
-  link.href = URL.createObjectURL(blob);
-  link.download = downloadFileName;
+    if (response.status !== 200) {
+      throw new Error('Fayl yuklab olinmadi');
+    }
 
-  document.body.appendChild(link);
-  link.click();
+    const blob = response.data;
+    const downloadFileName = name || url.split('/').pop() || 'download';
 
-  document.body.removeChild(link);
-  URL.revokeObjectURL(link.href);
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = downloadFileName;
+
+    document.body.appendChild(link);
+    link.click();
+
+    document.body.removeChild(link);
+    URL.revokeObjectURL(link.href);
+  } catch (error) {
+    showErrorSnackbar(error);
+  }
 };
 
 export const useExcelDownload = ({ name, params }: IDownloadFile) => {

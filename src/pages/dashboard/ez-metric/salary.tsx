@@ -27,6 +27,8 @@ import TableContainer from '@mui/material/TableContainer';
 import InputAdornment from '@mui/material/InputAdornment';
 import CircularProgress from '@mui/material/CircularProgress';
 
+import { useNavigate } from 'react-router-dom';
+
 import { exportCsv } from 'src/utils/exportCsv';
 
 import {
@@ -85,6 +87,7 @@ function getEfficiencyChipColor(efficiency: string): 'success' | 'info' | 'warni
 // ======================================================================
 
 export default function SalaryPage() {
+  const navigate = useNavigate();
   const [tab, setTab] = useState(0);
 
   // --- Overall Salary state ---
@@ -419,6 +422,11 @@ export default function SalaryPage() {
                         </Typography>
                       </TableCell>
                       <TableCell align="center">
+                        <Tooltip title="View Details">
+                          <IconButton size="small" onClick={() => navigate(`/dashboard/salary/${w._id}`)}>
+                            <Iconify icon="solar:eye-bold-duotone" width={18} />
+                          </IconButton>
+                        </Tooltip>
                         <Tooltip title="Edit Salary">
                           <IconButton size="small" onClick={() => handleEditSalary(w)}>
                             <Iconify icon="solar:pen-bold-duotone" width={18} />

@@ -35,6 +35,8 @@ const ClockPage = lazy(() => import('src/pages/dashboard/ez-metric/clock'));
 const ClockDetailPage = lazy(() => import('src/pages/dashboard/ez-metric/clock-detail'));
 const EfficiencyPage = lazy(() => import('src/pages/dashboard/ez-metric/efficiency'));
 const SalaryPage = lazy(() => import('src/pages/dashboard/ez-metric/salary'));
+const WorkerDetailPage = lazy(() => import('src/pages/dashboard/ez-metric/worker-detail'));
+const SalaryDetailPage = lazy(() => import('src/pages/dashboard/ez-metric/salary-detail'));
 const EZSettingsPage = lazy(() => import('src/pages/dashboard/ez-metric/settings'));
 
 export const dashboardRoutes = [
@@ -58,6 +60,10 @@ export const dashboardRoutes = [
         element: <WorkersPage />,
       },
       {
+        path: 'workers/:workerId',
+        element: <WorkerDetailPage />,
+      },
+      {
         path: 'clock',
         element: <ClockPage />,
       },
@@ -72,6 +78,10 @@ export const dashboardRoutes = [
       {
         path: 'salary',
         element: <SalaryPage />,
+      },
+      {
+        path: 'salary/:workerId',
+        element: <SalaryDetailPage />,
       },
       {
         path: 'settings',

@@ -2,21 +2,21 @@ import { useMemo } from 'react';
 import useSWR, { mutate } from 'swr';
 
 import { keyBy } from 'src/utils/helper';
+import axios, { fetcher, endpoints } from 'src/utils/axios';
 
 import type { IChatMessage, IChatParticipant, IChatConversation } from 'src/types/chat';
 
 // ----------------------------------------------------------------------
 
-const CHART_ENDPOINT = '/chat';
+const enableServer = false;
+
+const CHART_ENDPOINT = endpoints.chat;
 
 const swrOptions = {
-  revalidateIfStale: false,
-  revalidateOnFocus: false,
-  revalidateOnReconnect: false,
+  revalidateIfStale: enableServer,
+  revalidateOnFocus: enableServer,
+  revalidateOnReconnect: enableServer,
 };
-
-// Mock fetcher that returns empty data
-const mockFetcher = async () => ({ contacts: [], conversations: [], conversation: null as any });
 
 // ----------------------------------------------------------------------
 
@@ -27,7 +27,7 @@ type ContactsData = {
 export function useGetContacts() {
   const url = [CHART_ENDPOINT, { params: { endpoint: 'contacts' } }];
 
-  const { data, isLoading, error, isValidating } = useSWR<ContactsData>(url, mockFetcher, swrOptions);
+  const { data, isLoading, error, isValidating } = useSWR<ContactsData>(url, fetcher, swrOptions);
 
   const memoizedValue = useMemo(
     () => ({
@@ -54,7 +54,7 @@ export function useGetConversations() {
 
   const { data, isLoading, error, isValidating } = useSWR<ConversationsData>(
     url,
-    mockFetcher,
+    fetcher,
     swrOptions
   );
 
@@ -87,7 +87,7 @@ export function useGetConversation(conversationId: string) {
 
   const { data, isLoading, error, isValidating } = useSWR<ConversationData>(
     url,
-    mockFetcher,
+    fetcher,
     swrOptions
   );
 
@@ -114,9 +114,20 @@ export async function sendMessage(conversationId: string, messageData: IChatMess
     { params: { conversationId, endpoint: 'conversation' } },
   ];
 
+  /**
+   * Work on server
+   */
+  if (enableServer) {
+    const data = { conversationId, messageData };
+    await axios.put(CHART_ENDPOINT, data);
+  }
+
+  /**
+   * Work in local
+   */
   mutate(
     conversationUrl,
-    (currentData: any) => {
+    (currentData) => {
       const currentConversation: IChatConversation = currentData.conversation;
 
       const conversation = {
@@ -131,7 +142,7 @@ export async function sendMessage(conversationId: string, messageData: IChatMess
 
   mutate(
     conversationsUrl,
-    (currentData: any) => {
+    (currentData) => {
       const currentConversations: IChatConversation[] = currentData.conversations;
 
       const conversations: IChatConversation[] = currentConversations.map(
@@ -152,10 +163,19 @@ export async function sendMessage(conversationId: string, messageData: IChatMess
 export async function createConversation(conversationData: IChatConversation) {
   const url = [CHART_ENDPOINT, { params: { endpoint: 'conversations' } }];
 
+  /**
+   * Work on server
+   */
+  const data = { conversationData };
+  const res = await axios.post(CHART_ENDPOINT, data);
+
+  /**
+   * Work in local
+   */
   mutate(
     url,
-    (currentData: any) => {
-      const currentConversations: IChatConversation[] = currentData?.conversations || [];
+    (currentData) => {
+      const currentConversations: IChatConversation[] = currentData.conversations;
 
       const conversations: IChatConversation[] = [...currentConversations, conversationData];
 
@@ -164,16 +184,26 @@ export async function createConversation(conversationData: IChatConversation) {
     false
   );
 
-  return conversationData;
+  return res.data;
 }
 
 // ----------------------------------------------------------------------
 
 export async function clickConversation(conversationId: string) {
+  /**
+   * Work on server
+   */
+  if (enableServer) {
+    await axios.get(CHART_ENDPOINT, { params: { conversationId, endpoint: 'mark-as-seen' } });
+  }
+
+  /**
+   * Work in local
+   */
   mutate(
     [CHART_ENDPOINT, { params: { endpoint: 'conversations' } }],
-    (currentData: any) => {
-      const currentConversations: IChatConversation[] = currentData?.conversations || [];
+    (currentData) => {
+      const currentConversations: IChatConversation[] = currentData.conversations;
 
       const conversations = currentConversations.map((conversation: IChatConversation) =>
         conversation.id === conversationId ? { ...conversation, unreadCount: 0 } : conversation

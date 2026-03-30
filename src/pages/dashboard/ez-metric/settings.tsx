@@ -30,6 +30,10 @@ import Avatar from '@mui/material/Avatar';
 
 import {
   useManagers,
+  useBreakRules,
+  useCreateBreakRule,
+  useUpdateBreakRule,
+  useDeleteBreakRule,
   useBonusRules,
   useDepartments,
   useCreateManager,
@@ -75,6 +79,21 @@ type Department = {
   name: string;
   description: string;
   status: 'active' | 'inactive';
+};
+
+type BreakRule = {
+  _id: string;
+  label: string;
+  duration: number;
+  paid: boolean;
+  autoDeduct: boolean;
+};
+
+const DEFAULT_BREAK: Omit<BreakRule, '_id'> = {
+  label: '',
+  duration: 15,
+  paid: false,
+  autoDeduct: true,
 };
 
 type Manager = {
@@ -137,6 +156,11 @@ export default function SettingsPage() {
   const updateManager = useUpdateManager();
   const deleteManager = useDeleteManager();
 
+  const { data: breakRules, isLoading: loadingBreak } = useBreakRules();
+  const createBreakRule = useCreateBreakRule();
+  const updateBreakRule = useUpdateBreakRule();
+  const deleteBreakRule = useDeleteBreakRule();
+
   // Bonus rule dialog state
   const [bonusDialog, setBonusDialog] = useState(false);
   const [editingRule, setEditingRule] = useState<BonusRule | null>(null);
@@ -152,6 +176,11 @@ export default function SettingsPage() {
   const [editingDep, setEditingDep] = useState<Department | null>(null);
   const [depForm, setDepForm] = useState({ name: '', description: '' });
 
+  // Break rule dialog state
+  const [breakDialog, setBreakDialog] = useState(false);
+  const [editingBreak, setEditingBreak] = useState<BreakRule | null>(null);
+  const [breakForm, setBreakForm] = useState(DEFAULT_BREAK);
+
   // Manager dialog state
   const [mgrDialog, setMgrDialog] = useState(false);
   const [editingMgr, setEditingMgr] = useState<Manager | null>(null);
@@ -159,9 +188,9 @@ export default function SettingsPage() {
   const [showPassword, setShowPassword] = useState(false);
 
   // Delete confirmation
-  const [deleteDialog, setDeleteDialog] = useState<{ type: 'rule' | 'grace' | 'department' | 'manager'; id: string; name: string } | null>(null);
+  const [deleteDialog, setDeleteDialog] = useState<{ type: 'rule' | 'grace' | 'department' | 'break' | 'manager'; id: string; name: string } | null>(null);
 
-  const isLoading = loadingRules || loadingGrace || loadingDeps || loadingManagers;
+  const isLoading = loadingRules || loadingGrace || loadingDeps || loadingManagers || loadingBreak;
 
   // --- Bonus rule handlers ---
   const openAddRule = () => {
@@ -235,6 +264,37 @@ export default function SettingsPage() {
   const handleDeleteDep = () => {
     if (deleteDialog?.type === 'department') {
       deleteDepartment.mutate(deleteDialog.id);
+    }
+    setDeleteDialog(null);
+  };
+
+  // --- Break rule handlers ---
+  const openAddBreak = () => {
+    setEditingBreak(null);
+    setBreakForm(DEFAULT_BREAK);
+    setBreakDialog(true);
+  };
+
+  const openEditBreak = (rule: BreakRule) => {
+    setEditingBreak(rule);
+    setBreakForm({ label: rule.label, duration: rule.duration, paid: rule.paid, autoDeduct: rule.autoDeduct });
+    setBreakDialog(true);
+  };
+
+  const handleSaveBreak = () => {
+    const label = breakForm.label || `${breakForm.duration} min break`;
+    const payload = { ...breakForm, label };
+    if (editingBreak) {
+      updateBreakRule.mutate({ id: editingBreak._id, body: payload });
+    } else {
+      createBreakRule.mutate(payload);
+    }
+    setBreakDialog(false);
+  };
+
+  const handleDeleteBreak = () => {
+    if (deleteDialog?.type === 'break') {
+      deleteBreakRule.mutate(deleteDialog.id);
     }
     setDeleteDialog(null);
   };
@@ -570,6 +630,108 @@ export default function SettingsPage() {
           </AccordionDetails>
         </Accordion>
 
+        {/* ============ BREAK TIME ============ */}
+        <Accordion disableGutters sx={{ borderRadius: '16px !important', overflow: 'hidden', '&:before': { display: 'none' } }}>
+          <AccordionSummary
+            expandIcon={<Iconify icon="eva:arrow-ios-downward-fill" />}
+            sx={{ bgcolor: alpha('#22C55E', 0.04), px: 2.5 }}
+          >
+            <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ width: '100%', pr: 1 }}>
+              <Stack>
+                <Stack direction="row" alignItems="center" spacing={1}>
+                  <Iconify icon="solar:cup-hot-bold-duotone" width={24} sx={{ color: '#22C55E' }} />
+                  <Typography variant="h6">Break Time</Typography>
+                </Stack>
+                <Typography variant="caption" sx={{ color: 'text.secondary', mt: 0.5 }}>
+                  Configure break types, durations, and deduction rules
+                </Typography>
+              </Stack>
+              <Button
+                size="small"
+                startIcon={<Iconify icon="mingcute:add-line" />}
+                onClick={(e) => { e.stopPropagation(); openAddBreak(); }}
+              >
+                Add Break
+              </Button>
+            </Stack>
+          </AccordionSummary>
+          <AccordionDetails sx={{ p: 0 }}>
+            <TableContainer>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Label</TableCell>
+                    <TableCell>Duration</TableCell>
+                    <TableCell>Paid</TableCell>
+                    <TableCell>Auto-deduct</TableCell>
+                    <TableCell align="right">Actions</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {(breakRules || []).length === 0 && (
+                    <TableRow>
+                      <TableCell colSpan={5} align="center" sx={{ py: 4, color: 'text.disabled' }}>
+                        No break rules configured
+                      </TableCell>
+                    </TableRow>
+                  )}
+                  {(breakRules || []).map((rule: BreakRule) => (
+                    <TableRow key={rule._id} hover>
+                      <TableCell>
+                        <Stack direction="row" alignItems="center" spacing={1}>
+                          <Box sx={{ p: 0.5, borderRadius: 0.75, bgcolor: alpha('#22C55E', 0.1), display: 'flex' }}>
+                            <Iconify icon="solar:cup-hot-bold" width={16} sx={{ color: '#22C55E' }} />
+                          </Box>
+                          <Typography variant="subtitle2">{rule.label}</Typography>
+                        </Stack>
+                      </TableCell>
+                      <TableCell>
+                        <Chip
+                          label={`${rule.duration} min`}
+                          size="small"
+                          sx={{ bgcolor: alpha('#22C55E', 0.1), color: '#22C55E', fontWeight: 700 }}
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <Chip
+                          label={rule.paid ? 'Paid' : 'Unpaid'}
+                          size="small"
+                          color={rule.paid ? 'success' : 'default'}
+                          variant="soft"
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <Chip
+                          label={rule.autoDeduct ? 'Yes' : 'No'}
+                          size="small"
+                          color={rule.autoDeduct ? 'info' : 'default'}
+                          variant="soft"
+                        />
+                      </TableCell>
+                      <TableCell align="right">
+                        <Tooltip title="Edit">
+                          <IconButton size="small" onClick={() => openEditBreak(rule)}>
+                            <Iconify icon="solar:pen-bold" width={18} />
+                          </IconButton>
+                        </Tooltip>
+                        <Tooltip title="Delete">
+                          <IconButton
+                            size="small"
+                            color="error"
+                            onClick={() => setDeleteDialog({ type: 'break', id: rule._id, name: rule.label })}
+                          >
+                            <Iconify icon="solar:trash-bin-trash-bold" width={18} />
+                          </IconButton>
+                        </Tooltip>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </AccordionDetails>
+        </Accordion>
+
         {/* ============ DEPARTMENTS ============ */}
         <Accordion disableGutters sx={{ borderRadius: '16px !important', overflow: 'hidden', '&:before': { display: 'none' } }}>
           <AccordionSummary
@@ -871,6 +1033,63 @@ export default function SettingsPage() {
         </DialogActions>
       </Dialog>
 
+      {/* ============ BREAK RULE DIALOG ============ */}
+      <Dialog open={breakDialog} onClose={() => setBreakDialog(false)} maxWidth="sm" fullWidth>
+        <DialogTitle>{editingBreak ? 'Edit Break Rule' : 'Add Break Rule'}</DialogTitle>
+        <DialogContent sx={{ pt: '16px !important' }}>
+          <Stack spacing={2.5}>
+            <TextField
+              fullWidth
+              label="Label"
+              value={breakForm.label}
+              onChange={(e) => setBreakForm({ ...breakForm, label: e.target.value })}
+              placeholder="e.g. Lunch Break, Short Break"
+            />
+            <TextField
+              fullWidth
+              label="Duration"
+              type="number"
+              value={breakForm.duration}
+              onChange={(e) => setBreakForm({ ...breakForm, duration: Number(e.target.value) })}
+              InputProps={{ endAdornment: <InputAdornment position="end">min</InputAdornment> }}
+              helperText="Duration of the break in minutes"
+            />
+            <Stack direction="row" spacing={2}>
+              <TextField
+                select
+                fullWidth
+                label="Paid"
+                value={breakForm.paid ? 'yes' : 'no'}
+                onChange={(e) => setBreakForm({ ...breakForm, paid: e.target.value === 'yes' })}
+              >
+                <MenuItem value="yes">Paid</MenuItem>
+                <MenuItem value="no">Unpaid</MenuItem>
+              </TextField>
+              <TextField
+                select
+                fullWidth
+                label="Auto-deduct from Hours"
+                value={breakForm.autoDeduct ? 'yes' : 'no'}
+                onChange={(e) => setBreakForm({ ...breakForm, autoDeduct: e.target.value === 'yes' })}
+              >
+                <MenuItem value="yes">Yes</MenuItem>
+                <MenuItem value="no">No</MenuItem>
+              </TextField>
+            </Stack>
+          </Stack>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setBreakDialog(false)} color="inherit">Cancel</Button>
+          <Button
+            onClick={handleSaveBreak}
+            variant="contained"
+            disabled={!breakForm.label.trim() || breakForm.duration < 1}
+          >
+            {editingBreak ? 'Update' : 'Add'}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
       {/* ============ MANAGER DIALOG ============ */}
       <Dialog open={mgrDialog} onClose={() => setMgrDialog(false)} maxWidth="sm" fullWidth>
         <DialogTitle>{editingMgr ? 'Edit Manager' : 'Add Manager'}</DialogTitle>
@@ -955,6 +1174,7 @@ export default function SettingsPage() {
             onClick={() => {
               if (deleteDialog?.type === 'rule') handleDeleteRule();
               else if (deleteDialog?.type === 'grace') handleDeleteGrace();
+              else if (deleteDialog?.type === 'break') handleDeleteBreak();
               else if (deleteDialog?.type === 'manager') handleDeleteMgr();
               else handleDeleteDep();
             }}

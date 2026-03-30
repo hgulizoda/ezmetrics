@@ -214,6 +214,62 @@ const MOCK_DEPARTMENTS: Array<{ _id: string; name: string; description: string; 
   { _id: 'dep3', name: 'Office', description: 'Office and admin', status: 'active' },
 ];
 
+// ============ BREAK TIME RULES ============
+const MOCK_BREAK_RULES: Array<{
+  _id: string;
+  label: string;
+  duration: number;
+  paid: boolean;
+  autoDeduct: boolean;
+}> = [
+  { _id: 'brk1', label: 'Lunch Break', duration: 30, paid: false, autoDeduct: true },
+  { _id: 'brk2', label: 'Short Break', duration: 15, paid: true, autoDeduct: false },
+  { _id: 'brk3', label: 'Rest Period', duration: 10, paid: true, autoDeduct: false },
+];
+
+export function useBreakRules() {
+  return useQuery({
+    queryKey: ['break-rules'],
+    queryFn: async () => [...MOCK_BREAK_RULES],
+  });
+}
+
+export function useCreateBreakRule() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (body: { label: string; duration: number; paid: boolean; autoDeduct: boolean }) => {
+      const newRule = { _id: `brk${Date.now()}`, ...body };
+      MOCK_BREAK_RULES.push(newRule);
+      return newRule;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['break-rules'] }),
+  });
+}
+
+export function useUpdateBreakRule() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id, body }: { id: string; body: any }) => {
+      const idx = MOCK_BREAK_RULES.findIndex((r) => r._id === id);
+      if (idx >= 0) Object.assign(MOCK_BREAK_RULES[idx], body);
+      return MOCK_BREAK_RULES[idx];
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['break-rules'] }),
+  });
+}
+
+export function useDeleteBreakRule() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const idx = MOCK_BREAK_RULES.findIndex((r) => r._id === id);
+      if (idx >= 0) MOCK_BREAK_RULES.splice(idx, 1);
+      return id;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['break-rules'] }),
+  });
+}
+
 // ============ MANAGERS ============
 const MOCK_MANAGERS: Array<{
   _id: string;

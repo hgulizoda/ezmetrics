@@ -52,7 +52,7 @@ export function useNavData() {
       },
       {
         subheader: 'Admin',
-        roles: [],
+        roles: ['admin'],
         items: [
           {
             title: 'Settings',

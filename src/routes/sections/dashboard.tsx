@@ -2,6 +2,7 @@ import { lazy, Suspense } from 'react';
 import { Outlet } from 'react-router-dom';
 
 import DashboardLayout from 'src/layouts/dashboard';
+import { AuthGuard, RoleBasedGuard } from 'src/auth/guard';
 // ----------------------------------------------------------------------
 import AddPackageFormPage from 'src/pages/dashboard/packages/addpackage';
 
@@ -43,11 +44,13 @@ export const dashboardRoutes = [
   {
     path: 'dashboard',
     element: (
-      <DashboardLayout>
-        <Suspense fallback={<LoadingScreen />}>
-          <Outlet />
-        </Suspense>
-      </DashboardLayout>
+      <AuthGuard>
+        <DashboardLayout>
+          <Suspense fallback={<LoadingScreen />}>
+            <Outlet />
+          </Suspense>
+        </DashboardLayout>
+      </AuthGuard>
     ),
     children: [
       {
@@ -85,7 +88,11 @@ export const dashboardRoutes = [
       },
       {
         path: 'settings',
-        element: <EZSettingsPage />,
+        element: (
+          <RoleBasedGuard roles={['admin']} hasContent>
+            <EZSettingsPage />
+          </RoleBasedGuard>
+        ),
       },
       // Legacy routes
       {

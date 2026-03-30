@@ -5,7 +5,7 @@ import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import { Theme, SxProps } from '@mui/material/styles';
 
-import { useAdminRole } from 'src/hooks/use-mocked-user';
+import { useAuthContext } from 'src/auth/hooks';
 
 import { ForbiddenIllustration } from 'src/assets/illustrations';
 
@@ -21,10 +21,9 @@ type RoleBasedGuardProp = {
 };
 
 export default function RoleBasedGuard({ hasContent, roles, children, sx }: RoleBasedGuardProp) {
-  // Logic here to get current user role
-  const { user } = useAdminRole();
+  const { user } = useAuthContext();
 
-  if (typeof roles !== 'undefined' && !roles.includes(user.role || '')) {
+  if (typeof roles !== 'undefined' && !roles.includes(user?.role || '')) {
     return hasContent ? (
       <Container
         component={MotionContainer}
@@ -40,13 +39,13 @@ export default function RoleBasedGuard({ hasContent, roles, children, sx }: Role
         <Box>
           <m.div variants={varBounce().in}>
             <Typography variant="h3" sx={{ mb: 2 }}>
-              Ruxsat berilmadi
+              Permission Denied
             </Typography>
           </m.div>
 
           <m.div variants={varBounce().in}>
             <Typography sx={{ color: 'text.secondary' }}>
-              Sizda bu sahifaga kirish uchun ruxsat yo&apos;q
+              You do not have permission to access this page
             </Typography>
           </m.div>
 

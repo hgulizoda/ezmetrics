@@ -44,6 +44,7 @@ import {
   useChargedEmployees,
 } from 'src/modules/ez-metric/api';
 
+import { useAuthContext } from 'src/auth/hooks';
 import Iconify from 'src/components/iconify';
 
 // ----------------------------------------------------------------------
@@ -88,6 +89,8 @@ function getEfficiencyChipColor(efficiency: string): 'success' | 'info' | 'warni
 
 export default function SalaryPage() {
   const navigate = useNavigate();
+  const { user } = useAuthContext();
+  const isAdmin = user?.role === 'admin';
   const [tab, setTab] = useState(0);
 
   // --- Overall Salary state ---
@@ -427,11 +430,13 @@ export default function SalaryPage() {
                             <Iconify icon="solar:eye-bold-duotone" width={18} />
                           </IconButton>
                         </Tooltip>
-                        <Tooltip title="Edit Salary">
-                          <IconButton size="small" onClick={() => handleEditSalary(w)}>
-                            <Iconify icon="solar:pen-bold-duotone" width={18} />
-                          </IconButton>
-                        </Tooltip>
+                        {isAdmin && (
+                          <Tooltip title="Edit Salary">
+                            <IconButton size="small" onClick={() => handleEditSalary(w)}>
+                              <Iconify icon="solar:pen-bold-duotone" width={18} />
+                            </IconButton>
+                          </Tooltip>
+                        )}
                       </TableCell>
                     </TableRow>
                   ))}
@@ -539,7 +544,7 @@ export default function SalaryPage() {
                       <TableCell align="right">Overtime Hours</TableCell>
                       <TableCell align="right">Bonus Amount</TableCell>
                       <TableCell align="center">Status</TableCell>
-                      <TableCell align="center">Actions</TableCell>
+                      {isAdmin && <TableCell align="center">Actions</TableCell>}
                     </TableRow>
                   </TableHead>
                   <TableBody>
@@ -575,13 +580,15 @@ export default function SalaryPage() {
                             color={r.status === 'Calculated' ? 'success' : 'default'}
                           />
                         </TableCell>
-                        <TableCell align="center">
-                          <Tooltip title="Edit Overtime">
-                            <IconButton size="small" onClick={() => handleEditOT(r)}>
-                              <Iconify icon="solar:pen-bold-duotone" width={18} />
-                            </IconButton>
-                          </Tooltip>
-                        </TableCell>
+                        {isAdmin && (
+                          <TableCell align="center">
+                            <Tooltip title="Edit Overtime">
+                              <IconButton size="small" onClick={() => handleEditOT(r)}>
+                                <Iconify icon="solar:pen-bold-duotone" width={18} />
+                              </IconButton>
+                            </Tooltip>
+                          </TableCell>
+                        )}
                       </TableRow>
                     ))}
                     {filteredOvertime.length === 0 && (
@@ -638,9 +645,11 @@ export default function SalaryPage() {
                   ))}
                 </TextField>
               </Stack>
-              <Button variant="soft" size="small" startIcon={<Iconify icon="solar:add-circle-bold" />} onClick={() => handleOpenCeDialog()}>
-                Add Charge
-              </Button>
+              {isAdmin && (
+                <Button variant="soft" size="small" startIcon={<Iconify icon="solar:add-circle-bold" />} onClick={() => handleOpenCeDialog()}>
+                  Add Charge
+                </Button>
+              )}
             </Stack>
 
             {ceLoading ? (
@@ -655,7 +664,7 @@ export default function SalaryPage() {
                       <TableCell align="right">Amount</TableCell>
                       <TableCell>Date</TableCell>
                       <TableCell>Note</TableCell>
-                      <TableCell align="center">Actions</TableCell>
+                      {isAdmin && <TableCell align="center">Actions</TableCell>}
                     </TableRow>
                   </TableHead>
                   <TableBody>
@@ -681,6 +690,7 @@ export default function SalaryPage() {
                             {ce.note || '-'}
                           </Typography>
                         </TableCell>
+                        {isAdmin && (
                         <TableCell align="center">
                           <Stack direction="row" justifyContent="center" spacing={0.5}>
                             <Tooltip title="Edit">
@@ -695,6 +705,7 @@ export default function SalaryPage() {
                             </Tooltip>
                           </Stack>
                         </TableCell>
+                        )}
                       </TableRow>
                     ))}
                     {filteredCharges.length === 0 && (

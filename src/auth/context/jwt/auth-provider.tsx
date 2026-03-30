@@ -1,23 +1,33 @@
 import { useMemo, useEffect, useReducer, useCallback } from 'react';
 
-import axios, { endpoints } from 'src/utils/axios';
-
-import { setSession } from './utils';
 import { AuthContext } from './auth-context';
 import { AuthUserType, ActionMapType, AuthStateType } from '../../types';
 
 // ----------------------------------------------------------------------
-/**
- * NOTE:
- * We only build demo at basic level.
- * Customer will need to do some extra handling yourself if you want to extend the logic and other features...
- */
+
+// Mock users for frontend-only auth
+const MOCK_USERS = [
+  {
+    id: '1',
+    displayName: 'Admin',
+    phone: 'admin',
+    password: 'admin123',
+    role: 'admin',
+  },
+  {
+    id: '2',
+    displayName: 'Manager',
+    phone: 'manager',
+    password: 'manager123',
+    role: 'manager',
+  },
+];
+
 // ----------------------------------------------------------------------
 
 enum Types {
   INITIAL = 'INITIAL',
   LOGIN = 'LOGIN',
-  REGISTER = 'REGISTER',
   LOGOUT = 'LOGOUT',
 }
 
@@ -28,9 +38,6 @@ type Payload = {
   [Types.LOGIN]: {
     user: AuthUserType;
   };
-  [Types.REGISTER]: {
-    user: AuthUserType;
-  };
   [Types.LOGOUT]: undefined;
 };
 
@@ -38,9 +45,11 @@ type ActionsType = ActionMapType<Payload>[keyof ActionMapType<Payload>];
 
 // ----------------------------------------------------------------------
 
+const STORAGE_KEY = 'mockAuthUser';
+
 const initialState: AuthStateType = {
-  user: { displayName: 'Admin', role: 'admin' },
-  loading: false,
+  user: null,
+  loading: true,
 };
 
 const reducer = (state: AuthStateType, action: ActionsType) => {
@@ -51,12 +60,6 @@ const reducer = (state: AuthStateType, action: ActionsType) => {
     };
   }
   if (action.type === Types.LOGIN) {
-    return {
-      ...state,
-      user: action.payload.user,
-    };
-  }
-  if (action.type === Types.REGISTER) {
     return {
       ...state,
       user: action.payload.user,
@@ -73,8 +76,6 @@ const reducer = (state: AuthStateType, action: ActionsType) => {
 
 // ----------------------------------------------------------------------
 
-const STORAGE_KEY = 'accessToken';
-
 type Props = {
   children: React.ReactNode;
 };
@@ -83,13 +84,17 @@ export function AuthProvider({ children }: Props) {
   const [state, dispatch] = useReducer(reducer, initialState);
 
   const initialize = useCallback(async () => {
-    // Skip backend auth check - using mock user
-    dispatch({
-      type: Types.INITIAL,
-      payload: {
-        user: { displayName: 'Admin', role: 'admin' },
-      },
-    });
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored) {
+      try {
+        const user = JSON.parse(stored);
+        dispatch({ type: Types.INITIAL, payload: { user } });
+        return;
+      } catch {
+        localStorage.removeItem(STORAGE_KEY);
+      }
+    }
+    dispatch({ type: Types.INITIAL, payload: { user: null } });
   }, []);
 
   useEffect(() => {
@@ -97,35 +102,33 @@ export function AuthProvider({ children }: Props) {
   }, [initialize]);
 
   // LOGIN
-  const login = useCallback(async (email: string, password: string) => {
-    const loginData = {
-      email,
-      password,
+  const login = useCallback(async (phone: string, password: string) => {
+    const found = MOCK_USERS.find(
+      (u) => u.phone === phone && u.password === password
+    );
+
+    if (!found) {
+      throw new Error('Invalid credentials');
+    }
+
+    const user = {
+      id: found.id,
+      displayName: found.displayName,
+      role: found.role,
     };
 
-    const res = await axios.post(endpoints.auth.login, loginData);
-    const { data } = res.data;
-    setSession(data.access_token);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(user));
 
     dispatch({
       type: Types.LOGIN,
-      payload: {
-        user: {
-          ...data,
-          data,
-        },
-      },
+      payload: { user },
     });
-
-    initialize();
-  }, [initialize]);
+  }, []);
 
   // LOGOUT
   const logout = useCallback(async () => {
-    setSession(null);
-    dispatch({
-      type: Types.LOGOUT,
-    });
+    localStorage.removeItem(STORAGE_KEY);
+    dispatch({ type: Types.LOGOUT });
   }, []);
 
   // ----------------------------------------------------------------------

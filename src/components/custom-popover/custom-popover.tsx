@@ -28,6 +28,7 @@ export default function CustomPopover({
           sx: {
             width: 'auto',
             overflow: 'inherit',
+
             ...style,
             [`& .${menuItemClasses.root}`]: {
               '& svg': {

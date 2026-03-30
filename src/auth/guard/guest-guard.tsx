@@ -1,7 +1,8 @@
-// import { useEffect, useCallback } from 'react';
+import { useEffect, useCallback } from 'react';
 
-// import { paths } from 'src/routes/paths';
-// import { useRouter, useSearchParams } from 'src/routes/hooks';
+import { useRouter, useSearchParams } from 'src/routes/hooks';
+
+import { PATH_AFTER_LOGIN } from 'src/config-global';
 
 import { SplashScreen } from 'src/components/loading-screen';
 
@@ -22,23 +23,23 @@ export default function GuestGuard({ children }: Props) {
 // ----------------------------------------------------------------------
 
 function Container({ children }: Props) {
-  // const router = useRouter();
+  const router = useRouter();
 
-  // const searchParams = useSearchParams();
+  const searchParams = useSearchParams();
 
-  // const returnTo = searchParams.get('returnTo') || paths.dashboard.root;
+  const returnTo = searchParams.get('returnTo') || PATH_AFTER_LOGIN;
 
-  // const { authenticated } = useAuthContext();
+  const { authenticated } = useAuthContext();
 
-  // const check = useCallback(() => {
-  //   if (authenticated) {
-  //     router.replace(returnTo);
-  //   }
-  // }, [authenticated, returnTo, router]);
+  const check = useCallback(() => {
+    if (authenticated) {
+      router.replace(returnTo);
+    }
+  }, [authenticated, returnTo, router]);
 
-  // useEffect(() => {
-  //   check();
-  // }, [check]);
+  useEffect(() => {
+    check();
+  }, [check]);
 
   return <>{children}</>;
 }

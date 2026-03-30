@@ -54,7 +54,9 @@
       "Bash(cd:*)",
       "Bash(rm -f \"src/_mock/fake-backend.ts\")",
       "Bash(rmdir \"src/_mock\")",
-      "Bash(xargs grep:*)"
+      "Bash(xargs grep:*)",
+      "WebFetch(domain:i.pinimg.com)",
+      "Read(//c/Users/Hasanova/AppData/Local/Temp/claude/C--Users-Hasanova-utility-global-move-EzMertrics/63bf65ad-c4ee-41e9-94fd-3a1557c923b1/tasks/**)"
     ],
     "deny": [],
     "ask": []

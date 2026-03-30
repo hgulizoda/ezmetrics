@@ -30,6 +30,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { useWorkers, useCreateWorker, useUpdateWorker } from 'src/modules/ez-metric/api';
 
+import { useAuthContext } from 'src/auth/hooks';
 import Iconify from 'src/components/iconify';
 
 function getSalaryTypeColor(salaryType: string): 'info' | 'secondary' | 'warning' {
@@ -80,6 +81,8 @@ const INITIAL_FORM = {
 export default function WorkersPage() {
   const theme = useTheme();
   const navigate = useNavigate();
+  const { user } = useAuthContext();
+  const isAdmin = user?.role === 'admin';
   const [search, setSearch] = useState('');
   const [openDialog, setOpenDialog] = useState(false);
   const [formData, setFormData] = useState(INITIAL_FORM);
@@ -231,15 +234,17 @@ export default function WorkersPage() {
                 <Iconify icon="solar:download-minimalistic-bold-duotone" width={22} />
               </IconButton>
             </Tooltip>
-            <Button
-              variant="contained"
-              size="small"
-              startIcon={<Iconify icon="solar:add-circle-bold" />}
-              onClick={handleOpenDialog}
-              sx={{ borderRadius: 1.5 }}
-            >
-              Add Worker
-            </Button>
+            {isAdmin && (
+              <Button
+                variant="contained"
+                size="small"
+                startIcon={<Iconify icon="solar:add-circle-bold" />}
+                onClick={handleOpenDialog}
+                sx={{ borderRadius: 1.5 }}
+              >
+                Add Worker
+              </Button>
+            )}
           </Stack>
         </Stack>
         <Stack
@@ -350,11 +355,13 @@ export default function WorkersPage() {
                     />
                   </TableCell>
                   <TableCell align="center">
-                    <Tooltip title="Edit">
-                      <IconButton size="small" onClick={() => handleEditWorker(worker)}>
-                        <Iconify icon="solar:pen-bold-duotone" width={18} />
-                      </IconButton>
-                    </Tooltip>
+                    {isAdmin && (
+                      <Tooltip title="Edit">
+                        <IconButton size="small" onClick={() => handleEditWorker(worker)}>
+                          <Iconify icon="solar:pen-bold-duotone" width={18} />
+                        </IconButton>
+                      </Tooltip>
+                    )}
                     <Tooltip title="View Details">
                       <IconButton size="small" onClick={() => navigate(`/dashboard/workers/${worker._id}`)}>
                         <Iconify icon="solar:eye-bold-duotone" width={18} />

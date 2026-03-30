@@ -46,7 +46,7 @@ const MOCK_CLOCK_RECORDS_RAW = [
   { _id: 'c6', worker: { name: 'Islam Abdullaev' }, date: `${today}T00:00:00Z`, clockIn: `${today}T07:00:00Z`, clockOut: `${today}T15:00:00Z`, totalHours: 8.0, status: 'auto', note: '', efficiency: 102, shiftPeriod: '7AM-3PM', type: 'Normal', department: 'Office' },
   { _id: 'c7', worker: { name: 'Carlos Mendez' }, date: `${today}T00:00:00Z`, clockIn: `${today}T08:00:00Z`, clockOut: null, totalHours: null, status: 'auto', note: '', efficiency: null, shiftPeriod: '8AM-4PM', type: 'Normal', department: 'Shop' },
   { _id: 'c8', worker: { name: 'Alex Thompson' }, date: `${today}T00:00:00Z`, clockIn: `${today}T07:00:00Z`, clockOut: null, totalHours: null, status: 'auto', note: '', efficiency: null, shiftPeriod: '7AM-4PM', type: 'Normal', department: 'Fleet' },
-  { _id: 'c9', worker: { name: 'Roberto Sanchez' }, date: `${today}T00:00:00Z`, clockIn: `${today}T07:30:00Z`, clockOut: `${today}T15:30:00Z`, totalHours: 8.0, status: 'manual', note: 'Adjusted by admin', efficiency: 92, shiftPeriod: '7AM-4PM', type: 'Normal', department: 'Office' },
+  { _id: 'c9', worker: { name: 'Roberto Sanchez' }, date: `${today}T00:00:00Z`, clockIn: `${today}T07:30:00Z`, clockOut: `${today}T15:30:00Z`, totalHours: 8.0, status: 'manual', note: 'Worker forgot to clock in on time, adjusted from 08:15', correctedBy: 'Admin (John)', correctedAt: `${today}T16:00:00Z`, efficiency: 92, shiftPeriod: '7AM-4PM', type: 'Normal', department: 'Office' },
   { _id: 'c10', worker: { name: 'Marco Lopez' }, date: `${today}T00:00:00Z`, clockIn: `${today}T06:45:00Z`, clockOut: `${today}T15:30:00Z`, totalHours: 8.75, status: 'auto', note: '', efficiency: 108, shiftPeriod: '7AM-4PM', type: 'Normal', department: 'Shop' },
   { _id: 'c40', worker: { name: 'James Wilson' }, date: `${today}T00:00:00Z`, clockIn: `${today}T08:15:00Z`, clockOut: `${today}T16:30:00Z`, totalHours: 8.25, status: 'auto', note: '', efficiency: 85, shiftPeriod: '8AM-5PM', type: 'Overtime', department: 'Office' },
 
@@ -57,7 +57,7 @@ const MOCK_CLOCK_RECORDS_RAW = [
   { _id: 'c14', worker: { name: 'Miguel Retana' }, date: `${daysAgo(1)}T00:00:00Z`, clockIn: `${daysAgo(1)}T06:00:00Z`, clockOut: `${daysAgo(1)}T16:00:00Z`, totalHours: 10.0, status: 'auto', note: '', efficiency: 98, shiftPeriod: '6AM-4PM', type: 'Overtime', department: 'Fleet' },
   { _id: 'c15', worker: { name: 'Bernardo Grossi' }, date: `${daysAgo(1)}T00:00:00Z`, clockIn: `${daysAgo(1)}T07:00:00Z`, clockOut: `${daysAgo(1)}T15:00:00Z`, totalHours: 8.0, status: 'auto', note: '', efficiency: 91, shiftPeriod: '7AM-4PM', type: 'Normal', department: 'Shop' },
   { _id: 'c16', worker: { name: 'Islam Abdullaev' }, date: `${daysAgo(1)}T00:00:00Z`, clockIn: `${daysAgo(1)}T07:15:00Z`, clockOut: `${daysAgo(1)}T15:15:00Z`, totalHours: 8.0, status: 'auto', note: '', efficiency: 99, shiftPeriod: '7AM-3PM', type: 'Normal', department: 'Office' },
-  { _id: 'c17', worker: { name: 'Carlos Mendez' }, date: `${daysAgo(1)}T00:00:00Z`, clockIn: `${daysAgo(1)}T08:00:00Z`, clockOut: `${daysAgo(1)}T16:00:00Z`, totalHours: 8.0, status: 'auto', note: '', efficiency: 74, shiftPeriod: '8AM-4PM', type: 'Normal', department: 'Shop' },
+  { _id: 'c17', worker: { name: 'Carlos Mendez' }, date: `${daysAgo(1)}T00:00:00Z`, clockIn: `${daysAgo(1)}T08:00:00Z`, clockOut: `${daysAgo(1)}T16:00:00Z`, totalHours: 8.0, status: 'manual', note: 'System did not register clock-out, manually added', correctedBy: 'Manager (Sarah)', correctedAt: `${daysAgo(1)}T17:30:00Z`, efficiency: 74, shiftPeriod: '8AM-4PM', type: 'Normal', department: 'Shop' },
   { _id: 'c18', worker: { name: 'Alex Thompson' }, date: `${daysAgo(1)}T00:00:00Z`, clockIn: `${daysAgo(1)}T07:00:00Z`, clockOut: `${daysAgo(1)}T15:30:00Z`, totalHours: 8.5, status: 'auto', note: '', efficiency: 108, shiftPeriod: '7AM-4PM', type: 'Normal', department: 'Shop' },
   { _id: 'c19', worker: { name: 'Roberto Sanchez' }, date: `${daysAgo(1)}T00:00:00Z`, clockIn: `${daysAgo(1)}T07:30:00Z`, clockOut: `${daysAgo(1)}T15:30:00Z`, totalHours: 8.0, status: 'auto', note: '', efficiency: 90, shiftPeriod: '7AM-4PM', type: 'Normal', department: 'Shop' },
   { _id: 'c20', worker: { name: 'Marco Lopez' }, date: `${daysAgo(1)}T00:00:00Z`, clockIn: `${daysAgo(1)}T06:45:00Z`, clockOut: `${daysAgo(1)}T15:15:00Z`, totalHours: 8.5, status: 'auto', note: '', efficiency: 105, shiftPeriod: '7AM-4PM', type: 'Normal', department: 'Shop' },
@@ -196,10 +196,16 @@ const MOCK_SETTINGS = [
   { key: 'timezone', value: 'America/New_York' },
 ];
 
-const MOCK_GRACE_PERIOD_RULES: Array<{ _id: string; gracePeriod: number; perMinuteRate: number; maxPenaltyMinutes: number; label: string }> = [
-  { _id: 'gp1', gracePeriod: 5, perMinuteRate: 0, maxPenaltyMinutes: 60, label: 'First 5 min free' },
-  { _id: 'gp2', gracePeriod: 10, perMinuteRate: 1.5, maxPenaltyMinutes: 60, label: 'Standard penalty' },
-  { _id: 'gp3', gracePeriod: 15, perMinuteRate: 2.0, maxPenaltyMinutes: 90, label: 'Extended grace' },
+const MOCK_GRACE_PERIOD_RULES: Array<{
+  _id: string;
+  freeMinutes: number;
+  perMinuteRate: number;
+  billingStopMinutes: number;
+  label: string;
+}> = [
+  { _id: 'gp1', freeMinutes: 5, perMinuteRate: 1.0, billingStopMinutes: 60, label: 'Standard' },
+  { _id: 'gp2', freeMinutes: 10, perMinuteRate: 1.5, billingStopMinutes: 60, label: 'Moderate' },
+  { _id: 'gp3', freeMinutes: 15, perMinuteRate: 2.0, billingStopMinutes: 90, label: 'Extended' },
 ];
 
 const MOCK_DEPARTMENTS: Array<{ _id: string; name: string; description: string; status: 'active' | 'inactive' }> = [
@@ -290,7 +296,7 @@ export function useUpdateClockRecord() {
   return useMutation({
     mutationFn: async ({ id, body }: { id: string; body: any }) => {
       const idx = MOCK_CLOCK_RECORDS.findIndex((r) => r._id === id);
-      if (idx >= 0) Object.assign(MOCK_CLOCK_RECORDS[idx], body);
+      if (idx >= 0) Object.assign(MOCK_CLOCK_RECORDS[idx], body, { correctedBy: 'Admin (You)', correctedAt: new Date().toISOString() });
       return MOCK_CLOCK_RECORDS[idx];
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ['clock-records'] }),
@@ -429,7 +435,7 @@ export function useEfficiencyHistory() {
 export function useBonusRules() {
   return useQuery({
     queryKey: ['bonus-rules'],
-    queryFn: async () => MOCK_BONUS_RULES,
+    queryFn: async () => [...MOCK_BONUS_RULES],
   });
 }
 
@@ -473,7 +479,7 @@ export function useDeleteBonusRule() {
 export function useGracePeriodRules() {
   return useQuery({
     queryKey: ['grace-period-rules'],
-    queryFn: async () => MOCK_GRACE_PERIOD_RULES,
+    queryFn: async () => [...MOCK_GRACE_PERIOD_RULES],
   });
 }
 
@@ -517,7 +523,7 @@ export function useDeleteGracePeriodRule() {
 export function useDepartments() {
   return useQuery({
     queryKey: ['departments'],
-    queryFn: async () => MOCK_DEPARTMENTS,
+    queryFn: async () => [...MOCK_DEPARTMENTS],
   });
 }
 

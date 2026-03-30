@@ -145,7 +145,7 @@ export default function EfficiencyPage() {
       <Box sx={{ mb: 3 }}>
         <Typography variant="h4">Efficiency Tracker</Typography>
         <Typography variant="body2" sx={{ color: 'text.secondary', mt: 0.5 }}>
-          Actual vs expected hours per worker
+          Actual vs billed hours per worker
         </Typography>
       </Box>
 
@@ -212,17 +212,40 @@ export default function EfficiencyPage() {
 
       {/* Bar Chart */}
       <Card sx={{ p: 3, borderRadius: 2 }}>
-        <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mb: 3, pb: 2.5, borderBottom: (t) => `1px solid ${t.palette.divider}` }}>
+        <Stack
+          direction="row"
+          alignItems="center"
+          justifyContent="space-between"
+          sx={{ mb: 3, pb: 2.5, borderBottom: (t) => `1px solid ${t.palette.divider}` }}
+        >
           <Box>
             <Typography variant="h6">Actual vs Expected Hours</Typography>
             <Stack direction="row" alignItems="center" spacing={2} sx={{ mt: 0.5 }}>
               <Stack direction="row" alignItems="center" spacing={0.5}>
-                <Box sx={{ width: 10, height: 10, borderRadius: '50%', bgcolor: theme.palette.primary.main }} />
-                <Typography variant="caption" sx={{ color: 'text.secondary' }}>Actual Hours</Typography>
+                <Box
+                  sx={{
+                    width: 10,
+                    height: 10,
+                    borderRadius: '50%',
+                    bgcolor: theme.palette.primary.main,
+                  }}
+                />
+                <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                  Actual Hours
+                </Typography>
               </Stack>
               <Stack direction="row" alignItems="center" spacing={0.5}>
-                <Box sx={{ width: 10, height: 10, borderRadius: '50%', bgcolor: alpha(theme.palette.primary.main, 0.3) }} />
-                <Typography variant="caption" sx={{ color: 'text.secondary' }}>Expected Hours</Typography>
+                <Box
+                  sx={{
+                    width: 10,
+                    height: 10,
+                    borderRadius: '50%',
+                    bgcolor: alpha(theme.palette.primary.main, 0.3),
+                  }}
+                />
+                <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                  Billed Hours
+                </Typography>
               </Stack>
               <Typography variant="caption" sx={{ color: 'text.disabled' }}>
                 {dates.length} days &middot; {workers.length} workers
@@ -268,7 +291,7 @@ export default function EfficiencyPage() {
           type="bar"
           series={[
             { name: 'Actual Hours', data: chartActual },
-            { name: 'Expected Hours', data: chartExpected },
+            { name: 'Billed Hours', data: chartExpected },
           ]}
           options={{
             chart: { stacked: false, toolbar: { show: false } },

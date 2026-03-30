@@ -28,6 +28,10 @@ import {
   useCreateBonusRule,
   useUpdateBonusRule,
   useDeleteBonusRule,
+  useGracePeriodRules,
+  useCreateGracePeriodRule,
+  useUpdateGracePeriodRule,
+  useDeleteGracePeriodRule,
   useDepartments,
   useCreateDepartment,
   useUpdateDepartment,
@@ -49,6 +53,14 @@ type BonusRule = {
   color: string;
 };
 
+type GracePeriodRule = {
+  _id: string;
+  gracePeriod: number;
+  perMinuteRate: number;
+  maxPenaltyMinutes: number;
+  label: string;
+};
+
 type Department = {
   _id: string;
   name: string;
@@ -66,6 +78,12 @@ const DEFAULT_BONUS: Omit<BonusRule, '_id'> = {
   color: '#00B8D9',
 };
 
+const DEFAULT_GRACE: Omit<GracePeriodRule, '_id'> = {
+  gracePeriod: 5,
+  perMinuteRate: 0,
+  label: '',
+};
+
 const RULE_COLORS = ['#FF5630', '#FFAB00', '#00B8D9', '#22C55E', '#7635DC', '#2065D1'];
 
 // ----------------------------------------------------------------------
@@ -75,6 +93,11 @@ export default function SettingsPage() {
   const createBonusRule = useCreateBonusRule();
   const updateBonusRule = useUpdateBonusRule();
   const deleteBonusRule = useDeleteBonusRule();
+
+  const { data: gracePeriodRules, isLoading: loadingGrace } = useGracePeriodRules();
+  const createGracePeriodRule = useCreateGracePeriodRule();
+  const updateGracePeriodRule = useUpdateGracePeriodRule();
+  const deleteGracePeriodRule = useDeleteGracePeriodRule();
 
   const { data: departments, isLoading: loadingDeps } = useDepartments();
   const createDepartment = useCreateDepartment();
@@ -86,15 +109,20 @@ export default function SettingsPage() {
   const [editingRule, setEditingRule] = useState<BonusRule | null>(null);
   const [ruleForm, setRuleForm] = useState(DEFAULT_BONUS);
 
+  // Grace period dialog state
+  const [graceDialog, setGraceDialog] = useState(false);
+  const [editingGrace, setEditingGrace] = useState<GracePeriodRule | null>(null);
+  const [graceForm, setGraceForm] = useState(DEFAULT_GRACE);
+
   // Department dialog state
   const [depDialog, setDepDialog] = useState(false);
   const [editingDep, setEditingDep] = useState<Department | null>(null);
   const [depForm, setDepForm] = useState({ name: '', description: '' });
 
   // Delete confirmation
-  const [deleteDialog, setDeleteDialog] = useState<{ type: 'rule' | 'department'; id: string; name: string } | null>(null);
+  const [deleteDialog, setDeleteDialog] = useState<{ type: 'rule' | 'grace' | 'department'; id: string; name: string } | null>(null);
 
-  const isLoading = loadingRules || loadingDeps;
+  const isLoading = loadingRules || loadingGrace || loadingDeps;
 
   // --- Bonus rule handlers ---
   const openAddRule = () => {
@@ -132,6 +160,42 @@ export default function SettingsPage() {
   const handleDeleteRule = () => {
     if (deleteDialog?.type === 'rule') {
       deleteBonusRule.mutate(deleteDialog.id);
+    }
+    setDeleteDialog(null);
+  };
+
+  // --- Grace period handlers ---
+  const openAddGrace = () => {
+    setEditingGrace(null);
+    setGraceForm(DEFAULT_GRACE);
+    setGraceDialog(true);
+  };
+
+  const openEditGrace = (rule: GracePeriodRule) => {
+    setEditingGrace(rule);
+    setGraceForm({
+      gracePeriod: rule.gracePeriod,
+      perMinuteRate: rule.perMinuteRate,
+      label: rule.label,
+    });
+    setGraceDialog(true);
+  };
+
+  const handleSaveGrace = () => {
+    const label = graceForm.label || `${graceForm.gracePeriod} min grace`;
+    const payload = { ...graceForm, label };
+
+    if (editingGrace) {
+      updateGracePeriodRule.mutate({ id: editingGrace._id, body: payload });
+    } else {
+      createGracePeriodRule.mutate(payload);
+    }
+    setGraceDialog(false);
+  };
+
+  const handleDeleteGrace = () => {
+    if (deleteDialog?.type === 'grace') {
+      deleteGracePeriodRule.mutate(deleteDialog.id);
     }
     setDeleteDialog(null);
   };
@@ -253,6 +317,95 @@ export default function SettingsPage() {
                           size="small"
                           color="error"
                           onClick={() => setDeleteDialog({ type: 'rule', id: rule._id, name: rule.label })}
+                        >
+                          <Iconify icon="solar:trash-bin-trash-bold" width={18} />
+                        </IconButton>
+                      </Tooltip>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Card>
+
+        {/* ============ GRACE PERIOD RULES ============ */}
+        <Card sx={{ borderRadius: 2 }}>
+          <Box sx={{ p: 2.5, bgcolor: alpha('#00B8D9', 0.04) }}>
+            <Stack direction="row" alignItems="center" justifyContent="space-between">
+              <Stack direction="row" alignItems="center" spacing={1}>
+                <Iconify icon="solar:clock-circle-bold-duotone" width={24} sx={{ color: '#00B8D9' }} />
+                <Typography variant="h6">Grace Period Rules</Typography>
+              </Stack>
+              <Button
+                size="small"
+                startIcon={<Iconify icon="mingcute:add-line" />}
+                onClick={openAddGrace}
+              >
+                Add Rule
+              </Button>
+            </Stack>
+            <Typography variant="caption" sx={{ color: 'text.secondary', mt: 0.5, display: 'block' }}>
+              Grace period duration and per-minute penalty rate for late clock-ins
+            </Typography>
+          </Box>
+
+          <TableContainer>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Label</TableCell>
+                  <TableCell>Grace Period</TableCell>
+                  <TableCell>Per Minute Rate</TableCell>
+                  <TableCell align="right">Actions</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {(gracePeriodRules || []).length === 0 && (
+                  <TableRow>
+                    <TableCell colSpan={4} align="center" sx={{ py: 4, color: 'text.disabled' }}>
+                      No grace period rules configured
+                    </TableCell>
+                  </TableRow>
+                )}
+                {(gracePeriodRules || []).map((rule: GracePeriodRule) => (
+                  <TableRow key={rule._id} hover>
+                    <TableCell>
+                      <Typography variant="body2">{rule.label}</Typography>
+                    </TableCell>
+                    <TableCell>
+                      <Chip
+                        label={`${rule.gracePeriod} min`}
+                        size="small"
+                        sx={{
+                          bgcolor: alpha('#00B8D9', 0.1),
+                          color: '#00B8D9',
+                          fontWeight: 700,
+                        }}
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <Chip
+                        label={rule.perMinuteRate > 0 ? `$${rule.perMinuteRate}/min` : 'No penalty'}
+                        size="small"
+                        sx={{
+                          bgcolor: alpha(rule.perMinuteRate > 0 ? '#FF5630' : '#22C55E', 0.1),
+                          color: rule.perMinuteRate > 0 ? '#FF5630' : '#22C55E',
+                          fontWeight: 700,
+                        }}
+                      />
+                    </TableCell>
+                    <TableCell align="right">
+                      <Tooltip title="Edit">
+                        <IconButton size="small" onClick={() => openEditGrace(rule)}>
+                          <Iconify icon="solar:pen-bold" width={18} />
+                        </IconButton>
+                      </Tooltip>
+                      <Tooltip title="Delete">
+                        <IconButton
+                          size="small"
+                          color="error"
+                          onClick={() => setDeleteDialog({ type: 'grace', id: rule._id, name: rule.label })}
                         >
                           <Iconify icon="solar:trash-bin-trash-bold" width={18} />
                         </IconButton>
@@ -420,6 +573,53 @@ export default function SettingsPage() {
         </DialogActions>
       </Dialog>
 
+      {/* ============ GRACE PERIOD DIALOG ============ */}
+      <Dialog open={graceDialog} onClose={() => setGraceDialog(false)} maxWidth="sm" fullWidth>
+        <DialogTitle>{editingGrace ? 'Edit Grace Period Rule' : 'Add Grace Period Rule'}</DialogTitle>
+        <DialogContent sx={{ pt: '16px !important' }}>
+          <Stack spacing={2.5}>
+            <TextField
+              fullWidth
+              label="Grace Period"
+              type="number"
+              value={graceForm.gracePeriod}
+              onChange={(e) => setGraceForm({ ...graceForm, gracePeriod: Number(e.target.value) })}
+              InputProps={{
+                endAdornment: <InputAdornment position="end">min</InputAdornment>,
+              }}
+              helperText="Number of minutes allowed before penalty applies"
+            />
+
+            <TextField
+              fullWidth
+              label="Per Minute Rate"
+              type="number"
+              value={graceForm.perMinuteRate}
+              onChange={(e) => setGraceForm({ ...graceForm, perMinuteRate: Number(e.target.value) })}
+              InputProps={{
+                startAdornment: <InputAdornment position="start">$</InputAdornment>,
+                endAdornment: <InputAdornment position="end">/min</InputAdornment>,
+              }}
+              helperText="Deduction per minute after grace period expires"
+            />
+
+            <TextField
+              fullWidth
+              label="Label (optional)"
+              value={graceForm.label}
+              onChange={(e) => setGraceForm({ ...graceForm, label: e.target.value })}
+              placeholder={`${graceForm.gracePeriod} min grace`}
+            />
+          </Stack>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setGraceDialog(false)} color="inherit">Cancel</Button>
+          <Button onClick={handleSaveGrace} variant="contained">
+            {editingGrace ? 'Update' : 'Add'}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
       {/* ============ DEPARTMENT DIALOG ============ */}
       <Dialog open={depDialog} onClose={() => setDepDialog(false)} maxWidth="sm" fullWidth>
         <DialogTitle>{editingDep ? 'Edit Department' : 'Add Department'}</DialogTitle>
@@ -466,7 +666,7 @@ export default function SettingsPage() {
         <DialogActions>
           <Button onClick={() => setDeleteDialog(null)} color="inherit">Cancel</Button>
           <Button
-            onClick={deleteDialog?.type === 'rule' ? handleDeleteRule : handleDeleteDep}
+            onClick={deleteDialog?.type === 'rule' ? handleDeleteRule : deleteDialog?.type === 'grace' ? handleDeleteGrace : handleDeleteDep}
             variant="contained"
             color="error"
           >

@@ -16,8 +16,7 @@ import Chart from 'src/components/chart';
 import Iconify from 'src/components/iconify';
 
 function getEffBg(eff: number): string {
-  if (eff >= 105) return '#22C55E';
-  if (eff >= 100) return '#00B8D9';
+  if (eff >= 90) return '#22C55E';
   return '#FFAB00';
 }
 

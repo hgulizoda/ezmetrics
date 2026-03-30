@@ -42,6 +42,18 @@ function getEffColor(eff: number | null): string {
   return '#FF5630';
 }
 
+function getEffChipColor(eff: number | null): 'success' | 'info' | 'warning' | 'default' {
+  if (eff === null) return 'default';
+  if (eff >= 100) return 'success';
+  if (eff >= 80) return 'info';
+  return 'warning';
+}
+
+function getEffBg(eff: number): string {
+  if (eff >= 90) return '#22C55E';
+  return '#FFAB00';
+}
+
 const today = new Date().toISOString().split('T')[0];
 
 function formatTime(value: string | null | undefined): string | null {
@@ -287,7 +299,6 @@ export default function ClockPage() {
   // Table row renderer (shared between both tabs)
   const renderRow = (record: any, index: number, showDate: boolean) => {
     const eff = record.efficiency;
-    const effColor = getEffColor(eff);
     const initials = (record.worker?.name || '')
       .split(' ')
       .map((n: string) => n[0])
@@ -333,9 +344,9 @@ export default function ClockPage() {
           {record.billedHours != null ? `${record.billedHours} hrs` : '—'}
         </TableCell>
         <TableCell>
-          <Typography variant="body2" sx={{ fontWeight: 600, color: effColor }}>
-            {eff != null ? `${eff}%` : '—'}
-          </Typography>
+          {eff != null ? (
+            <Chip label={`${eff}%`} size="small" variant="soft" color={getEffChipColor(eff)} />
+          ) : '—'}
         </TableCell>
         <TableCell>{record.shiftPeriod ?? '—'}</TableCell>
         <TableCell>
@@ -448,74 +459,54 @@ export default function ClockPage() {
                           <Box sx={{ width: 10, height: 10, borderRadius: '50%', bgcolor: alpha(theme.palette.primary.main, 0.3) }} />
                           <Typography variant="caption" sx={{ color: 'text.secondary' }}>Required Hours</Typography>
                         </Stack>
-                        <Stack direction="row" alignItems="center" spacing={0.5}>
-                          <Box sx={{ width: 10, height: 10, borderRadius: '50%', bgcolor: '#FFAB00' }} />
-                          <Typography variant="caption" sx={{ color: 'text.secondary' }}>Efficiency</Typography>
-                        </Stack>
                       </Stack>
                     </Box>
                   </Stack>
                   <Chart
                     type="bar"
                     series={[
-                      { name: 'Actual Hours', type: 'bar', data: todayChartData.actual },
-                      { name: 'Required Hours', type: 'bar', data: todayChartData.billed },
-                      { name: 'Efficiency', type: 'line', data: todayChartData.efficiency },
+                      { name: 'Actual Hours', data: todayChartData.actual },
+                      { name: 'Required Hours', data: todayChartData.billed },
                     ]}
                     options={{
                       chart: { stacked: false, toolbar: { show: false } },
-                      plotOptions: {
-                        bar: { columnWidth: '50%', borderRadius: 4, dataLabels: { position: 'top' } },
-                      },
-                      dataLabels: {
-                        enabled: true,
-                        enabledOnSeries: [2],
-                        formatter: (val: number) => `${val}%`,
-                        offsetY: -8,
-                        style: { fontSize: '13px', fontWeight: 700, colors: ['#FFAB00'] },
-                        background: { enabled: false },
-                      },
-                      stroke: { width: [0, 0, 3], curve: 'smooth' },
-                      markers: {
-                        size: [0, 0, 5],
-                        colors: ['#FFAB00'],
-                        strokeColors: '#fff',
-                        strokeWidth: 2,
-                      },
+                      plotOptions: { bar: { columnWidth: '50%', borderRadius: 4 } },
                       xaxis: {
                         categories: todayChartData.categories,
                         labels: { style: { fontSize: '12px', colors: theme.palette.text.secondary } },
                       },
-                      yaxis: [
-                        {
-                          seriesName: 'Actual Hours',
-                          title: { text: 'Hours', style: { color: theme.palette.text.secondary } },
-                          labels: { formatter: (val: number) => `${val}`, style: { colors: theme.palette.text.secondary } },
-                        },
-                        {
-                          seriesName: 'Actual Hours',
-                          show: false,
-                        },
-                        {
-                          seriesName: 'Efficiency',
-                          opposite: true,
-                          title: { text: 'Efficiency %', style: { color: theme.palette.text.secondary } },
-                          labels: { formatter: (val: number) => `${val}%`, style: { colors: theme.palette.text.secondary } },
-                          min: 0,
-                          max: 120,
-                        },
-                      ],
-                      colors: [theme.palette.primary.main, alpha(theme.palette.primary.main, 0.3), '#FFAB00'],
+                      yaxis: {
+                        title: { text: 'Hours', style: { color: theme.palette.text.secondary } },
+                        labels: { formatter: (val: number) => `${val}`, style: { colors: theme.palette.text.secondary } },
+                      },
+                      colors: [theme.palette.primary.main, alpha(theme.palette.primary.main, 0.3)],
                       legend: { show: false },
                       grid: { strokeDashArray: 3, borderColor: theme.palette.divider },
                       tooltip: {
                         theme: theme.palette.mode,
                         shared: true,
                         intersect: false,
-                        y: {
-                          formatter: (val: number, opts: any) =>
-                            opts.seriesIndex === 2 ? `${val}%` : `${val} hrs`,
-                        },
+                        y: { formatter: (val: number) => `${val} hrs` },
+                      },
+                      annotations: {
+                        points: todayChartData.categories.map((cat: string, i: number) => ({
+                          x: cat,
+                          y: Math.max(todayChartData.actual[i], todayChartData.billed[i]) + 0.5,
+                          seriesIndex: 0,
+                          marker: { size: 0 },
+                          label: {
+                            text: `${todayChartData.efficiency[i]}%`,
+                            borderWidth: 0,
+                            style: {
+                              background: getEffBg(todayChartData.efficiency[i]),
+                              color: '#fff',
+                              fontSize: '11px',
+                              fontWeight: 700,
+                              padding: { left: 8, right: 8, top: 4, bottom: 4 },
+                            },
+                            borderRadius: 6,
+                          },
+                        })),
                       },
                     }}
                     height={320}
@@ -626,13 +617,12 @@ export default function ClockPage() {
               </Stack>
 
               {/* Period summary bar */}
-              <Stack direction="row" spacing={3} sx={{ mb: 0, px: 1 }}>
+              <Stack direction="row" spacing={3} sx={{ mb: 0, px: 1 }} alignItems="center">
                 {[
                   { label: 'Days', value: periodStats.daysCount, color: '#2065D1' },
                   { label: 'Records', value: periodStats.totalRecords, color: '#7635DC' },
                   { label: 'Completed', value: periodStats.completedShifts, color: '#FFAB00' },
                   { label: 'Total Hours', value: periodStats.totalHours, color: '#22C55E' },
-                  { label: 'Avg Efficiency', value: `${periodStats.avgEfficiency}%`, color: getEffColor(periodStats.avgEfficiency) },
                 ].map((stat) => (
                   <Stack key={stat.label} direction="row" spacing={0.75} alignItems="center">
                     <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: stat.color }} />
@@ -640,6 +630,10 @@ export default function ClockPage() {
                     <Typography variant="subtitle2">{stat.value}</Typography>
                   </Stack>
                 ))}
+                <Stack direction="row" spacing={0.75} alignItems="center">
+                  <Typography variant="caption" sx={{ color: 'text.secondary' }}>Avg Efficiency:</Typography>
+                  <Chip label={`${periodStats.avgEfficiency}%`} size="small" variant="soft" color={getEffChipColor(periodStats.avgEfficiency)} />
+                </Stack>
               </Stack>
             </Box>
 
@@ -659,74 +653,54 @@ export default function ClockPage() {
                           <Box sx={{ width: 10, height: 10, borderRadius: '50%', bgcolor: alpha(theme.palette.primary.main, 0.3) }} />
                           <Typography variant="caption" sx={{ color: 'text.secondary' }}>Required Hours</Typography>
                         </Stack>
-                        <Stack direction="row" alignItems="center" spacing={0.5}>
-                          <Box sx={{ width: 10, height: 10, borderRadius: '50%', bgcolor: '#FFAB00' }} />
-                          <Typography variant="caption" sx={{ color: 'text.secondary' }}>Efficiency</Typography>
-                        </Stack>
                       </Stack>
                     </Box>
                   </Stack>
                   <Chart
                     type="bar"
                     series={[
-                      { name: 'Actual Hours', type: 'bar', data: chartData.actual },
-                      { name: 'Required Hours', type: 'bar', data: chartData.billed },
-                      { name: 'Efficiency', type: 'line', data: chartData.efficiency },
+                      { name: 'Actual Hours', data: chartData.actual },
+                      { name: 'Required Hours', data: chartData.billed },
                     ]}
                     options={{
                       chart: { stacked: false, toolbar: { show: false } },
-                      plotOptions: {
-                        bar: { columnWidth: '50%', borderRadius: 4, dataLabels: { position: 'top' } },
-                      },
-                      dataLabels: {
-                        enabled: true,
-                        enabledOnSeries: [2],
-                        formatter: (val: number) => `${val}%`,
-                        offsetY: -8,
-                        style: { fontSize: '13px', fontWeight: 700, colors: ['#FFAB00'] },
-                        background: { enabled: false },
-                      },
-                      stroke: { width: [0, 0, 3], curve: 'smooth' },
-                      markers: {
-                        size: [0, 0, 5],
-                        colors: ['#FFAB00'],
-                        strokeColors: '#fff',
-                        strokeWidth: 2,
-                      },
+                      plotOptions: { bar: { columnWidth: '50%', borderRadius: 4 } },
                       xaxis: {
                         categories: chartData.categories,
                         labels: { rotate: -45, style: { fontSize: '11px', colors: theme.palette.text.secondary } },
                       },
-                      yaxis: [
-                        {
-                          seriesName: 'Actual Hours',
-                          title: { text: 'Hours', style: { color: theme.palette.text.secondary } },
-                          labels: { formatter: (val: number) => `${val}`, style: { colors: theme.palette.text.secondary } },
-                        },
-                        {
-                          seriesName: 'Actual Hours',
-                          show: false,
-                        },
-                        {
-                          seriesName: 'Efficiency',
-                          opposite: true,
-                          title: { text: 'Efficiency %', style: { color: theme.palette.text.secondary } },
-                          labels: { formatter: (val: number) => `${val}%`, style: { colors: theme.palette.text.secondary } },
-                          min: 0,
-                          max: 120,
-                        },
-                      ],
-                      colors: [theme.palette.primary.main, alpha(theme.palette.primary.main, 0.3), '#FFAB00'],
+                      yaxis: {
+                        title: { text: 'Hours', style: { color: theme.palette.text.secondary } },
+                        labels: { formatter: (val: number) => `${val}`, style: { colors: theme.palette.text.secondary } },
+                      },
+                      colors: [theme.palette.primary.main, alpha(theme.palette.primary.main, 0.3)],
                       legend: { show: false },
                       grid: { strokeDashArray: 3, borderColor: theme.palette.divider },
                       tooltip: {
                         theme: theme.palette.mode,
                         shared: true,
                         intersect: false,
-                        y: {
-                          formatter: (val: number, opts: any) =>
-                            opts.seriesIndex === 2 ? `${val}%` : `${val} hrs`,
-                        },
+                        y: { formatter: (val: number) => `${val} hrs` },
+                      },
+                      annotations: {
+                        points: chartData.categories.map((cat: string, i: number) => ({
+                          x: cat,
+                          y: Math.max(chartData.actual[i], chartData.billed[i]) + 0.5,
+                          seriesIndex: 0,
+                          marker: { size: 0 },
+                          label: {
+                            text: `${chartData.efficiency[i]}%`,
+                            borderWidth: 0,
+                            style: {
+                              background: getEffBg(chartData.efficiency[i]),
+                              color: '#fff',
+                              fontSize: '11px',
+                              fontWeight: 700,
+                              padding: { left: 8, right: 8, top: 4, bottom: 4 },
+                            },
+                            borderRadius: 6,
+                          },
+                        })),
                       },
                     }}
                     height={400}
@@ -773,12 +747,10 @@ export default function ClockPage() {
                           <Typography variant="caption" sx={{ color: 'text.secondary' }}>
                             Hours: <strong>{dayHours.toFixed(1)}</strong>
                           </Typography>
-                          <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-                            Avg Efficiency:{' '}
-                            <Typography component="span" variant="caption" sx={{ fontWeight: 700, color: getEffColor(dayAvgEff) }}>
-                              {dayAvgEff}%
-                            </Typography>
-                          </Typography>
+                          <Stack direction="row" alignItems="center" spacing={0.5}>
+                            <Typography variant="caption" sx={{ color: 'text.secondary' }}>Avg Efficiency:</Typography>
+                            <Chip label={`${dayAvgEff}%`} size="small" variant="soft" color={getEffChipColor(dayAvgEff)} />
+                          </Stack>
                         </Stack>
                       </Stack>
 
@@ -802,7 +774,6 @@ export default function ClockPage() {
                           <TableBody>
                             {dateRecords.map((record: any, index: number) => {
                               const eff = record.efficiency;
-                              const effColor = getEffColor(eff);
                               const initials = (record.worker?.name || '')
                                 .split(' ')
                                 .map((n: string) => n[0])
@@ -848,9 +819,9 @@ export default function ClockPage() {
                                     {record.billedHours != null ? `${record.billedHours} hrs` : '—'}
                                   </TableCell>
                                   <TableCell>
-                                    <Typography variant="body2" sx={{ fontWeight: 600, color: effColor }}>
-                                      {eff != null ? `${eff}%` : '—'}
-                                    </Typography>
+                                    {eff != null ? (
+                                      <Chip label={`${eff}%`} size="small" variant="soft" color={getEffChipColor(eff)} />
+                                    ) : '—'}
                                   </TableCell>
                                   <TableCell>{record.shiftPeriod ?? '—'}</TableCell>
                                   <TableCell>

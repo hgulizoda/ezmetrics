@@ -38,6 +38,13 @@ function getEffColor(eff: number | null): string {
   return '#FF5630';
 }
 
+function getEffChipColor(eff: number | null): 'success' | 'info' | 'warning' | 'default' {
+  if (eff === null) return 'default';
+  if (eff >= 100) return 'success';
+  if (eff >= 80) return 'info';
+  return 'warning';
+}
+
 const today = new Date().toISOString().split('T')[0];
 
 function formatTime(value: string | null | undefined): string {
@@ -225,17 +232,10 @@ export default function ClockDetailPage() {
               <Typography variant="subtitle2">{worker.type ?? '—'}</Typography>
             </Box>
             <Box sx={{ textAlign: 'center' }}>
-              <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+              <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block', mb: 0.5 }}>
                 Avg Efficiency
               </Typography>
-              <Typography
-                variant="subtitle2"
-                sx={{
-                  color: getEffColor(avgEfficiency),
-                }}
-              >
-                {avgEfficiency}%
-              </Typography>
+              <Chip label={`${avgEfficiency}%`} size="small" variant="soft" color={getEffChipColor(avgEfficiency)} />
             </Box>
             <Box sx={{ textAlign: 'center' }}>
               <Typography variant="caption" sx={{ color: 'text.secondary' }}>
@@ -275,7 +275,6 @@ export default function ClockDetailPage() {
               ) : (
                 paginatedRecords.map((record: any) => {
                   const eff = record.efficiency;
-                  const effColor = getEffColor(eff);
 
                   return (
                     <TableRow key={record._id} hover>
@@ -283,9 +282,9 @@ export default function ClockDetailPage() {
                       <TableCell>{formatTime(record.clockIn)}</TableCell>
                       <TableCell>{formatTime(record.clockOut)}</TableCell>
                       <TableCell align="center">
-                        <Typography variant="body2" sx={{ fontWeight: 600, color: effColor }}>
-                          {eff != null ? `${eff}%` : '—'}
-                        </Typography>
+                        {eff != null ? (
+                          <Chip label={`${eff}%`} size="small" variant="soft" color={getEffChipColor(eff)} />
+                        ) : '—'}
                       </TableCell>
                       <TableCell align="right">
                         {record.totalHours != null ? `${record.totalHours} hrs` : '—'}

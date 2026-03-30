@@ -196,6 +196,12 @@ const MOCK_SETTINGS = [
   { key: 'timezone', value: 'America/New_York' },
 ];
 
+const MOCK_GRACE_PERIOD_RULES: Array<{ _id: string; gracePeriod: number; perMinuteRate: number; maxPenaltyMinutes: number; label: string }> = [
+  { _id: 'gp1', gracePeriod: 5, perMinuteRate: 0, maxPenaltyMinutes: 60, label: 'First 5 min free' },
+  { _id: 'gp2', gracePeriod: 10, perMinuteRate: 1.5, maxPenaltyMinutes: 60, label: 'Standard penalty' },
+  { _id: 'gp3', gracePeriod: 15, perMinuteRate: 2.0, maxPenaltyMinutes: 90, label: 'Extended grace' },
+];
+
 const MOCK_DEPARTMENTS: Array<{ _id: string; name: string; description: string; status: 'active' | 'inactive' }> = [
   { _id: 'dep1', name: 'Shop', description: 'Main repair shop', status: 'active' },
   { _id: 'dep2', name: 'Fleet', description: 'Fleet maintenance', status: 'active' },
@@ -460,6 +466,50 @@ export function useDeleteBonusRule() {
       return id;
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ['bonus-rules'] }),
+  });
+}
+
+// ============ GRACE PERIOD RULES ============
+export function useGracePeriodRules() {
+  return useQuery({
+    queryKey: ['grace-period-rules'],
+    queryFn: async () => MOCK_GRACE_PERIOD_RULES,
+  });
+}
+
+export function useCreateGracePeriodRule() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (body: any) => {
+      const newRule = { _id: `gp${Date.now()}`, ...body };
+      MOCK_GRACE_PERIOD_RULES.push(newRule);
+      return newRule;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['grace-period-rules'] }),
+  });
+}
+
+export function useUpdateGracePeriodRule() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id, body }: { id: string; body: any }) => {
+      const idx = MOCK_GRACE_PERIOD_RULES.findIndex((r) => r._id === id);
+      if (idx >= 0) Object.assign(MOCK_GRACE_PERIOD_RULES[idx], body);
+      return MOCK_GRACE_PERIOD_RULES[idx];
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['grace-period-rules'] }),
+  });
+}
+
+export function useDeleteGracePeriodRule() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const idx = MOCK_GRACE_PERIOD_RULES.findIndex((r) => r._id === id);
+      if (idx >= 0) MOCK_GRACE_PERIOD_RULES.splice(idx, 1);
+      return id;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['grace-period-rules'] }),
   });
 }
 

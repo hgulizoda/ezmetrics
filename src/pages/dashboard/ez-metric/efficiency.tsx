@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
+import Chip from '@mui/material/Chip';
 import Grid from '@mui/material/Grid';
 import Stack from '@mui/material/Stack';
 import MenuItem from '@mui/material/MenuItem';
@@ -31,6 +32,17 @@ function getEffColor(eff: number): string {
   if (eff >= 100) return '#22C55E';
   if (eff >= 90) return '#FFAB00';
   return '#FF5630';
+}
+
+function getEffChipColor(eff: number): 'success' | 'info' | 'warning' {
+  if (eff >= 100) return 'success';
+  if (eff >= 80) return 'info';
+  return 'warning';
+}
+
+function getEffBg(eff: number): string {
+  if (eff >= 90) return '#22C55E';
+  return '#FFAB00';
 }
 
 export default function EfficiencyPage() {
@@ -130,6 +142,7 @@ export default function EfficiencyPage() {
     const agg = workerAgg.get(w.id);
     return agg ? Math.round(agg.totalExpected * 10) / 10 : 0;
   });
+  const chartEfficiency = workers.map((w) => workerAvg.get(w.id) || 0);
 
   if (isLoading) {
     return (
@@ -192,15 +205,17 @@ export default function EfficiencyPage() {
                   <Iconify icon={s.icon} width={24} sx={{ color: s.color }} />
                 </Box>
                 <Box>
-                  <Stack direction="row" alignItems="baseline" spacing={0.5}>
-                    <Typography variant="h5">{s.value}</Typography>
+                  <Stack direction="row" alignItems="center" spacing={0.5}>
+                    {s.label === 'Avg Efficiency' ? (
+                      <Chip label={s.value} size="small" variant="soft" color={getEffChipColor(overallAvg)} />
+                    ) : (
+                      <Typography variant="h5">{s.value}</Typography>
+                    )}
                     {(s as any).sub && (
-                      <Typography variant="caption" sx={{ color: s.color, fontWeight: 700 }}>
-                        {(s as any).sub}
-                      </Typography>
+                      <Chip label={(s as any).sub} size="small" variant="soft" color={getEffChipColor(topPerformer.avg)} />
                     )}
                   </Stack>
-                  <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                  <Typography variant="caption" sx={{ color: 'text.secondary', mt: 0.5 }}>
                     {s.label}
                   </Typography>
                 </Box>
@@ -298,15 +313,40 @@ export default function EfficiencyPage() {
             plotOptions: { bar: { columnWidth: '50%', borderRadius: 4 } },
             xaxis: {
               categories: chartCategories,
-              labels: { rotate: -45, style: { fontSize: '11px' } },
+              labels: { rotate: -45, style: { fontSize: '11px', colors: theme.palette.text.secondary } },
+            },
+            yaxis: {
+              title: { text: 'Hours', style: { color: theme.palette.text.secondary } },
+              labels: { style: { colors: theme.palette.text.secondary } },
             },
             colors: [theme.palette.primary.main, alpha(theme.palette.primary.main, 0.3)],
             legend: { show: false },
-            grid: { strokeDashArray: 3 },
+            grid: { strokeDashArray: 3, borderColor: theme.palette.divider },
             tooltip: {
+              theme: theme.palette.mode,
               shared: true,
               intersect: false,
               y: { formatter: (val: number) => `${val} hrs` },
+            },
+            annotations: {
+              points: chartCategories.map((cat: string, i: number) => ({
+                x: cat,
+                y: Math.max(chartActual[i], chartExpected[i]) + 0.5,
+                seriesIndex: 0,
+                marker: { size: 0 },
+                label: {
+                  text: `${chartEfficiency[i]}%`,
+                  borderWidth: 0,
+                  style: {
+                    background: getEffBg(chartEfficiency[i]),
+                    color: '#fff',
+                    fontSize: '11px',
+                    fontWeight: 700,
+                    padding: { left: 8, right: 8, top: 4, bottom: 4 },
+                  },
+                  borderRadius: 6,
+                },
+              })),
             },
           }}
           height={400}

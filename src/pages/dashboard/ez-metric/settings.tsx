@@ -40,7 +40,7 @@ import Iconify from 'src/components/iconify';
 
 type BonusRule = {
   _id: string;
-  type: 'fixed';
+  type: 'fixed' | 'formula';
   minEfficiency: number;
   maxEfficiency: number;
   ratePerHour: number;

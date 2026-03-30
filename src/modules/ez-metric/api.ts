@@ -196,6 +196,12 @@ const MOCK_SETTINGS = [
   { key: 'timezone', value: 'America/New_York' },
 ];
 
+const MOCK_DEPARTMENTS: Array<{ _id: string; name: string; description: string; status: 'active' | 'inactive' }> = [
+  { _id: 'dep1', name: 'Shop', description: 'Main repair shop', status: 'active' },
+  { _id: 'dep2', name: 'Fleet', description: 'Fleet maintenance', status: 'active' },
+  { _id: 'dep3', name: 'Office', description: 'Office and admin', status: 'active' },
+];
+
 // ============ DASHBOARD ============
 export function useDashboardSummary() {
   return useQuery({
@@ -430,6 +436,74 @@ export function useCreateBonusRule() {
       return newRule;
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ['bonus-rules'] }),
+  });
+}
+
+export function useUpdateBonusRule() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id, body }: { id: string; body: any }) => {
+      const idx = MOCK_BONUS_RULES.findIndex((r) => r._id === id);
+      if (idx >= 0) Object.assign(MOCK_BONUS_RULES[idx], body);
+      return MOCK_BONUS_RULES[idx];
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['bonus-rules'] }),
+  });
+}
+
+export function useDeleteBonusRule() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const idx = MOCK_BONUS_RULES.findIndex((r) => r._id === id);
+      if (idx >= 0) MOCK_BONUS_RULES.splice(idx, 1);
+      return id;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['bonus-rules'] }),
+  });
+}
+
+// ============ DEPARTMENTS ============
+export function useDepartments() {
+  return useQuery({
+    queryKey: ['departments'],
+    queryFn: async () => MOCK_DEPARTMENTS,
+  });
+}
+
+export function useCreateDepartment() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (body: { name: string; description: string }) => {
+      const newDep = { _id: `dep${Date.now()}`, ...body, status: 'active' as const };
+      MOCK_DEPARTMENTS.push(newDep);
+      return newDep;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['departments'] }),
+  });
+}
+
+export function useUpdateDepartment() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id, body }: { id: string; body: any }) => {
+      const idx = MOCK_DEPARTMENTS.findIndex((d) => d._id === id);
+      if (idx >= 0) Object.assign(MOCK_DEPARTMENTS[idx], body);
+      return MOCK_DEPARTMENTS[idx];
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['departments'] }),
+  });
+}
+
+export function useDeleteDepartment() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const idx = MOCK_DEPARTMENTS.findIndex((d) => d._id === id);
+      if (idx >= 0) MOCK_DEPARTMENTS.splice(idx, 1);
+      return id;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['departments'] }),
   });
 }
 

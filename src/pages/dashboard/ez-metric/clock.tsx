@@ -13,7 +13,7 @@ import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import Tooltip from '@mui/material/Tooltip';
-import { alpha } from '@mui/material/styles';
+import { alpha, useTheme } from '@mui/material/styles';
 import TableRow from '@mui/material/TableRow';
 import MenuItem from '@mui/material/MenuItem';
 import TableBody from '@mui/material/TableBody';
@@ -32,6 +32,7 @@ import { exportCsv } from 'src/utils/exportCsv';
 
 import { useWorkers, useClockRecords, useUpdateClockRecord } from 'src/modules/ez-metric/api';
 
+import Chart from 'src/components/chart';
 import Iconify from 'src/components/iconify';
 
 function getEffColor(eff: number | null): string {
@@ -72,22 +73,36 @@ export default function ClockPage() {
   const [editNote, setEditNote] = useState('');
   const [origValues, setOrigValues] = useState({ clockIn: '', clockOut: '', date: '', billedHours: '' });
 
-  // All Records filters
+  // Filters
+  const [todayDeptFilter, setTodayDeptFilter] = useState('all');
+  const [allDeptFilter, setAllDeptFilter] = useState('all');
   const [periodPreset, setPeriodPreset] = useState<PeriodPreset>('last7');
   const [customFrom, setCustomFrom] = useState(daysAgoDate(7));
   const [customTo, setCustomTo] = useState(today);
   const [searchQuery, setSearchQuery] = useState('');
 
+  const theme = useTheme();
   const navigate = useNavigate();
   const { data: records = [], isLoading } = useClockRecords();
   const { data: workers = [] } = useWorkers();
   const updateClockRecord = useUpdateClockRecord();
 
-  const todayRecords = records.filter((r: any) => {
+  // Unique departments from all records
+  const departments = useMemo(() => {
+    const set = new Set<string>();
+    records.forEach((r: any) => { if (r.department) set.add(r.department); });
+    return Array.from(set).sort();
+  }, [records]);
+
+  const allTodayRecords = records.filter((r: any) => {
     const recordDate = r.date ? new Date(r.date).toISOString().split('T')[0] : '';
     return recordDate === today;
   });
-  const activeWorkers = todayRecords.filter((r: any) => !r.clockOut);
+  const todayRecords = useMemo(() => {
+    if (todayDeptFilter === 'all') return allTodayRecords;
+    return allTodayRecords.filter((r: any) => r.department === todayDeptFilter);
+  }, [allTodayRecords, todayDeptFilter]);
+  const activeWorkers = allTodayRecords.filter((r: any) => !r.clockOut);
 
   // Compute date range based on preset
   const dateRange = useMemo(() => {
@@ -107,6 +122,9 @@ export default function ClockPage() {
       const d = r.date ? new Date(r.date).toISOString().split('T')[0] : '';
       return d >= dateRange.from && d <= dateRange.to;
     });
+    if (allDeptFilter !== 'all') {
+      list = list.filter((r: any) => r.department === allDeptFilter);
+    }
     if (searchQuery) {
       const q = searchQuery.toLowerCase();
       list = list.filter((r: any) => (r.worker?.name || '').toLowerCase().includes(q));
@@ -119,7 +137,7 @@ export default function ClockPage() {
       return (a.worker?.name || '').localeCompare(b.worker?.name || '');
     });
     return list;
-  }, [records, dateRange, searchQuery]);
+  }, [records, dateRange, allDeptFilter, searchQuery]);
 
   // Aggregate stats for the selected period
   const periodStats = useMemo(() => {
@@ -141,6 +159,29 @@ export default function ClockPage() {
     };
   }, [filteredRecords]);
 
+  // Per-worker chart data (actual vs required hours + efficiency)
+  const chartData = useMemo(() => {
+    const map = new Map<string, { name: string; actual: number; billed: number; effSum: number; effCount: number }>();
+    filteredRecords.forEach((r: any) => {
+      const name = r.worker?.name || 'Unknown';
+      const prev = map.get(name) || { name, actual: 0, billed: 0, effSum: 0, effCount: 0 };
+      map.set(name, {
+        name,
+        actual: prev.actual + (r.totalHours || 0),
+        billed: prev.billed + (r.billedHours || 0),
+        effSum: prev.effSum + (r.efficiency != null ? r.efficiency : 0),
+        effCount: prev.effCount + (r.efficiency != null ? 1 : 0),
+      });
+    });
+    const entries = Array.from(map.values());
+    return {
+      categories: entries.map((e) => e.name.split(' ')[0]),
+      actual: entries.map((e) => Math.round(e.actual * 10) / 10),
+      billed: entries.map((e) => Math.round(e.billed * 10) / 10),
+      efficiency: entries.map((e) => e.effCount > 0 ? Math.round(e.effSum / e.effCount) : 0),
+    };
+  }, [filteredRecords]);
+
   // Group records by date for display
   const groupedByDate = useMemo(() => {
     const groups: Record<string, any[]> = {};
@@ -151,6 +192,29 @@ export default function ClockPage() {
     });
     return Object.entries(groups).sort(([a], [b]) => b.localeCompare(a));
   }, [filteredRecords]);
+
+  // Per-worker chart data for today (actual vs required hours + efficiency)
+  const todayChartData = useMemo(() => {
+    const map = new Map<string, { name: string; actual: number; billed: number; effSum: number; effCount: number }>();
+    todayRecords.forEach((r: any) => {
+      const name = r.worker?.name || 'Unknown';
+      const prev = map.get(name) || { name, actual: 0, billed: 0, effSum: 0, effCount: 0 };
+      map.set(name, {
+        name,
+        actual: prev.actual + (r.totalHours || 0),
+        billed: prev.billed + (r.billedHours || 0),
+        effSum: prev.effSum + (r.efficiency != null ? r.efficiency : 0),
+        effCount: prev.effCount + (r.efficiency != null ? 1 : 0),
+      });
+    });
+    const entries = Array.from(map.values());
+    return {
+      categories: entries.map((e) => e.name.split(' ')[0]),
+      actual: entries.map((e) => Math.round(e.actual * 10) / 10),
+      billed: entries.map((e) => Math.round(e.billed * 10) / 10),
+      efficiency: entries.map((e) => e.effCount > 0 ? Math.round(e.effSum / e.effCount) : 0),
+    };
+  }, [todayRecords]);
 
   const _displayedRecords = tab === 0 ? todayRecords : filteredRecords;
 
@@ -218,7 +282,7 @@ export default function ClockPage() {
       { id: editRecord._id, body },
       { onSuccess: () => handleCloseEdit() }
     );
-  }, [editRecord, editClockIn, editClockOut, editDate, editNote, updateClockRecord, handleCloseEdit]);
+  }, [editRecord, editClockIn, editClockOut, editDate, editBilledHours, editNote, updateClockRecord, handleCloseEdit]);
 
   // Table row renderer (shared between both tabs)
   const renderRow = (record: any, index: number, showDate: boolean) => {
@@ -351,6 +415,115 @@ export default function ClockPage() {
             <Box sx={{ display: 'flex', justifyContent: 'center', py: 6 }}><CircularProgress /></Box>
           ) : (
             <Box>
+            {/* Department filter */}
+            <Box sx={{ px: 3, pt: 2.5, pb: 1 }}>
+              <TextField
+                select
+                size="small"
+                label="Department"
+                value={todayDeptFilter}
+                onChange={(e) => setTodayDeptFilter(e.target.value)}
+                sx={{ minWidth: 180 }}
+              >
+                <MenuItem value="all">All Departments</MenuItem>
+                {departments.map((d) => (
+                  <MenuItem key={d} value={d}>{d}</MenuItem>
+                ))}
+              </TextField>
+            </Box>
+
+            {/* Actual vs Required Hours per Employee */}
+            {todayChartData.categories.length > 0 && (
+              <Box sx={{ px: 3, pt: 2, pb: 1 }}>
+                <Card sx={{ p: 3, borderRadius: 2 }}>
+                  <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mb: 2 }}>
+                    <Box>
+                      <Typography variant="h6">Actual vs Required Hours</Typography>
+                      <Stack direction="row" alignItems="center" spacing={2} sx={{ mt: 0.5 }}>
+                        <Stack direction="row" alignItems="center" spacing={0.5}>
+                          <Box sx={{ width: 10, height: 10, borderRadius: '50%', bgcolor: theme.palette.primary.main }} />
+                          <Typography variant="caption" sx={{ color: 'text.secondary' }}>Actual Hours</Typography>
+                        </Stack>
+                        <Stack direction="row" alignItems="center" spacing={0.5}>
+                          <Box sx={{ width: 10, height: 10, borderRadius: '50%', bgcolor: alpha(theme.palette.primary.main, 0.3) }} />
+                          <Typography variant="caption" sx={{ color: 'text.secondary' }}>Required Hours</Typography>
+                        </Stack>
+                        <Stack direction="row" alignItems="center" spacing={0.5}>
+                          <Box sx={{ width: 10, height: 10, borderRadius: '50%', bgcolor: '#FFAB00' }} />
+                          <Typography variant="caption" sx={{ color: 'text.secondary' }}>Efficiency</Typography>
+                        </Stack>
+                      </Stack>
+                    </Box>
+                  </Stack>
+                  <Chart
+                    type="bar"
+                    series={[
+                      { name: 'Actual Hours', type: 'bar', data: todayChartData.actual },
+                      { name: 'Required Hours', type: 'bar', data: todayChartData.billed },
+                      { name: 'Efficiency', type: 'line', data: todayChartData.efficiency },
+                    ]}
+                    options={{
+                      chart: { stacked: false, toolbar: { show: false } },
+                      plotOptions: {
+                        bar: { columnWidth: '50%', borderRadius: 4, dataLabels: { position: 'top' } },
+                      },
+                      dataLabels: {
+                        enabled: true,
+                        enabledOnSeries: [2],
+                        formatter: (val: number) => `${val}%`,
+                        offsetY: -8,
+                        style: { fontSize: '13px', fontWeight: 700, colors: ['#FFAB00'] },
+                        background: { enabled: false },
+                      },
+                      stroke: { width: [0, 0, 3], curve: 'smooth' },
+                      markers: {
+                        size: [0, 0, 5],
+                        colors: ['#FFAB00'],
+                        strokeColors: '#fff',
+                        strokeWidth: 2,
+                      },
+                      xaxis: {
+                        categories: todayChartData.categories,
+                        labels: { style: { fontSize: '12px', colors: theme.palette.text.secondary } },
+                      },
+                      yaxis: [
+                        {
+                          seriesName: 'Actual Hours',
+                          title: { text: 'Hours', style: { color: theme.palette.text.secondary } },
+                          labels: { formatter: (val: number) => `${val}`, style: { colors: theme.palette.text.secondary } },
+                        },
+                        {
+                          seriesName: 'Actual Hours',
+                          show: false,
+                        },
+                        {
+                          seriesName: 'Efficiency',
+                          opposite: true,
+                          title: { text: 'Efficiency %', style: { color: theme.palette.text.secondary } },
+                          labels: { formatter: (val: number) => `${val}%`, style: { colors: theme.palette.text.secondary } },
+                          min: 0,
+                          max: 120,
+                        },
+                      ],
+                      colors: [theme.palette.primary.main, alpha(theme.palette.primary.main, 0.3), '#FFAB00'],
+                      legend: { show: false },
+                      grid: { strokeDashArray: 3, borderColor: theme.palette.divider },
+                      tooltip: {
+                        theme: theme.palette.mode,
+                        shared: true,
+                        intersect: false,
+                        y: {
+                          formatter: (val: number, opts: any) =>
+                            opts.seriesIndex === 2 ? `${val}%` : `${val} hrs`,
+                        },
+                      },
+                    }}
+                    height={320}
+                  />
+                </Card>
+              </Box>
+            )}
+
             <TableContainer>
               <Table>
                 <TableHead>
@@ -430,6 +603,20 @@ export default function ClockPage() {
                 )}
 
                 <TextField
+                  select
+                  size="small"
+                  label="Department"
+                  value={allDeptFilter}
+                  onChange={(e) => setAllDeptFilter(e.target.value)}
+                  sx={{ minWidth: 180 }}
+                >
+                  <MenuItem value="all">All Departments</MenuItem>
+                  {departments.map((d) => (
+                    <MenuItem key={d} value={d}>{d}</MenuItem>
+                  ))}
+                </TextField>
+
+                <TextField
                   size="small"
                   placeholder="Search worker..."
                   value={searchQuery}
@@ -455,6 +642,98 @@ export default function ClockPage() {
                 ))}
               </Stack>
             </Box>
+
+            {/* Actual vs Required Hours Bar Chart */}
+            {!isLoading && chartData.categories.length > 0 && (
+              <Box sx={{ px: 3, pt: 3 }}>
+                <Card sx={{ p: 3, borderRadius: 2 }}>
+                  <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mb: 2 }}>
+                    <Box>
+                      <Typography variant="h6">Actual vs Required Hours</Typography>
+                      <Stack direction="row" alignItems="center" spacing={2} sx={{ mt: 0.5 }}>
+                        <Stack direction="row" alignItems="center" spacing={0.5}>
+                          <Box sx={{ width: 10, height: 10, borderRadius: '50%', bgcolor: theme.palette.primary.main }} />
+                          <Typography variant="caption" sx={{ color: 'text.secondary' }}>Actual Hours</Typography>
+                        </Stack>
+                        <Stack direction="row" alignItems="center" spacing={0.5}>
+                          <Box sx={{ width: 10, height: 10, borderRadius: '50%', bgcolor: alpha(theme.palette.primary.main, 0.3) }} />
+                          <Typography variant="caption" sx={{ color: 'text.secondary' }}>Required Hours</Typography>
+                        </Stack>
+                        <Stack direction="row" alignItems="center" spacing={0.5}>
+                          <Box sx={{ width: 10, height: 10, borderRadius: '50%', bgcolor: '#FFAB00' }} />
+                          <Typography variant="caption" sx={{ color: 'text.secondary' }}>Efficiency</Typography>
+                        </Stack>
+                      </Stack>
+                    </Box>
+                  </Stack>
+                  <Chart
+                    type="bar"
+                    series={[
+                      { name: 'Actual Hours', type: 'bar', data: chartData.actual },
+                      { name: 'Required Hours', type: 'bar', data: chartData.billed },
+                      { name: 'Efficiency', type: 'line', data: chartData.efficiency },
+                    ]}
+                    options={{
+                      chart: { stacked: false, toolbar: { show: false } },
+                      plotOptions: {
+                        bar: { columnWidth: '50%', borderRadius: 4, dataLabels: { position: 'top' } },
+                      },
+                      dataLabels: {
+                        enabled: true,
+                        enabledOnSeries: [2],
+                        formatter: (val: number) => `${val}%`,
+                        offsetY: -8,
+                        style: { fontSize: '13px', fontWeight: 700, colors: ['#FFAB00'] },
+                        background: { enabled: false },
+                      },
+                      stroke: { width: [0, 0, 3], curve: 'smooth' },
+                      markers: {
+                        size: [0, 0, 5],
+                        colors: ['#FFAB00'],
+                        strokeColors: '#fff',
+                        strokeWidth: 2,
+                      },
+                      xaxis: {
+                        categories: chartData.categories,
+                        labels: { rotate: -45, style: { fontSize: '11px', colors: theme.palette.text.secondary } },
+                      },
+                      yaxis: [
+                        {
+                          seriesName: 'Actual Hours',
+                          title: { text: 'Hours', style: { color: theme.palette.text.secondary } },
+                          labels: { formatter: (val: number) => `${val}`, style: { colors: theme.palette.text.secondary } },
+                        },
+                        {
+                          seriesName: 'Actual Hours',
+                          show: false,
+                        },
+                        {
+                          seriesName: 'Efficiency',
+                          opposite: true,
+                          title: { text: 'Efficiency %', style: { color: theme.palette.text.secondary } },
+                          labels: { formatter: (val: number) => `${val}%`, style: { colors: theme.palette.text.secondary } },
+                          min: 0,
+                          max: 120,
+                        },
+                      ],
+                      colors: [theme.palette.primary.main, alpha(theme.palette.primary.main, 0.3), '#FFAB00'],
+                      legend: { show: false },
+                      grid: { strokeDashArray: 3, borderColor: theme.palette.divider },
+                      tooltip: {
+                        theme: theme.palette.mode,
+                        shared: true,
+                        intersect: false,
+                        y: {
+                          formatter: (val: number, opts: any) =>
+                            opts.seriesIndex === 2 ? `${val}%` : `${val} hrs`,
+                        },
+                      },
+                    }}
+                    height={400}
+                  />
+                </Card>
+              </Box>
+            )}
 
             {isLoading && (
               <Box sx={{ display: 'flex', justifyContent: 'center', py: 6 }}><CircularProgress /></Box>

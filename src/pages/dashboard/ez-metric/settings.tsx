@@ -25,9 +25,16 @@ import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import CircularProgress from '@mui/material/CircularProgress';
 
+import MenuItem from '@mui/material/MenuItem';
+import Avatar from '@mui/material/Avatar';
+
 import {
+  useManagers,
   useBonusRules,
   useDepartments,
+  useCreateManager,
+  useUpdateManager,
+  useDeleteManager,
   useCreateBonusRule,
   useUpdateBonusRule,
   useDeleteBonusRule,
@@ -70,6 +77,24 @@ type Department = {
   status: 'active' | 'inactive';
 };
 
+type Manager = {
+  _id: string;
+  name: string;
+  email: string;
+  phone: string;
+  password: string;
+  role: 'admin' | 'manager';
+  status: 'active' | 'inactive';
+};
+
+const DEFAULT_MANAGER = {
+  name: '',
+  email: '',
+  phone: '',
+  password: '',
+  role: 'manager' as 'admin' | 'manager',
+};
+
 const DEFAULT_BONUS: Omit<BonusRule, '_id'> = {
   type: 'fixed',
   minEfficiency: 90,
@@ -107,6 +132,11 @@ export default function SettingsPage() {
   const updateDepartment = useUpdateDepartment();
   const deleteDepartment = useDeleteDepartment();
 
+  const { data: managers, isLoading: loadingManagers } = useManagers();
+  const createManager = useCreateManager();
+  const updateManager = useUpdateManager();
+  const deleteManager = useDeleteManager();
+
   // Bonus rule dialog state
   const [bonusDialog, setBonusDialog] = useState(false);
   const [editingRule, setEditingRule] = useState<BonusRule | null>(null);
@@ -122,10 +152,16 @@ export default function SettingsPage() {
   const [editingDep, setEditingDep] = useState<Department | null>(null);
   const [depForm, setDepForm] = useState({ name: '', description: '' });
 
-  // Delete confirmation
-  const [deleteDialog, setDeleteDialog] = useState<{ type: 'rule' | 'grace' | 'department'; id: string; name: string } | null>(null);
+  // Manager dialog state
+  const [mgrDialog, setMgrDialog] = useState(false);
+  const [editingMgr, setEditingMgr] = useState<Manager | null>(null);
+  const [mgrForm, setMgrForm] = useState(DEFAULT_MANAGER);
+  const [showPassword, setShowPassword] = useState(false);
 
-  const isLoading = loadingRules || loadingGrace || loadingDeps;
+  // Delete confirmation
+  const [deleteDialog, setDeleteDialog] = useState<{ type: 'rule' | 'grace' | 'department' | 'manager'; id: string; name: string } | null>(null);
+
+  const isLoading = loadingRules || loadingGrace || loadingDeps || loadingManagers;
 
   // --- Bonus rule handlers ---
   const openAddRule = () => {
@@ -203,6 +239,35 @@ export default function SettingsPage() {
     setDeleteDialog(null);
   };
 
+  // --- Manager handlers ---
+  const openAddMgr = () => {
+    setEditingMgr(null);
+    setMgrForm(DEFAULT_MANAGER);
+    setMgrDialog(true);
+  };
+
+  const openEditMgr = (mgr: Manager) => {
+    setEditingMgr(mgr);
+    setMgrForm({ name: mgr.name, email: mgr.email, phone: mgr.phone, password: mgr.password, role: mgr.role });
+    setMgrDialog(true);
+  };
+
+  const handleSaveMgr = () => {
+    if (editingMgr) {
+      updateManager.mutate({ id: editingMgr._id, body: mgrForm });
+    } else {
+      createManager.mutate(mgrForm);
+    }
+    setMgrDialog(false);
+  };
+
+  const handleDeleteMgr = () => {
+    if (deleteDialog?.type === 'manager') {
+      deleteManager.mutate(deleteDialog.id);
+    }
+    setDeleteDialog(null);
+  };
+
   // Sync grace form with loaded data once
   if (!graceInitialized && gracePeriodRules && (gracePeriodRules as GracePeriodRule[]).length > 0) {
     const rule = (gracePeriodRules as GracePeriodRule[])[0];
@@ -220,7 +285,7 @@ export default function SettingsPage() {
         <Box>
           <Typography variant="h4">Settings</Typography>
           <Typography variant="body2" sx={{ color: 'text.secondary', mt: 0.5 }}>
-            Bonus rules and department management
+            Bonus rules, departments, and manager management
           </Typography>
         </Box>
       </Stack>
@@ -581,6 +646,113 @@ export default function SettingsPage() {
             </TableContainer>
           </AccordionDetails>
         </Accordion>
+
+        {/* ============ MANAGERS ============ */}
+        <Accordion disableGutters sx={{ borderRadius: '16px !important', overflow: 'hidden', '&:before': { display: 'none' } }}>
+          <AccordionSummary
+            expandIcon={<Iconify icon="eva:arrow-ios-downward-fill" />}
+            sx={{ bgcolor: alpha('#FF5630', 0.04), px: 2.5 }}
+          >
+            <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ width: '100%', pr: 1 }}>
+              <Stack>
+                <Stack direction="row" alignItems="center" spacing={1}>
+                  <Iconify icon="solar:users-group-rounded-bold-duotone" width={24} sx={{ color: '#FF5630' }} />
+                  <Typography variant="h6">Managers</Typography>
+                </Stack>
+                <Typography variant="caption" sx={{ color: 'text.secondary', mt: 0.5 }}>
+                  Admin and manager accounts with system access
+                </Typography>
+              </Stack>
+              <Button
+                size="small"
+                startIcon={<Iconify icon="mingcute:add-line" />}
+                onClick={(e) => { e.stopPropagation(); openAddMgr(); }}
+              >
+                Add Manager
+              </Button>
+            </Stack>
+          </AccordionSummary>
+          <AccordionDetails sx={{ p: 0 }}>
+            <TableContainer>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Name</TableCell>
+                    <TableCell>Email</TableCell>
+                    <TableCell>Phone</TableCell>
+                    <TableCell>Role</TableCell>
+                    <TableCell>Status</TableCell>
+                    <TableCell align="right">Actions</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {(managers || []).length === 0 && (
+                    <TableRow>
+                      <TableCell colSpan={6} align="center" sx={{ py: 4, color: 'text.disabled' }}>
+                        No managers configured
+                      </TableCell>
+                    </TableRow>
+                  )}
+                  {(managers || []).map((mgr: Manager) => (
+                    <TableRow key={mgr._id} hover>
+                      <TableCell>
+                        <Stack direction="row" alignItems="center" spacing={1.5}>
+                          <Avatar sx={{ width: 32, height: 32, bgcolor: alpha('#FF5630', 0.08), color: '#FF5630', fontSize: 13, fontWeight: 700 }}>
+                            {mgr.name.split(' ').map((n) => n[0]).join('')}
+                          </Avatar>
+                          <Typography variant="subtitle2">{mgr.name}</Typography>
+                        </Stack>
+                      </TableCell>
+                      <TableCell>
+                        <Typography variant="body2" sx={{ color: 'text.secondary' }}>{mgr.email}</Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Typography variant="body2" sx={{ color: 'text.secondary' }}>{mgr.phone}</Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Chip
+                          label={mgr.role === 'admin' ? 'Admin' : 'Manager'}
+                          size="small"
+                          sx={{
+                            bgcolor: alpha(mgr.role === 'admin' ? '#7635DC' : '#2065D1', 0.1),
+                            color: mgr.role === 'admin' ? '#7635DC' : '#2065D1',
+                            fontWeight: 700,
+                          }}
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <Chip
+                          label={mgr.status === 'active' ? 'Active' : 'Inactive'}
+                          size="small"
+                          color={mgr.status === 'active' ? 'success' : 'default'}
+                          variant="soft"
+                        />
+                      </TableCell>
+                      <TableCell align="right">
+                        <Tooltip title="Edit">
+                          <IconButton size="small" onClick={() => openEditMgr(mgr)}>
+                            <Iconify icon="solar:pen-bold" width={18} />
+                          </IconButton>
+                        </Tooltip>
+                        {mgr.role !== 'admin' && (
+                          <Tooltip title="Delete">
+                            <IconButton
+                              size="small"
+                              color="error"
+                              onClick={() => setDeleteDialog({ type: 'manager', id: mgr._id, name: mgr.name })}
+                            >
+                              <Iconify icon="solar:trash-bin-trash-bold" width={18} />
+                            </IconButton>
+                          </Tooltip>
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </AccordionDetails>
+        </Accordion>
       </Stack>
 
       {/* ============ BONUS RULE DIALOG ============ */}
@@ -699,6 +871,76 @@ export default function SettingsPage() {
         </DialogActions>
       </Dialog>
 
+      {/* ============ MANAGER DIALOG ============ */}
+      <Dialog open={mgrDialog} onClose={() => setMgrDialog(false)} maxWidth="sm" fullWidth>
+        <DialogTitle>{editingMgr ? 'Edit Manager' : 'Add Manager'}</DialogTitle>
+        <DialogContent sx={{ pt: '16px !important' }}>
+          <Stack spacing={2.5}>
+            <TextField
+              fullWidth
+              label="Full Name"
+              value={mgrForm.name}
+              onChange={(e) => setMgrForm({ ...mgrForm, name: e.target.value })}
+              placeholder="e.g. John Smith"
+            />
+            <Stack direction="row" spacing={2}>
+              <TextField
+                fullWidth
+                label="Email"
+                type="email"
+                value={mgrForm.email}
+                onChange={(e) => setMgrForm({ ...mgrForm, email: e.target.value })}
+                placeholder="john@ezmetric.com"
+              />
+              <TextField
+                fullWidth
+                label="Phone"
+                value={mgrForm.phone}
+                onChange={(e) => setMgrForm({ ...mgrForm, phone: e.target.value })}
+                placeholder="(555) 000-0000"
+              />
+            </Stack>
+            <TextField
+              fullWidth
+              label="Password"
+              type={showPassword ? 'text' : 'password'}
+              value={mgrForm.password}
+              onChange={(e) => setMgrForm({ ...mgrForm, password: e.target.value })}
+              placeholder="Enter password"
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton size="small" onClick={() => setShowPassword(!showPassword)} edge="end">
+                      <Iconify icon={showPassword ? 'solar:eye-bold' : 'solar:eye-closed-bold'} width={18} />
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
+            />
+            <TextField
+              select
+              fullWidth
+              label="Role"
+              value={mgrForm.role}
+              onChange={(e) => setMgrForm({ ...mgrForm, role: e.target.value as 'admin' | 'manager' })}
+            >
+              <MenuItem value="manager">Manager</MenuItem>
+              <MenuItem value="admin">Admin</MenuItem>
+            </TextField>
+          </Stack>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setMgrDialog(false)} color="inherit">Cancel</Button>
+          <Button
+            onClick={() => { handleSaveMgr(); setShowPassword(false); }}
+            variant="contained"
+            disabled={!mgrForm.name.trim() || !mgrForm.email.trim() || !mgrForm.password.trim()}
+          >
+            {editingMgr ? 'Update' : 'Add'}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
       {/* ============ DELETE CONFIRMATION ============ */}
       <Dialog open={!!deleteDialog} onClose={() => setDeleteDialog(null)} maxWidth="xs" fullWidth>
         <DialogTitle>Confirm Delete</DialogTitle>
@@ -713,6 +955,7 @@ export default function SettingsPage() {
             onClick={() => {
               if (deleteDialog?.type === 'rule') handleDeleteRule();
               else if (deleteDialog?.type === 'grace') handleDeleteGrace();
+              else if (deleteDialog?.type === 'manager') handleDeleteMgr();
               else handleDeleteDep();
             }}
             variant="contained"

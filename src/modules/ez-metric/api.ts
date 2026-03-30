@@ -214,6 +214,65 @@ const MOCK_DEPARTMENTS: Array<{ _id: string; name: string; description: string; 
   { _id: 'dep3', name: 'Office', description: 'Office and admin', status: 'active' },
 ];
 
+// ============ MANAGERS ============
+const MOCK_MANAGERS: Array<{
+  _id: string;
+  name: string;
+  email: string;
+  phone: string;
+  password: string;
+  role: 'admin' | 'manager';
+  status: 'active' | 'inactive';
+}> = [
+  { _id: 'mgr1', name: 'John Smith', email: 'john@ezmetric.com', phone: '(555) 200-1001', password: 'admin123', role: 'admin', status: 'active' },
+  { _id: 'mgr2', name: 'Sarah Johnson', email: 'sarah@ezmetric.com', phone: '(555) 200-1002', password: 'sarah456', role: 'manager', status: 'active' },
+  { _id: 'mgr3', name: 'Mike Davis', email: 'mike@ezmetric.com', phone: '(555) 200-1003', password: 'mike789', role: 'manager', status: 'active' },
+  { _id: 'mgr4', name: 'Emily Chen', email: 'emily@ezmetric.com', phone: '(555) 200-1004', password: 'emily321', role: 'manager', status: 'inactive' },
+];
+
+export function useManagers() {
+  return useQuery({
+    queryKey: ['managers'],
+    queryFn: async () => [...MOCK_MANAGERS],
+  });
+}
+
+export function useCreateManager() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (body: { name: string; email: string; phone: string; password: string; role: 'admin' | 'manager' }) => {
+      const newMgr = { _id: `mgr${Date.now()}`, ...body, status: 'active' as const };
+      MOCK_MANAGERS.push(newMgr);
+      return newMgr;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['managers'] }),
+  });
+}
+
+export function useUpdateManager() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id, body }: { id: string; body: any }) => {
+      const idx = MOCK_MANAGERS.findIndex((m) => m._id === id);
+      if (idx >= 0) Object.assign(MOCK_MANAGERS[idx], body);
+      return MOCK_MANAGERS[idx];
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['managers'] }),
+  });
+}
+
+export function useDeleteManager() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const idx = MOCK_MANAGERS.findIndex((m) => m._id === id);
+      if (idx >= 0) MOCK_MANAGERS.splice(idx, 1);
+      return id;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['managers'] }),
+  });
+}
+
 // ============ DASHBOARD ============
 export function useDashboardSummary() {
   return useQuery({

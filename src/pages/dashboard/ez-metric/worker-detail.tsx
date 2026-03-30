@@ -9,12 +9,12 @@ import Stack from '@mui/material/Stack';
 import Table from '@mui/material/Table';
 import Avatar from '@mui/material/Avatar';
 import Divider from '@mui/material/Divider';
+import Tooltip from '@mui/material/Tooltip';
 import TableRow from '@mui/material/TableRow';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableHead from '@mui/material/TableHead';
 import Typography from '@mui/material/Typography';
-import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
 import { alpha, useTheme } from '@mui/material/styles';
 import TableContainer from '@mui/material/TableContainer';
@@ -22,12 +22,12 @@ import TablePagination from '@mui/material/TablePagination';
 import CircularProgress from '@mui/material/CircularProgress';
 
 import {
-  useWorkers,
+  useLoans,
   useSalary,
+  useWorkers,
   useClockRecords,
   useOvertimeRecords,
   useChargedEmployees,
-  useLoans,
 } from 'src/modules/ez-metric/api';
 
 import Chart from 'src/components/chart';
@@ -98,7 +98,7 @@ export default function WorkerDetailPage() {
     [records, worker]
   );
 
-  const workerOvertime = useMemo(
+  const _workerOvertime = useMemo(
     () => (overtimeRecords as any[]).filter((r) => r.workerId === workerId),
     [overtimeRecords, workerId]
   );

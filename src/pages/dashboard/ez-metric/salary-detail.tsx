@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 
 import Box from '@mui/material/Box';
@@ -20,12 +20,12 @@ import TableContainer from '@mui/material/TableContainer';
 import CircularProgress from '@mui/material/CircularProgress';
 
 import {
-  useWorkers,
+  useLoans,
   useSalary,
+  useWorkers,
   useClockRecords,
   useOvertimeRecords,
   useChargedEmployees,
-  useLoans,
 } from 'src/modules/ez-metric/api';
 
 import Chart from 'src/components/chart';
@@ -66,7 +66,7 @@ export default function SalaryDetailPage() {
     [salaryData, workerId]
   );
 
-  const workerRecords = useMemo(
+  const _workerRecords = useMemo(
     () =>
       (records as any[])
         .filter((r) => r.worker?.name === worker?.name)
@@ -74,7 +74,7 @@ export default function SalaryDetailPage() {
     [records, worker]
   );
 
-  const workerOvertime = useMemo(
+  const _workerOvertime = useMemo(
     () => (overtimeRecords as any[]).filter((r) => r.workerId === workerId),
     [overtimeRecords, workerId]
   );

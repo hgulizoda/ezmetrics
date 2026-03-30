@@ -1,41 +1,43 @@
 import { useState } from 'react';
 
 import Box from '@mui/material/Box';
-import Card from '@mui/material/Card';
 import Chip from '@mui/material/Chip';
 import Stack from '@mui/material/Stack';
 import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import Tooltip from '@mui/material/Tooltip';
+import { alpha } from '@mui/material/styles';
+import TableRow from '@mui/material/TableRow';
+import Accordion from '@mui/material/Accordion';
 import TextField from '@mui/material/TextField';
-import Typography from '@mui/material/Typography';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableHead from '@mui/material/TableHead';
 import IconButton from '@mui/material/IconButton';
+import Typography from '@mui/material/Typography';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
-import { alpha } from '@mui/material/styles';
-import CircularProgress from '@mui/material/CircularProgress';
 import InputAdornment from '@mui/material/InputAdornment';
+import TableContainer from '@mui/material/TableContainer';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import CircularProgress from '@mui/material/CircularProgress';
 
 import {
   useBonusRules,
+  useDepartments,
   useCreateBonusRule,
   useUpdateBonusRule,
   useDeleteBonusRule,
   useGracePeriodRules,
-  useCreateGracePeriodRule,
-  useUpdateGracePeriodRule,
-  useDeleteGracePeriodRule,
-  useDepartments,
   useCreateDepartment,
   useUpdateDepartment,
   useDeleteDepartment,
+  useCreateGracePeriodRule,
+  useUpdateGracePeriodRule,
+  useDeleteGracePeriodRule,
 } from 'src/modules/ez-metric/api';
 
 import Iconify from 'src/components/iconify';
@@ -55,9 +57,9 @@ type BonusRule = {
 
 type GracePeriodRule = {
   _id: string;
-  gracePeriod: number;
+  freeMinutes: number;
   perMinuteRate: number;
-  maxPenaltyMinutes: number;
+  billingStopMinutes: number;
   label: string;
 };
 
@@ -79,8 +81,9 @@ const DEFAULT_BONUS: Omit<BonusRule, '_id'> = {
 };
 
 const DEFAULT_GRACE: Omit<GracePeriodRule, '_id'> = {
-  gracePeriod: 5,
-  perMinuteRate: 0,
+  freeMinutes: 5,
+  perMinuteRate: 1.0,
+  billingStopMinutes: 60,
   label: '',
 };
 
@@ -109,10 +112,10 @@ export default function SettingsPage() {
   const [editingRule, setEditingRule] = useState<BonusRule | null>(null);
   const [ruleForm, setRuleForm] = useState(DEFAULT_BONUS);
 
-  // Grace period dialog state
-  const [graceDialog, setGraceDialog] = useState(false);
-  const [editingGrace, setEditingGrace] = useState<GracePeriodRule | null>(null);
+  // Grace period form state (single rule, inline edit)
   const [graceForm, setGraceForm] = useState(DEFAULT_GRACE);
+  const [graceInitialized, setGraceInitialized] = useState(false);
+  const [editingLateBilling, setEditingLateBilling] = useState(false);
 
   // Department dialog state
   const [depDialog, setDepDialog] = useState(false);
@@ -164,35 +167,6 @@ export default function SettingsPage() {
     setDeleteDialog(null);
   };
 
-  // --- Grace period handlers ---
-  const openAddGrace = () => {
-    setEditingGrace(null);
-    setGraceForm(DEFAULT_GRACE);
-    setGraceDialog(true);
-  };
-
-  const openEditGrace = (rule: GracePeriodRule) => {
-    setEditingGrace(rule);
-    setGraceForm({
-      gracePeriod: rule.gracePeriod,
-      perMinuteRate: rule.perMinuteRate,
-      label: rule.label,
-    });
-    setGraceDialog(true);
-  };
-
-  const handleSaveGrace = () => {
-    const label = graceForm.label || `${graceForm.gracePeriod} min grace`;
-    const payload = { ...graceForm, label };
-
-    if (editingGrace) {
-      updateGracePeriodRule.mutate({ id: editingGrace._id, body: payload });
-    } else {
-      createGracePeriodRule.mutate(payload);
-    }
-    setGraceDialog(false);
-  };
-
   const handleDeleteGrace = () => {
     if (deleteDialog?.type === 'grace') {
       deleteGracePeriodRule.mutate(deleteDialog.id);
@@ -229,6 +203,13 @@ export default function SettingsPage() {
     setDeleteDialog(null);
   };
 
+  // Sync grace form with loaded data once
+  if (!graceInitialized && gracePeriodRules && (gracePeriodRules as GracePeriodRule[]).length > 0) {
+    const rule = (gracePeriodRules as GracePeriodRule[])[0];
+    setGraceForm({ freeMinutes: rule.freeMinutes, perMinuteRate: rule.perMinuteRate, billingStopMinutes: rule.billingStopMinutes, label: rule.label });
+    setGraceInitialized(true);
+  }
+
   if (isLoading) return <Box sx={{ p: 5, textAlign: 'center' }}><CircularProgress /></Box>;
 
   const allRules = (bonusRules || []).filter((r: BonusRule) => r.type === 'fixed');
@@ -246,182 +227,291 @@ export default function SettingsPage() {
 
       <Stack spacing={3}>
         {/* ============ BONUS RULES - Flat Amount ============ */}
-        <Card sx={{ borderRadius: 2 }}>
-          <Box sx={{ p: 2.5, bgcolor: alpha('#7635DC', 0.04) }}>
-            <Stack direction="row" alignItems="center" justifyContent="space-between">
-              <Stack direction="row" alignItems="center" spacing={1}>
-                <Iconify icon="solar:dollar-bold-duotone" width={24} sx={{ color: '#7635DC' }} />
-                <Typography variant="h6">Bonus Rules</Typography>
+        <Accordion defaultExpanded disableGutters sx={{ borderRadius: '16px !important', overflow: 'hidden', '&:before': { display: 'none' } }}>
+          <AccordionSummary
+            expandIcon={<Iconify icon="eva:arrow-ios-downward-fill" />}
+            sx={{ bgcolor: alpha('#7635DC', 0.04), px: 2.5 }}
+          >
+            <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ width: '100%', pr: 1 }}>
+              <Stack>
+                <Stack direction="row" alignItems="center" spacing={1}>
+                  <Iconify icon="solar:dollar-bold-duotone" width={24} sx={{ color: '#7635DC' }} />
+                  <Typography variant="h6">Bonus Rules</Typography>
+                </Stack>
+                <Typography variant="caption" sx={{ color: 'text.secondary', mt: 0.5 }}>
+                  Fixed bonus amount based on efficiency threshold
+                </Typography>
               </Stack>
               <Button
                 size="small"
                 startIcon={<Iconify icon="mingcute:add-line" />}
-                onClick={openAddRule}
+                onClick={(e) => { e.stopPropagation(); openAddRule(); }}
               >
                 Add Rule
               </Button>
             </Stack>
-            <Typography variant="caption" sx={{ color: 'text.secondary', mt: 0.5, display: 'block' }}>
-              Fixed bonus amount based on efficiency threshold
-            </Typography>
-          </Box>
-
-          <TableContainer>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Label</TableCell>
-                  <TableCell>Min Efficiency</TableCell>
-                  <TableCell>Max Efficiency</TableCell>
-                  <TableCell>Bonus Amount</TableCell>
-                  <TableCell align="right">Actions</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {allRules.length === 0 && (
+          </AccordionSummary>
+          <AccordionDetails sx={{ p: 0 }}>
+            <TableContainer>
+              <Table>
+                <TableHead>
                   <TableRow>
-                    <TableCell colSpan={5} align="center" sx={{ py: 4, color: 'text.disabled' }}>
-                      No bonus rules configured
-                    </TableCell>
+                    <TableCell>Label</TableCell>
+                    <TableCell>Min Efficiency</TableCell>
+                    <TableCell>Max Efficiency</TableCell>
+                    <TableCell>Bonus Amount</TableCell>
+                    <TableCell align="right">Actions</TableCell>
                   </TableRow>
-                )}
-                {allRules.map((rule: BonusRule) => (
-                  <TableRow key={rule._id} hover>
-                    <TableCell>
-                      <Stack direction="row" alignItems="center" spacing={1}>
-                        <Box sx={{ width: 12, height: 12, borderRadius: 0.5, bgcolor: rule.color, flexShrink: 0 }} />
-                        <Typography variant="body2">{rule.label}</Typography>
-                      </Stack>
-                    </TableCell>
-                    <TableCell>{rule.minEfficiency}%</TableCell>
-                    <TableCell>{rule.maxEfficiency}%</TableCell>
-                    <TableCell>
-                      <Chip
-                        label={rule.fixedAmount > 0 ? `$${rule.fixedAmount}` : 'No bonus'}
-                        size="small"
-                        sx={{
-                          bgcolor: alpha(rule.color, 0.1),
-                          color: rule.color,
-                          fontWeight: 700,
-                        }}
-                      />
-                    </TableCell>
-                    <TableCell align="right">
-                      <Tooltip title="Edit">
-                        <IconButton size="small" onClick={() => openEditRule(rule)}>
-                          <Iconify icon="solar:pen-bold" width={18} />
-                        </IconButton>
-                      </Tooltip>
-                      <Tooltip title="Delete">
-                        <IconButton
+                </TableHead>
+                <TableBody>
+                  {allRules.length === 0 && (
+                    <TableRow>
+                      <TableCell colSpan={5} align="center" sx={{ py: 4, color: 'text.disabled' }}>
+                        No bonus rules configured
+                      </TableCell>
+                    </TableRow>
+                  )}
+                  {allRules.map((rule: BonusRule) => (
+                    <TableRow key={rule._id} hover>
+                      <TableCell>
+                        <Stack direction="row" alignItems="center" spacing={1}>
+                          <Box sx={{ width: 12, height: 12, borderRadius: 0.5, bgcolor: rule.color, flexShrink: 0 }} />
+                          <Typography variant="body2">{rule.label}</Typography>
+                        </Stack>
+                      </TableCell>
+                      <TableCell>{rule.minEfficiency}%</TableCell>
+                      <TableCell>{rule.maxEfficiency}%</TableCell>
+                      <TableCell>
+                        <Chip
+                          label={rule.fixedAmount > 0 ? `$${rule.fixedAmount}` : 'No bonus'}
                           size="small"
-                          color="error"
-                          onClick={() => setDeleteDialog({ type: 'rule', id: rule._id, name: rule.label })}
-                        >
-                          <Iconify icon="solar:trash-bin-trash-bold" width={18} />
-                        </IconButton>
-                      </Tooltip>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </Card>
+                          sx={{
+                            bgcolor: alpha(rule.color, 0.1),
+                            color: rule.color,
+                            fontWeight: 700,
+                          }}
+                        />
+                      </TableCell>
+                      <TableCell align="right">
+                        <Tooltip title="Edit">
+                          <IconButton size="small" onClick={() => openEditRule(rule)}>
+                            <Iconify icon="solar:pen-bold" width={18} />
+                          </IconButton>
+                        </Tooltip>
+                        <Tooltip title="Delete">
+                          <IconButton
+                            size="small"
+                            color="error"
+                            onClick={() => setDeleteDialog({ type: 'rule', id: rule._id, name: rule.label })}
+                          >
+                            <Iconify icon="solar:trash-bin-trash-bold" width={18} />
+                          </IconButton>
+                        </Tooltip>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </AccordionDetails>
+        </Accordion>
 
-        {/* ============ GRACE PERIOD RULES ============ */}
-        <Card sx={{ borderRadius: 2 }}>
-          <Box sx={{ p: 2.5, bgcolor: alpha('#00B8D9', 0.04) }}>
-            <Stack direction="row" alignItems="center" justifyContent="space-between">
+        {/* ============ LATE BILLING ============ */}
+        <Accordion disableGutters sx={{ borderRadius: '16px !important', overflow: 'hidden', '&:before': { display: 'none' } }}>
+          <AccordionSummary
+            expandIcon={<Iconify icon="eva:arrow-ios-downward-fill" />}
+            sx={{ bgcolor: alpha('#00B8D9', 0.04), px: 2.5 }}
+          >
+            <Stack>
               <Stack direction="row" alignItems="center" spacing={1}>
                 <Iconify icon="solar:clock-circle-bold-duotone" width={24} sx={{ color: '#00B8D9' }} />
-                <Typography variant="h6">Grace Period Rules</Typography>
+                <Typography variant="h6">Late Billing</Typography>
               </Stack>
-              <Button
-                size="small"
-                startIcon={<Iconify icon="mingcute:add-line" />}
-                onClick={openAddGrace}
-              >
-                Add Rule
-              </Button>
+              <Typography variant="caption" sx={{ color: 'text.secondary', mt: 0.5 }}>
+                Configure the grace period and per-minute penalty for late clock-ins
+              </Typography>
             </Stack>
-            <Typography variant="caption" sx={{ color: 'text.secondary', mt: 0.5, display: 'block' }}>
-              Grace period duration and per-minute penalty rate for late clock-ins
-            </Typography>
-          </Box>
+          </AccordionSummary>
+          <AccordionDetails sx={{ p: 3 }}>
+            {(() => {
+              const rule = (gracePeriodRules || [])[0] as GracePeriodRule | undefined;
+              const current = rule
+                ? { freeMinutes: rule.freeMinutes, perMinuteRate: rule.perMinuteRate, billingStopMinutes: rule.billingStopMinutes }
+                : { freeMinutes: DEFAULT_GRACE.freeMinutes, perMinuteRate: DEFAULT_GRACE.perMinuteRate, billingStopMinutes: DEFAULT_GRACE.billingStopMinutes };
 
-          <TableContainer>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Label</TableCell>
-                  <TableCell>Grace Period</TableCell>
-                  <TableCell>Per Minute Rate</TableCell>
-                  <TableCell align="right">Actions</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {(gracePeriodRules || []).length === 0 && (
-                  <TableRow>
-                    <TableCell colSpan={4} align="center" sx={{ py: 4, color: 'text.disabled' }}>
-                      No grace period rules configured
-                    </TableCell>
-                  </TableRow>
-                )}
-                {(gracePeriodRules || []).map((rule: GracePeriodRule) => (
-                  <TableRow key={rule._id} hover>
-                    <TableCell>
-                      <Typography variant="body2">{rule.label}</Typography>
-                    </TableCell>
-                    <TableCell>
-                      <Chip
-                        label={`${rule.gracePeriod} min`}
-                        size="small"
-                        sx={{
-                          bgcolor: alpha('#00B8D9', 0.1),
-                          color: '#00B8D9',
-                          fontWeight: 700,
-                        }}
+              const freeErr = graceForm.freeMinutes < 1;
+              const rateErr = graceForm.perMinuteRate <= 0;
+              const stopErr = graceForm.billingStopMinutes <= graceForm.freeMinutes;
+              const hasError = freeErr || rateErr || stopErr;
+
+              const maxPenalty = current.perMinuteRate * (current.billingStopMinutes - current.freeMinutes);
+
+              const stepIcon = (icon: string, color: string) => (
+                <Box sx={{ width: 40, height: 40, borderRadius: '50%', bgcolor: alpha(color, 0.1), display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <Iconify icon={icon} width={20} sx={{ color }} />
+                </Box>
+              );
+
+              const connector = (
+                <Box sx={{ width: 40, display: 'flex', justifyContent: 'center', flexShrink: 0 }}>
+                  <Box sx={{ width: 2, height: 24, bgcolor: 'divider' }} />
+                </Box>
+              );
+
+              if (editingLateBilling) {
+                return (
+                  <Stack spacing={3}>
+                    <Stack direction="row" spacing={2}>
+                      <TextField
+                        fullWidth
+                        label="Free Period"
+                        type="number"
+                        value={graceForm.freeMinutes}
+                        onChange={(e) => setGraceForm({ ...graceForm, freeMinutes: Number(e.target.value) })}
+                        InputProps={{ endAdornment: <InputAdornment position="end">min</InputAdornment> }}
+                        error={freeErr}
+                        helperText={freeErr ? 'Must be at least 1 minute' : 'No penalty during this time'}
                       />
-                    </TableCell>
-                    <TableCell>
-                      <Chip
-                        label={rule.perMinuteRate > 0 ? `$${rule.perMinuteRate}/min` : 'No penalty'}
-                        size="small"
-                        sx={{
-                          bgcolor: alpha(rule.perMinuteRate > 0 ? '#FF5630' : '#22C55E', 0.1),
-                          color: rule.perMinuteRate > 0 ? '#FF5630' : '#22C55E',
-                          fontWeight: 700,
+                      <TextField
+                        fullWidth
+                        label="Rate per Minute"
+                        type="number"
+                        value={graceForm.perMinuteRate}
+                        onChange={(e) => setGraceForm({ ...graceForm, perMinuteRate: Number(e.target.value) })}
+                        InputProps={{
+                          startAdornment: <InputAdornment position="start">$</InputAdornment>,
+                          endAdornment: <InputAdornment position="end">/min</InputAdornment>,
                         }}
+                        error={rateErr}
+                        helperText={rateErr ? 'Rate must be greater than 0' : 'Charge per minute after free period'}
                       />
-                    </TableCell>
-                    <TableCell align="right">
-                      <Tooltip title="Edit">
-                        <IconButton size="small" onClick={() => openEditGrace(rule)}>
-                          <Iconify icon="solar:pen-bold" width={18} />
-                        </IconButton>
-                      </Tooltip>
-                      <Tooltip title="Delete">
-                        <IconButton
-                          size="small"
-                          color="error"
-                          onClick={() => setDeleteDialog({ type: 'grace', id: rule._id, name: rule.label })}
-                        >
-                          <Iconify icon="solar:trash-bin-trash-bold" width={18} />
-                        </IconButton>
-                      </Tooltip>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </Card>
+                      <TextField
+                        fullWidth
+                        label="Billing Stops At"
+                        type="number"
+                        value={graceForm.billingStopMinutes}
+                        onChange={(e) => setGraceForm({ ...graceForm, billingStopMinutes: Number(e.target.value) })}
+                        InputProps={{ endAdornment: <InputAdornment position="end">min</InputAdornment> }}
+                        error={stopErr}
+                        helperText={stopErr ? 'Must be greater than free period' : 'Max minutes to bill'}
+                      />
+                    </Stack>
+
+                    {!hasError && (
+                      <Box sx={{ px: 2, py: 1.5, borderRadius: 1.5, bgcolor: alpha('#00B8D9', 0.06), border: `1px dashed ${alpha('#00B8D9', 0.2)}` }}>
+                        <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                          Preview: First <strong>{graceForm.freeMinutes} min</strong> free, then <strong>${graceForm.perMinuteRate}/min</strong> until <strong>{graceForm.billingStopMinutes} min</strong> (max penalty: <strong>${(graceForm.perMinuteRate * (graceForm.billingStopMinutes - graceForm.freeMinutes)).toFixed(2)}</strong>)
+                        </Typography>
+                      </Box>
+                    )}
+
+                    <Stack direction="row" spacing={1} justifyContent="flex-end">
+                      <Button
+                        color="inherit"
+                        onClick={() => {
+                          setGraceForm({
+                            freeMinutes: current.freeMinutes,
+                            perMinuteRate: current.perMinuteRate,
+                            billingStopMinutes: current.billingStopMinutes,
+                            label: rule?.label || '',
+                          });
+                          setEditingLateBilling(false);
+                        }}
+                      >
+                        Cancel
+                      </Button>
+                      <Button
+                        variant="contained"
+                        disabled={hasError || updateGracePeriodRule.isPending || createGracePeriodRule.isPending}
+                        onClick={() => {
+                          const payload = { freeMinutes: graceForm.freeMinutes, perMinuteRate: graceForm.perMinuteRate, billingStopMinutes: graceForm.billingStopMinutes, label: `${graceForm.freeMinutes} min free` };
+                          if (rule) {
+                            updateGracePeriodRule.mutate({ id: rule._id, body: payload }, { onSuccess: () => setEditingLateBilling(false) });
+                          } else {
+                            createGracePeriodRule.mutate(payload, { onSuccess: () => setEditingLateBilling(false) });
+                          }
+                        }}
+                      >
+                        {updateGracePeriodRule.isPending || createGracePeriodRule.isPending ? 'Saving...' : 'Save'}
+                      </Button>
+                    </Stack>
+                  </Stack>
+                );
+              }
+
+              return (
+                <Stack spacing={0}>
+                  {/* Step 1 — Grace period */}
+                  <Stack direction="row" alignItems="center" spacing={2}>
+                    {stepIcon('solar:shield-check-bold-duotone', '#22C55E')}
+                    <Box sx={{ flex: 1 }}>
+                      <Typography variant="subtitle2">Grace Period</Typography>
+                      <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                        First <strong>{current.freeMinutes} minutes</strong> are free — no penalty
+                      </Typography>
+                    </Box>
+                    <Chip label={`${current.freeMinutes} min`} size="small" sx={{ bgcolor: alpha('#22C55E', 0.1), color: '#22C55E', fontWeight: 700 }} />
+                  </Stack>
+
+                  {connector}
+
+                  {/* Step 2 — Billing active */}
+                  <Stack direction="row" alignItems="center" spacing={2}>
+                    {stepIcon('solar:dollar-minimalistic-bold-duotone', '#FF5630')}
+                    <Box sx={{ flex: 1 }}>
+                      <Typography variant="subtitle2">Billing Active</Typography>
+                      <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                        Charged <strong>${current.perMinuteRate}</strong> per minute after grace period
+                      </Typography>
+                    </Box>
+                    <Chip label={`$${current.perMinuteRate}/min`} size="small" sx={{ bgcolor: alpha('#FF5630', 0.1), color: '#FF5630', fontWeight: 700 }} />
+                  </Stack>
+
+                  {connector}
+
+                  {/* Step 3 — Billing stops */}
+                  <Stack direction="row" alignItems="center" spacing={2}>
+                    {stepIcon('solar:stop-circle-bold-duotone', '#7635DC')}
+                    <Box sx={{ flex: 1 }}>
+                      <Typography variant="subtitle2">Billing Stops</Typography>
+                      <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                        No further charges after <strong>{current.billingStopMinutes} minutes</strong> — max penalty <strong>${maxPenalty.toFixed(2)}</strong>
+                      </Typography>
+                    </Box>
+                    <Chip label={`${current.billingStopMinutes} min`} size="small" sx={{ bgcolor: alpha('#7635DC', 0.1), color: '#7635DC', fontWeight: 700 }} />
+                  </Stack>
+
+                  {/* Edit button */}
+                  <Box sx={{ textAlign: 'right', mt: 2 }}>
+                    <Button
+                      size="small"
+                      startIcon={<Iconify icon="solar:pen-bold" width={16} />}
+                      onClick={() => {
+                        setGraceForm({
+                          freeMinutes: current.freeMinutes,
+                          perMinuteRate: current.perMinuteRate,
+                          billingStopMinutes: current.billingStopMinutes,
+                          label: rule?.label || '',
+                        });
+                        setEditingLateBilling(true);
+                      }}
+                    >
+                      Edit
+                    </Button>
+                  </Box>
+                </Stack>
+              );
+            })()}
+          </AccordionDetails>
+        </Accordion>
 
         {/* ============ DEPARTMENTS ============ */}
-        <Card sx={{ borderRadius: 2 }}>
-          <Box sx={{ p: 2.5, bgcolor: alpha('#2065D1', 0.04) }}>
-            <Stack direction="row" alignItems="center" justifyContent="space-between">
+        <Accordion disableGutters sx={{ borderRadius: '16px !important', overflow: 'hidden', '&:before': { display: 'none' } }}>
+          <AccordionSummary
+            expandIcon={<Iconify icon="eva:arrow-ios-downward-fill" />}
+            sx={{ bgcolor: alpha('#2065D1', 0.04), px: 2.5 }}
+          >
+            <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ width: '100%', pr: 1 }}>
               <Stack direction="row" alignItems="center" spacing={1}>
                 <Iconify icon="solar:buildings-bold-duotone" width={24} sx={{ color: '#2065D1' }} />
                 <Typography variant="h6">Departments</Typography>
@@ -429,67 +519,68 @@ export default function SettingsPage() {
               <Button
                 size="small"
                 startIcon={<Iconify icon="mingcute:add-line" />}
-                onClick={openAddDep}
+                onClick={(e) => { e.stopPropagation(); openAddDep(); }}
               >
                 Add Department
               </Button>
             </Stack>
-          </Box>
-
-          <TableContainer>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Name</TableCell>
-                  <TableCell>Description</TableCell>
-                  <TableCell align="right">Actions</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {(departments || []).length === 0 && (
+          </AccordionSummary>
+          <AccordionDetails sx={{ p: 0 }}>
+            <TableContainer>
+              <Table>
+                <TableHead>
                   <TableRow>
-                    <TableCell colSpan={3} align="center" sx={{ py: 4, color: 'text.disabled' }}>
-                      No departments configured
-                    </TableCell>
+                    <TableCell>Name</TableCell>
+                    <TableCell>Description</TableCell>
+                    <TableCell align="right">Actions</TableCell>
                   </TableRow>
-                )}
-                {(departments || []).map((dep: Department) => (
-                  <TableRow key={dep._id} hover>
-                    <TableCell>
-                      <Stack direction="row" alignItems="center" spacing={1}>
-                        <Box sx={{ p: 0.5, borderRadius: 0.75, bgcolor: alpha('#2065D1', 0.1), display: 'flex' }}>
-                          <Iconify icon="solar:buildings-bold" width={16} sx={{ color: '#2065D1' }} />
-                        </Box>
-                        <Typography variant="subtitle2">{dep.name}</Typography>
-                      </Stack>
-                    </TableCell>
-                    <TableCell>
-                      <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                        {dep.description || 'No description'}
-                      </Typography>
-                    </TableCell>
-                    <TableCell align="right">
-                      <Tooltip title="Edit">
-                        <IconButton size="small" onClick={() => openEditDep(dep)}>
-                          <Iconify icon="solar:pen-bold" width={18} />
-                        </IconButton>
-                      </Tooltip>
-                      <Tooltip title="Delete">
-                        <IconButton
-                          size="small"
-                          color="error"
-                          onClick={() => setDeleteDialog({ type: 'department', id: dep._id, name: dep.name })}
-                        >
-                          <Iconify icon="solar:trash-bin-trash-bold" width={18} />
-                        </IconButton>
-                      </Tooltip>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </Card>
+                </TableHead>
+                <TableBody>
+                  {(departments || []).length === 0 && (
+                    <TableRow>
+                      <TableCell colSpan={3} align="center" sx={{ py: 4, color: 'text.disabled' }}>
+                        No departments configured
+                      </TableCell>
+                    </TableRow>
+                  )}
+                  {(departments || []).map((dep: Department) => (
+                    <TableRow key={dep._id} hover>
+                      <TableCell>
+                        <Stack direction="row" alignItems="center" spacing={1}>
+                          <Box sx={{ p: 0.5, borderRadius: 0.75, bgcolor: alpha('#2065D1', 0.1), display: 'flex' }}>
+                            <Iconify icon="solar:buildings-bold" width={16} sx={{ color: '#2065D1' }} />
+                          </Box>
+                          <Typography variant="subtitle2">{dep.name}</Typography>
+                        </Stack>
+                      </TableCell>
+                      <TableCell>
+                        <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                          {dep.description || 'No description'}
+                        </Typography>
+                      </TableCell>
+                      <TableCell align="right">
+                        <Tooltip title="Edit">
+                          <IconButton size="small" onClick={() => openEditDep(dep)}>
+                            <Iconify icon="solar:pen-bold" width={18} />
+                          </IconButton>
+                        </Tooltip>
+                        <Tooltip title="Delete">
+                          <IconButton
+                            size="small"
+                            color="error"
+                            onClick={() => setDeleteDialog({ type: 'department', id: dep._id, name: dep.name })}
+                          >
+                            <Iconify icon="solar:trash-bin-trash-bold" width={18} />
+                          </IconButton>
+                        </Tooltip>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </AccordionDetails>
+        </Accordion>
       </Stack>
 
       {/* ============ BONUS RULE DIALOG ============ */}
@@ -573,53 +664,6 @@ export default function SettingsPage() {
         </DialogActions>
       </Dialog>
 
-      {/* ============ GRACE PERIOD DIALOG ============ */}
-      <Dialog open={graceDialog} onClose={() => setGraceDialog(false)} maxWidth="sm" fullWidth>
-        <DialogTitle>{editingGrace ? 'Edit Grace Period Rule' : 'Add Grace Period Rule'}</DialogTitle>
-        <DialogContent sx={{ pt: '16px !important' }}>
-          <Stack spacing={2.5}>
-            <TextField
-              fullWidth
-              label="Grace Period"
-              type="number"
-              value={graceForm.gracePeriod}
-              onChange={(e) => setGraceForm({ ...graceForm, gracePeriod: Number(e.target.value) })}
-              InputProps={{
-                endAdornment: <InputAdornment position="end">min</InputAdornment>,
-              }}
-              helperText="Number of minutes allowed before penalty applies"
-            />
-
-            <TextField
-              fullWidth
-              label="Per Minute Rate"
-              type="number"
-              value={graceForm.perMinuteRate}
-              onChange={(e) => setGraceForm({ ...graceForm, perMinuteRate: Number(e.target.value) })}
-              InputProps={{
-                startAdornment: <InputAdornment position="start">$</InputAdornment>,
-                endAdornment: <InputAdornment position="end">/min</InputAdornment>,
-              }}
-              helperText="Deduction per minute after grace period expires"
-            />
-
-            <TextField
-              fullWidth
-              label="Label (optional)"
-              value={graceForm.label}
-              onChange={(e) => setGraceForm({ ...graceForm, label: e.target.value })}
-              placeholder={`${graceForm.gracePeriod} min grace`}
-            />
-          </Stack>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setGraceDialog(false)} color="inherit">Cancel</Button>
-          <Button onClick={handleSaveGrace} variant="contained">
-            {editingGrace ? 'Update' : 'Add'}
-          </Button>
-        </DialogActions>
-      </Dialog>
-
       {/* ============ DEPARTMENT DIALOG ============ */}
       <Dialog open={depDialog} onClose={() => setDepDialog(false)} maxWidth="sm" fullWidth>
         <DialogTitle>{editingDep ? 'Edit Department' : 'Add Department'}</DialogTitle>
@@ -666,7 +710,11 @@ export default function SettingsPage() {
         <DialogActions>
           <Button onClick={() => setDeleteDialog(null)} color="inherit">Cancel</Button>
           <Button
-            onClick={deleteDialog?.type === 'rule' ? handleDeleteRule : deleteDialog?.type === 'grace' ? handleDeleteGrace : handleDeleteDep}
+            onClick={() => {
+              if (deleteDialog?.type === 'rule') handleDeleteRule();
+              else if (deleteDialog?.type === 'grace') handleDeleteGrace();
+              else handleDeleteDep();
+            }}
             variant="contained"
             color="error"
           >

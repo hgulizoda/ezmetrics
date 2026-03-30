@@ -4,16 +4,17 @@ import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Avatar from '@mui/material/Avatar';
 import Drawer from '@mui/material/Drawer';
+import { alpha } from '@mui/material/styles';
 import MenuItem from '@mui/material/MenuItem';
 import Typography from '@mui/material/Typography';
-import { alpha } from '@mui/material/styles';
 
-import { usePathname, useRouter } from 'src/routes/hooks';
+import { useRouter, usePathname } from 'src/routes/hooks';
 
 import { useResponsive } from 'src/hooks/use-responsive';
 import { useAdminRole } from 'src/hooks/use-mocked-user';
 
 import { useAuthContext } from 'src/auth/hooks';
+
 import Logo from 'src/components/logo';
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';

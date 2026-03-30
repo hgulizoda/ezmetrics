@@ -1,4 +1,3 @@
-import { useNavigate } from 'react-router-dom';
 import { useMemo, useState, useCallback } from 'react';
 
 import Box from '@mui/material/Box';
@@ -13,9 +12,8 @@ import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import Tooltip from '@mui/material/Tooltip';
-import { alpha, useTheme } from '@mui/material/styles';
-import TableRow from '@mui/material/TableRow';
 import MenuItem from '@mui/material/MenuItem';
+import TableRow from '@mui/material/TableRow';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableHead from '@mui/material/TableHead';
@@ -23,9 +21,11 @@ import TextField from '@mui/material/TextField';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import DialogTitle from '@mui/material/DialogTitle';
+import { alpha, useTheme } from '@mui/material/styles';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import TableContainer from '@mui/material/TableContainer';
+import Divider from '@mui/material/Divider';
 import CircularProgress from '@mui/material/CircularProgress';
 
 import { exportCsv } from 'src/utils/exportCsv';
@@ -34,13 +34,6 @@ import { useWorkers, useClockRecords, useUpdateClockRecord } from 'src/modules/e
 
 import Chart from 'src/components/chart';
 import Iconify from 'src/components/iconify';
-
-function getEffColor(eff: number | null): string {
-  if (eff === null) return 'text.disabled';
-  if (eff >= 100) return '#22C55E';
-  if (eff >= 90) return '#FFAB00';
-  return '#FF5630';
-}
 
 function getEffChipColor(eff: number | null): 'success' | 'info' | 'warning' | 'default' {
   if (eff === null) return 'default';
@@ -93,8 +86,10 @@ export default function ClockPage() {
   const [customTo, setCustomTo] = useState(today);
   const [searchQuery, setSearchQuery] = useState('');
 
+  // Detail modal state
+  const [detailRecord, setDetailRecord] = useState<any>(null);
+
   const theme = useTheme();
-  const navigate = useNavigate();
   const { data: records = [], isLoading } = useClockRecords();
   const { data: workers = [] } = useWorkers();
   const updateClockRecord = useUpdateClockRecord();
@@ -312,10 +307,7 @@ export default function ClockPage() {
             direction="row"
             alignItems="center"
             spacing={1.5}
-            onClick={() => {
-              const matched = (workers as any[]).find((w) => w.name === record.worker?.name);
-              if (matched) navigate(`/dashboard/clock/${matched._id}`);
-            }}
+            onClick={() => setDetailRecord(record)}
             sx={{ cursor: 'pointer', '&:hover': { opacity: 0.7 } }}
           >
             <Avatar
@@ -787,10 +779,7 @@ export default function ClockPage() {
                                       direction="row"
                                       alignItems="center"
                                       spacing={1.5}
-                                      onClick={() => {
-                                        const matched = (workers as any[]).find((w) => w.name === record.worker?.name);
-                                        if (matched) navigate(`/dashboard/clock/${matched._id}`);
-                                      }}
+                                      onClick={() => setDetailRecord(record)}
                                       sx={{ cursor: 'pointer', '&:hover': { opacity: 0.7 } }}
                                     >
                                       <Avatar
@@ -932,6 +921,249 @@ export default function ClockPage() {
             {updateClockRecord.isPending ? 'Saving...' : 'Save Changes'}
           </Button>
         </DialogActions>
+      </Dialog>
+
+      {/* ============ CLOCK DETAIL MODAL ============ */}
+      <Dialog
+        open={!!detailRecord}
+        onClose={() => setDetailRecord(null)}
+        maxWidth="sm"
+        fullWidth
+        PaperProps={{ sx: { borderRadius: 3, overflow: 'hidden' } }}
+      >
+        {detailRecord && (() => {
+          const rec = detailRecord;
+          const isCorrected = rec.status === 'manual';
+          const isActive = !rec.clockOut;
+          const initials = (rec.worker?.name || '').split(' ').map((n: string) => n[0]).join('');
+
+          let durationText = '—';
+          let durationPct = 0;
+          if (rec.clockIn && rec.clockOut) {
+            const diffMs = new Date(rec.clockOut).getTime() - new Date(rec.clockIn).getTime();
+            const hrs = Math.floor(diffMs / 3600000);
+            const mins = Math.round((diffMs % 3600000) / 60000);
+            durationText = `${hrs}h ${mins}m`;
+            durationPct = Math.min((diffMs / (10 * 3600000)) * 100, 100); // 10h = full bar
+          }
+
+          const fmtDetailDate = (v: string | null | undefined) => {
+            if (!v) return '—';
+            const d = new Date(v);
+            if (d.toISOString().split('T')[0] === today) return 'Today';
+            return d.toLocaleDateString('en', { weekday: 'short', month: 'short', day: 'numeric' });
+          };
+          const fmtDetailTime = (v: string | null | undefined) => {
+            if (!v) return '—';
+            return new Date(v).toLocaleTimeString('en', { hour: '2-digit', minute: '2-digit' });
+          };
+          const fmtDetailDateTime = (v: string | null | undefined) => {
+            if (!v) return '—';
+            return `${fmtDetailDate(v)}, ${fmtDetailTime(v)}`;
+          };
+
+          return (
+            <>
+              {/* Header */}
+              <Box sx={{ px: 3, pt: 2.5, pb: 2 }}>
+                <Stack direction="row" alignItems="center" justifyContent="space-between">
+                  <Stack direction="row" alignItems="center" spacing={2}>
+                    <Avatar
+                      sx={{
+                        width: 48,
+                        height: 48,
+                        bgcolor: alpha('#2065D1', 0.08),
+                        color: '#2065D1',
+                        fontWeight: 700,
+                        fontSize: 17,
+                      }}
+                    >
+                      {initials}
+                    </Avatar>
+                    <Box>
+                      <Typography variant="h6" sx={{ lineHeight: 1.3 }}>{rec.worker?.name}</Typography>
+                      <Stack direction="row" alignItems="center" spacing={0.5} sx={{ mt: 0.25 }}>
+                        <Chip label={rec.department || 'N/A'} size="small" variant="soft" sx={{ height: 22, fontSize: 11 }} />
+                        <Typography variant="caption" sx={{ color: 'text.disabled' }}>&middot;</Typography>
+                        <Typography variant="caption" sx={{ color: 'text.secondary' }}>{fmtDetailDate(rec.date)}</Typography>
+                      </Stack>
+                    </Box>
+                  </Stack>
+
+                  <IconButton size="small" onClick={() => setDetailRecord(null)} sx={{ color: 'text.secondary' }}>
+                    <Iconify icon="mingcute:close-line" width={20} />
+                  </IconButton>
+                </Stack>
+              </Box>
+
+              <Divider />
+
+              <DialogContent sx={{ p: 0 }}>
+                {/* Clock In / Out timeline */}
+                <Box sx={{ px: 3, py: 3 }}>
+                  {/* Timeline row */}
+                  <Stack direction="row" alignItems="center" spacing={2}>
+                    {/* Clock In */}
+                    <Stack alignItems="center" spacing={0.5} sx={{ minWidth: 90 }}>
+                      <Box sx={{ p: 1.25, borderRadius: '50%', bgcolor: alpha('#22C55E', 0.08), display: 'inline-flex' }}>
+                        <Iconify icon="solar:login-3-bold-duotone" width={24} sx={{ color: '#22C55E' }} />
+                      </Box>
+                      <Typography variant="h5" sx={{ fontWeight: 700, lineHeight: 1.2 }}>
+                        {fmtDetailTime(rec.clockIn)}
+                      </Typography>
+                      <Typography variant="caption" sx={{ color: 'text.disabled', fontSize: 10, textTransform: 'uppercase', letterSpacing: 0.8 }}>
+                        In
+                      </Typography>
+                    </Stack>
+
+                    {/* Progress bar connector */}
+                    <Box sx={{ flex: 1, position: 'relative' }}>
+                      <Box sx={{ height: 6, borderRadius: 3, bgcolor: alpha(theme.palette.primary.main, 0.08), overflow: 'hidden' }}>
+                        <Box
+                          sx={{
+                            height: '100%',
+                            width: isActive ? '40%' : `${durationPct}%`,
+                            borderRadius: 3,
+                            bgcolor: isActive ? 'info.main' : 'primary.main',
+                            transition: 'width 0.5s ease',
+                            ...(isActive && {
+                              background: `linear-gradient(90deg, ${theme.palette.info.main}, ${alpha(theme.palette.info.main, 0.3)})`,
+                            }),
+                          }}
+                        />
+                      </Box>
+                      {/* Duration label centered */}
+                      <Stack alignItems="center" sx={{ mt: 1 }}>
+                        <Typography variant="subtitle2" sx={{ fontWeight: 700, color: isActive ? 'info.main' : 'text.primary' }}>
+                          {isActive ? 'In progress' : durationText}
+                        </Typography>
+                        {rec.totalHours != null && !isActive && (
+                          <Typography variant="caption" sx={{ color: 'text.disabled', fontSize: 11 }}>
+                            {rec.totalHours} hrs logged
+                          </Typography>
+                        )}
+                      </Stack>
+                    </Box>
+
+                    {/* Clock Out */}
+                    <Stack alignItems="center" spacing={0.5} sx={{ minWidth: 90 }}>
+                      <Box sx={{
+                        p: 1.25,
+                        borderRadius: '50%',
+                        bgcolor: alpha(isActive ? '#919EAB' : '#FF5630', 0.08),
+                        display: 'inline-flex',
+                        ...(isActive && { border: '2px dashed', borderColor: alpha('#919EAB', 0.3) }),
+                      }}>
+                        <Iconify icon="solar:logout-3-bold-duotone" width={24} sx={{ color: isActive ? '#919EAB' : '#FF5630' }} />
+                      </Box>
+                      <Typography variant="h5" sx={{ fontWeight: 700, lineHeight: 1.2, color: isActive ? 'text.disabled' : 'text.primary' }}>
+                        {isActive ? '—' : fmtDetailTime(rec.clockOut)}
+                      </Typography>
+                      <Typography variant="caption" sx={{ color: 'text.disabled', fontSize: 10, textTransform: 'uppercase', letterSpacing: 0.8 }}>
+                        Out
+                      </Typography>
+                    </Stack>
+                  </Stack>
+                </Box>
+
+                {/* Info chips row */}
+                <Box sx={{ px: 3, pb: 2.5 }}>
+                  <Stack direction="row" spacing={1}>
+                    <Chip
+                      icon={<Iconify icon="solar:clock-circle-bold" width={16} />}
+                      label={rec.shiftPeriod || '—'}
+                      size="small"
+                      variant="outlined"
+                      sx={{ borderColor: 'divider', color: 'text.secondary' }}
+                    />
+                    {isActive ? (
+                      <Chip
+                        icon={<Iconify icon="svg-spinners:pulse-3" width={14} />}
+                        label="Currently Active"
+                        size="small"
+                        color="info"
+                        variant="soft"
+                      />
+                    ) : (
+                      <Chip
+                        icon={<Iconify icon="solar:check-circle-bold" width={16} />}
+                        label="Shift Complete"
+                        size="small"
+                        color="success"
+                        variant="soft"
+                      />
+                    )}
+                    {isCorrected && (
+                      <Chip
+                        icon={<Iconify icon="solar:pen-new-round-bold" width={14} />}
+                        label="Corrected"
+                        size="small"
+                        color="warning"
+                        variant="soft"
+                      />
+                    )}
+                  </Stack>
+                </Box>
+
+                {/* Correction details */}
+                {isCorrected && (
+                  <>
+                    <Divider />
+                    <Box sx={{ px: 3, py: 2.5 }}>
+                      <Typography variant="overline" sx={{ color: 'text.disabled', fontSize: 10, letterSpacing: 1.2, mb: 1.5, display: 'block' }}>
+                        Correction Details
+                      </Typography>
+                      <Stack spacing={1.5}>
+                        {rec.correctedBy && (
+                          <Stack direction="row" alignItems="center" spacing={1.5}>
+                            <Box sx={{ width: 32, height: 32, borderRadius: 1, bgcolor: alpha('#FFAB00', 0.08), display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                              <Iconify icon="solar:user-bold" width={16} sx={{ color: '#FFAB00' }} />
+                            </Box>
+                            <Box>
+                              <Typography variant="caption" sx={{ color: 'text.disabled', display: 'block', lineHeight: 1.2 }}>Corrected by</Typography>
+                              <Typography variant="body2" sx={{ fontWeight: 600 }}>{rec.correctedBy}</Typography>
+                            </Box>
+                          </Stack>
+                        )}
+                        {rec.correctedAt && (
+                          <Stack direction="row" alignItems="center" spacing={1.5}>
+                            <Box sx={{ width: 32, height: 32, borderRadius: 1, bgcolor: alpha('#00B8D9', 0.08), display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                              <Iconify icon="solar:clock-circle-bold" width={16} sx={{ color: '#00B8D9' }} />
+                            </Box>
+                            <Box>
+                              <Typography variant="caption" sx={{ color: 'text.disabled', display: 'block', lineHeight: 1.2 }}>When</Typography>
+                              <Typography variant="body2" sx={{ fontWeight: 600 }}>{fmtDetailDateTime(rec.correctedAt)}</Typography>
+                            </Box>
+                          </Stack>
+                        )}
+                        {rec.note && (
+                          <Box sx={{ p: 1.5, borderRadius: 1.5, bgcolor: alpha('#919EAB', 0.06), border: '1px solid', borderColor: 'divider' }}>
+                            <Typography variant="caption" sx={{ color: 'text.disabled', display: 'block', mb: 0.5 }}>Note</Typography>
+                            <Typography variant="body2" sx={{ color: 'text.secondary', lineHeight: 1.6 }}>
+                              {rec.note}
+                            </Typography>
+                          </Box>
+                        )}
+                      </Stack>
+                    </Box>
+                  </>
+                )}
+              </DialogContent>
+
+              <Divider />
+              <DialogActions sx={{ px: 3, py: 2 }}>
+                <Button onClick={() => setDetailRecord(null)} color="inherit">Close</Button>
+                <Button
+                  variant="contained"
+                  startIcon={<Iconify icon="solar:pen-bold" width={18} />}
+                  onClick={() => { handleOpenEdit(rec); setDetailRecord(null); }}
+                >
+                  Edit Record
+                </Button>
+              </DialogActions>
+            </>
+          );
+        })()}
       </Dialog>
     </Box>
   );

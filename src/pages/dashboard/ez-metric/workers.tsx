@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
@@ -26,11 +27,9 @@ import InputAdornment from '@mui/material/InputAdornment';
 import TableContainer from '@mui/material/TableContainer';
 import CircularProgress from '@mui/material/CircularProgress';
 
-import { useNavigate } from 'react-router-dom';
-
+import { useAuthContext } from 'src/auth/hooks';
 import { useWorkers, useCreateWorker, useUpdateWorker } from 'src/modules/ez-metric/api';
 
-import { useAuthContext } from 'src/auth/hooks';
 import Iconify from 'src/components/iconify';
 
 function getSalaryTypeColor(salaryType: string): 'info' | 'secondary' | 'warning' {

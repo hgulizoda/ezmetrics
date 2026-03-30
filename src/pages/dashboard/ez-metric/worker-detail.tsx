@@ -14,6 +14,7 @@ import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableHead from '@mui/material/TableHead';
 import Typography from '@mui/material/Typography';
+import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
 import { alpha, useTheme } from '@mui/material/styles';
 import TableContainer from '@mui/material/TableContainer';
@@ -246,37 +247,8 @@ export default function WorkerDetailPage() {
       </Grid>
 
       <Grid container spacing={3}>
-        {/* Efficiency Chart */}
-        <Grid item xs={12} md={8}>
-          <Card sx={{ p: 2.5, borderRadius: 2, height: '100%' }}>
-            <Typography variant="h6" sx={{ mb: 1 }}>Efficiency Trend</Typography>
-            {chartData.series.length > 0 ? (
-              <Chart
-                type="area"
-                series={[{ name: 'Efficiency', data: chartData.series }]}
-                options={{
-                  chart: { toolbar: { show: false }, sparkline: { enabled: false } },
-                  xaxis: { categories: chartData.categories },
-                  yaxis: { max: 150, labels: { formatter: (v: number) => `${v}%` } },
-                  colors: [theme.palette.primary.main],
-                  grid: { strokeDashArray: 3 },
-                  tooltip: { y: { formatter: (v: number) => `${v}%` } },
-                  fill: { type: 'gradient', gradient: { shadeIntensity: 1, opacityFrom: 0.4, opacityTo: 0.1 } },
-                  stroke: { curve: 'smooth', width: 3 },
-                  dataLabels: { enabled: false },
-                }}
-                height={280}
-              />
-            ) : (
-              <Typography variant="body2" sx={{ color: 'text.secondary', py: 4, textAlign: 'center' }}>
-                No efficiency data
-              </Typography>
-            )}
-          </Card>
-        </Grid>
-
         {/* Salary Summary */}
-        <Grid item xs={12} md={4}>
+        <Grid item xs={12} md={6}>
           <Card sx={{ p: 2.5, borderRadius: 2, height: '100%' }}>
             <Typography variant="h6" sx={{ mb: 2 }}>Salary Summary</Typography>
             {workerSalary ? (
@@ -330,6 +302,95 @@ export default function WorkerDetailPage() {
           </Card>
         </Grid>
 
+        {/* Charges, Loans & Debts */}
+        <Grid item xs={12} md={6}>
+          <Card sx={{ borderRadius: 2, height: '100%' }}>
+            <Typography variant="h6" sx={{ p: 2.5, pb: 0 }}>Charges, Loans & Debts</Typography>
+            {(workerCharges.length > 0 || workerLoans.length > 0) ? (
+              <TableContainer>
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Category</TableCell>
+                      <TableCell>Type</TableCell>
+                      <TableCell>Date</TableCell>
+                      <TableCell align="right">Amount</TableCell>
+                      <TableCell align="center">Status</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {workerCharges.map((ce: any) => (
+                      <TableRow key={`charge-${ce._id}`} hover>
+                        <TableCell>
+                          <Chip label="Charge" size="small" variant="soft" color="error" />
+                        </TableCell>
+                        <TableCell>{ce.chargeType}</TableCell>
+                        <TableCell>{ce.date}</TableCell>
+                        <TableCell align="right">
+                          <Typography variant="subtitle2" sx={{ color: '#FF5630' }}>${ce.amount.toFixed(2)}</Typography>
+                        </TableCell>
+                        <TableCell align="center">
+                          <Chip label={ce.chargeCategory || 'Applied'} size="small" variant="soft" color="default" />
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                    {workerLoans.map((loan: any) => (
+                      <TableRow key={`loan-${loan._id}`} hover>
+                        <TableCell>
+                          <Chip label="Loan" size="small" variant="soft" color="warning" />
+                        </TableCell>
+                        <TableCell>{loan.type}</TableCell>
+                        <TableCell>{loan.date || '—'}</TableCell>
+                        <TableCell align="right">
+                          <Typography variant="subtitle2" sx={{ color: loan.remaining > 0 ? '#FF5630' : '#22C55E' }}>
+                            ${loan.remaining.toLocaleString()} / ${loan.amount.toLocaleString()}
+                          </Typography>
+                        </TableCell>
+                        <TableCell align="center">
+                          <Chip label={loan.status} size="small" variant="soft" color={loan.status === 'paid' ? 'success' : 'warning'} />
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            ) : (
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', py: 6 }}>
+                <Typography variant="body2" sx={{ color: 'text.secondary' }}>No charges, loans or debts</Typography>
+              </Box>
+            )}
+          </Card>
+        </Grid>
+
+        {/* Efficiency Chart */}
+        <Grid item xs={12}>
+          <Card sx={{ p: 2.5, borderRadius: 2 }}>
+            <Typography variant="h6" sx={{ mb: 1 }}>Efficiency Trend</Typography>
+            {chartData.series.length > 0 ? (
+              <Chart
+                type="area"
+                series={[{ name: 'Efficiency', data: chartData.series }]}
+                options={{
+                  chart: { toolbar: { show: false }, sparkline: { enabled: false } },
+                  xaxis: { categories: chartData.categories },
+                  yaxis: { max: 150, labels: { formatter: (v: number) => `${v}%` } },
+                  colors: [theme.palette.primary.main],
+                  grid: { strokeDashArray: 3 },
+                  tooltip: { y: { formatter: (v: number) => `${v}%` } },
+                  fill: { type: 'gradient', gradient: { shadeIntensity: 1, opacityFrom: 0.4, opacityTo: 0.1 } },
+                  stroke: { curve: 'smooth', width: 3 },
+                  dataLabels: { enabled: false },
+                }}
+                height={280}
+              />
+            ) : (
+              <Typography variant="body2" sx={{ color: 'text.secondary', py: 4, textAlign: 'center' }}>
+                No efficiency data
+              </Typography>
+            )}
+          </Card>
+        </Grid>
+
         {/* Clock Records Table */}
         <Grid item xs={12}>
           <Card sx={{ borderRadius: 2 }}>
@@ -343,7 +404,7 @@ export default function WorkerDetailPage() {
                     <TableCell>Clock Out</TableCell>
                     <TableCell align="center">Efficiency</TableCell>
                     <TableCell align="right">Worked Hours</TableCell>
-                    <TableCell align="center">Status</TableCell>
+                    <TableCell align="center">Type</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -371,12 +432,13 @@ export default function WorkerDetailPage() {
                             {record.totalHours != null ? `${record.totalHours} hrs` : '—'}
                           </TableCell>
                           <TableCell align="center">
-                            <Chip
-                              label={record.status}
-                              size="small"
-                              variant="soft"
-                              color={record.status === 'auto' ? 'info' : 'warning'}
-                            />
+                            {record.status === 'manual' ? (
+                              <Tooltip title={record.note || 'Corrected'} arrow>
+                                <Chip label="Corrected" size="small" variant="soft" color="warning" />
+                              </Tooltip>
+                            ) : (
+                              <Chip label="Normal" size="small" variant="soft" color="success" />
+                            )}
                           </TableCell>
                         </TableRow>
                       );
@@ -396,81 +458,6 @@ export default function WorkerDetailPage() {
             />
           </Card>
         </Grid>
-
-        {/* Charges, Loans & Debts */}
-        {(workerCharges.length > 0 || workerLoans.length > 0) && (
-          <Grid item xs={12}>
-            <Card sx={{ borderRadius: 2 }}>
-              <Typography variant="h6" sx={{ p: 2.5, pb: 0 }}>Charges, Loans & Debts</Typography>
-              <TableContainer>
-                <Table>
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>Category</TableCell>
-                      <TableCell>Type</TableCell>
-                      <TableCell>Date</TableCell>
-                      <TableCell align="right">Amount</TableCell>
-                      <TableCell align="right">Paid</TableCell>
-                      <TableCell align="right">Remaining</TableCell>
-                      <TableCell>Note</TableCell>
-                      <TableCell align="center">Status</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {workerCharges.map((ce: any) => (
-                      <TableRow key={`charge-${ce._id}`} hover>
-                        <TableCell>
-                          <Chip label="Charge" size="small" variant="soft" color="error" />
-                        </TableCell>
-                        <TableCell>
-                          <Chip label={ce.chargeType} size="small" variant="soft" color={ce.chargeCategory === 'Deduction' ? 'error' : 'warning'} />
-                        </TableCell>
-                        <TableCell>{ce.date}</TableCell>
-                        <TableCell align="right">
-                          <Typography variant="subtitle2" sx={{ color: '#FF5630' }}>${ce.amount.toFixed(2)}</Typography>
-                        </TableCell>
-                        <TableCell align="right">—</TableCell>
-                        <TableCell align="right">—</TableCell>
-                        <TableCell>
-                          <Typography variant="body2" sx={{ color: 'text.secondary' }}>{ce.note || '—'}</Typography>
-                        </TableCell>
-                        <TableCell align="center">
-                          <Chip label={ce.chargeCategory || 'Applied'} size="small" variant="soft" color="default" />
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                    {workerLoans.map((loan: any) => (
-                      <TableRow key={`loan-${loan._id}`} hover>
-                        <TableCell>
-                          <Chip label="Loan" size="small" variant="soft" color="warning" />
-                        </TableCell>
-                        <TableCell>{loan.type}</TableCell>
-                        <TableCell>{loan.date || '—'}</TableCell>
-                        <TableCell align="right">
-                          <Typography variant="subtitle2">${loan.amount.toLocaleString()}</Typography>
-                        </TableCell>
-                        <TableCell align="right">
-                          <Typography variant="subtitle2" sx={{ color: '#22C55E' }}>${loan.paid.toLocaleString()}</Typography>
-                        </TableCell>
-                        <TableCell align="right">
-                          <Typography variant="subtitle2" sx={{ color: loan.remaining > 0 ? '#FF5630' : '#22C55E' }}>
-                            ${loan.remaining.toLocaleString()}
-                          </Typography>
-                        </TableCell>
-                        <TableCell>
-                          <Typography variant="body2" sx={{ color: 'text.secondary' }}>{loan.note || '—'}</Typography>
-                        </TableCell>
-                        <TableCell align="center">
-                          <Chip label={loan.status} size="small" variant="soft" color={loan.status === 'paid' ? 'success' : 'warning'} />
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-            </Card>
-          </Grid>
-        )}
       </Grid>
     </Box>
   );

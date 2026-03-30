@@ -23,6 +23,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
+import Chip from '@mui/material/Chip';
 import CircularProgress from '@mui/material/CircularProgress';
 
 import { useWorkers, useClockRecords, useUpdateClockRecord } from 'src/modules/ez-metric/api';
@@ -260,13 +261,14 @@ export default function ClockDetailPage() {
                 <TableCell>Clock Out</TableCell>
                 <TableCell align="center">Efficiency</TableCell>
                 <TableCell align="right">Worked Hours</TableCell>
+                <TableCell align="center">Type</TableCell>
                 <TableCell align="center">Edit</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {paginatedRecords.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={6} align="center" sx={{ py: 4, color: 'text.secondary' }}>
+                  <TableCell colSpan={7} align="center" sx={{ py: 4, color: 'text.secondary' }}>
                     No records found
                   </TableCell>
                 </TableRow>
@@ -287,6 +289,15 @@ export default function ClockDetailPage() {
                       </TableCell>
                       <TableCell align="right">
                         {record.totalHours != null ? `${record.totalHours} hrs` : '—'}
+                      </TableCell>
+                      <TableCell align="center">
+                        {record.status === 'manual' ? (
+                          <Tooltip title={record.note || 'Corrected'} arrow>
+                            <Chip label="Corrected" size="small" variant="soft" color="warning" />
+                          </Tooltip>
+                        ) : (
+                          <Chip label="Normal" size="small" variant="soft" color="success" />
+                        )}
                       </TableCell>
                       <TableCell align="center">
                         <Tooltip title="Edit Record">

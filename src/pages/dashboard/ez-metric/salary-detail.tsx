@@ -287,7 +287,7 @@ export default function SalaryDetailPage() {
 
         {/* Detailed Salary Breakdown */}
         <Grid item xs={12} md={6}>
-          <Card sx={{ p: 2.5, borderRadius: 2 }}>
+          <Card sx={{ p: 2.5, borderRadius: 2, height: '100%' }}>
             <Typography variant="h6" sx={{ mb: 2 }}>Salary Details</Typography>
             <Stack spacing={2}>
               <Stack direction="row" justifyContent="space-between" alignItems="center">
@@ -364,10 +364,10 @@ export default function SalaryDetailPage() {
         </Grid>
 
         {/* Charges, Loans & Debts */}
-        {(workerCharges.length > 0 || workerLoans.length > 0) && (
-          <Grid item xs={12}>
-            <Card sx={{ borderRadius: 2 }}>
-              <Typography variant="h6" sx={{ p: 2.5, pb: 0 }}>Charges, Loans & Debts</Typography>
+        <Grid item xs={12} md={6}>
+          <Card sx={{ borderRadius: 2, height: '100%' }}>
+            <Typography variant="h6" sx={{ p: 2.5, pb: 0 }}>Charges, Loans & Debts</Typography>
+            {(workerCharges.length > 0 || workerLoans.length > 0) ? (
               <TableContainer>
                 <Table>
                   <TableHead>
@@ -376,9 +376,6 @@ export default function SalaryDetailPage() {
                       <TableCell>Type</TableCell>
                       <TableCell>Date</TableCell>
                       <TableCell align="right">Amount</TableCell>
-                      <TableCell align="right">Paid</TableCell>
-                      <TableCell align="right">Remaining</TableCell>
-                      <TableCell>Note</TableCell>
                       <TableCell align="center">Status</TableCell>
                     </TableRow>
                   </TableHead>
@@ -388,17 +385,10 @@ export default function SalaryDetailPage() {
                         <TableCell>
                           <Chip label="Charge" size="small" variant="soft" color="error" />
                         </TableCell>
-                        <TableCell>
-                          <Chip label={ce.chargeType} size="small" variant="soft" color={ce.chargeCategory === 'Deduction' ? 'error' : 'warning'} />
-                        </TableCell>
+                        <TableCell>{ce.chargeType}</TableCell>
                         <TableCell>{ce.date}</TableCell>
                         <TableCell align="right">
                           <Typography variant="subtitle2" sx={{ color: '#FF5630' }}>${ce.amount.toFixed(2)}</Typography>
-                        </TableCell>
-                        <TableCell align="right">—</TableCell>
-                        <TableCell align="right">—</TableCell>
-                        <TableCell>
-                          <Typography variant="body2" sx={{ color: 'text.secondary' }}>{ce.note || '—'}</Typography>
                         </TableCell>
                         <TableCell align="center">
                           <Chip label={ce.chargeCategory || 'Applied'} size="small" variant="soft" color="default" />
@@ -413,18 +403,9 @@ export default function SalaryDetailPage() {
                         <TableCell>{loan.type}</TableCell>
                         <TableCell>{loan.date || '—'}</TableCell>
                         <TableCell align="right">
-                          <Typography variant="subtitle2">${loan.amount.toLocaleString()}</Typography>
-                        </TableCell>
-                        <TableCell align="right">
-                          <Typography variant="subtitle2" sx={{ color: '#22C55E' }}>${loan.paid.toLocaleString()}</Typography>
-                        </TableCell>
-                        <TableCell align="right">
                           <Typography variant="subtitle2" sx={{ color: loan.remaining > 0 ? '#FF5630' : '#22C55E' }}>
-                            ${loan.remaining.toLocaleString()}
+                            ${loan.remaining.toLocaleString()} / ${loan.amount.toLocaleString()}
                           </Typography>
-                        </TableCell>
-                        <TableCell>
-                          <Typography variant="body2" sx={{ color: 'text.secondary' }}>{loan.note || '—'}</Typography>
                         </TableCell>
                         <TableCell align="center">
                           <Chip label={loan.status} size="small" variant="soft" color={loan.status === 'paid' ? 'success' : 'warning'} />
@@ -434,9 +415,13 @@ export default function SalaryDetailPage() {
                   </TableBody>
                 </Table>
               </TableContainer>
-            </Card>
-          </Grid>
-        )}
+            ) : (
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', py: 6 }}>
+                <Typography variant="body2" sx={{ color: 'text.secondary' }}>No charges, loans or debts</Typography>
+              </Box>
+            )}
+          </Card>
+        </Grid>
       </Grid>
     </Box>
   );

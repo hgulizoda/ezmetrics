@@ -262,7 +262,15 @@ export default function ClockPage() {
           </Typography>
         </TableCell>
         <TableCell>{record.shiftPeriod ?? '—'}</TableCell>
-        <TableCell>{record.type ?? '—'}</TableCell>
+        <TableCell>
+          {record.status === 'manual' ? (
+            <Tooltip title={record.note || 'Corrected'} arrow>
+              <Chip label="Corrected" size="small" variant="soft" color="warning" />
+            </Tooltip>
+          ) : (
+            <Chip label="Normal" size="small" variant="soft" color="success" />
+          )}
+        </TableCell>
         <TableCell>{record.department ?? '—'}</TableCell>
         <TableCell align="center">
           <Tooltip title="Edit Record">
@@ -549,7 +557,15 @@ export default function ClockPage() {
                                     </Typography>
                                   </TableCell>
                                   <TableCell>{record.shiftPeriod ?? '—'}</TableCell>
-                                  <TableCell>{record.type ?? '—'}</TableCell>
+                                  <TableCell>
+                                    {record.status === 'manual' ? (
+                                      <Tooltip title={record.note || 'Corrected'} arrow>
+                                        <Chip label="Corrected" size="small" variant="soft" color="warning" />
+                                      </Tooltip>
+                                    ) : (
+                                      <Chip label="Normal" size="small" variant="soft" color="success" />
+                                    )}
+                                  </TableCell>
                                   <TableCell>{record.department ?? '—'}</TableCell>
                                   <TableCell align="center">
                                     <Tooltip title="Edit Record">

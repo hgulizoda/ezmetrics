@@ -272,6 +272,8 @@ export default function WorkersPage() {
               <TableRow>
                 <TableCell>Worker</TableCell>
                 <TableCell>Position</TableCell>
+                <TableCell>Department</TableCell>
+                <TableCell>Shift</TableCell>
                 <TableCell>Salary Type</TableCell>
                 <TableCell align="right">Rate</TableCell>
                 <TableCell align="right">Hours Worked</TableCell>
@@ -304,6 +306,8 @@ export default function WorkersPage() {
                     </Stack>
                   </TableCell>
                   <TableCell>{worker.position}</TableCell>
+                  <TableCell>{worker.department || '—'}</TableCell>
+                  <TableCell>{worker.shiftPeriod || '—'}</TableCell>
                   <TableCell>
                     <Chip
                       label={worker.salaryType}

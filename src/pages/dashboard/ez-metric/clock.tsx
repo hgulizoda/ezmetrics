@@ -68,8 +68,9 @@ export default function ClockPage() {
   const [editClockIn, setEditClockIn] = useState('');
   const [editClockOut, setEditClockOut] = useState('');
   const [editDate, setEditDate] = useState('');
+  const [editBilledHours, setEditBilledHours] = useState('');
   const [editNote, setEditNote] = useState('');
-  const [origValues, setOrigValues] = useState({ clockIn: '', clockOut: '', date: '' });
+  const [origValues, setOrigValues] = useState({ clockIn: '', clockOut: '', date: '', billedHours: '' });
 
   // All Records filters
   const [periodPreset, setPeriodPreset] = useState<PeriodPreset>('last7');
@@ -153,11 +154,12 @@ export default function ClockPage() {
 
   const _displayedRecords = tab === 0 ? todayRecords : filteredRecords;
 
-  const clockCsvHeaders = ['Name', 'Date', 'Clock In', 'Clock Out', 'Total Hours', 'Efficiency', 'Shift Period', 'Type', 'Department', 'Status'];
+  const clockCsvHeaders = ['Name', 'Date', 'Clock In', 'Clock Out', 'Total Hours', 'Billed Hours', 'Efficiency', 'Shift Period', 'Type', 'Department', 'Status'];
   const clockCsvRow = (r: any) => [
     r.worker?.name || '', r.date ? new Date(r.date).toISOString().split('T')[0] : '',
     formatTime(r.clockIn) || '', r.clockOut ? formatTime(r.clockOut) : '',
-    r.totalHours ?? '', r.efficiency != null ? `${r.efficiency}%` : '',
+    r.totalHours ?? '', r.billedHours ?? '',
+    r.efficiency != null ? `${r.efficiency}%` : '',
     r.shiftPeriod || '', r.type || '', r.department || '', r.status || '',
   ];
   const exportToday = () => exportCsv('clock-today', clockCsvHeaders, todayRecords.map(clockCsvRow));
@@ -168,12 +170,15 @@ export default function ClockPage() {
     const clockOutVal = record.clockOut ? new Date(record.clockOut).toTimeString().slice(0, 5) : '';
     const dateVal = record.date ? new Date(record.date).toISOString().split('T')[0] : today;
 
+    const billedVal = record.billedHours != null ? String(record.billedHours) : '';
+
     setEditRecord(record);
     setEditClockIn(clockInVal);
     setEditClockOut(clockOutVal);
     setEditDate(dateVal);
+    setEditBilledHours(billedVal);
     setEditNote('');
-    setOrigValues({ clockIn: clockInVal, clockOut: clockOutVal, date: dateVal });
+    setOrigValues({ clockIn: clockInVal, clockOut: clockOutVal, date: dateVal, billedHours: billedVal });
     setEditDialog(true);
   }, []);
 
@@ -185,7 +190,8 @@ export default function ClockPage() {
   const hasChanges =
     editClockIn !== origValues.clockIn ||
     editClockOut !== origValues.clockOut ||
-    editDate !== origValues.date;
+    editDate !== origValues.date ||
+    editBilledHours !== origValues.billedHours;
 
   const canSave = !hasChanges || editNote.trim().length > 0;
 
@@ -203,6 +209,9 @@ export default function ClockPage() {
     }
     if (editClockOut) {
       body.clockOut = `${editDate}T${editClockOut}:00Z`;
+    }
+    if (editBilledHours) {
+      body.billedHours = Number(editBilledHours);
     }
 
     updateClockRecord.mutate(
@@ -256,6 +265,9 @@ export default function ClockPage() {
         )}
         <TableCell>{formatTime(record.clockIn) || '—'}</TableCell>
         <TableCell>{record.clockOut ? formatTime(record.clockOut) : '—'}</TableCell>
+        <TableCell>
+          {record.billedHours != null ? `${record.billedHours} hrs` : '—'}
+        </TableCell>
         <TableCell>
           <Typography variant="body2" sx={{ fontWeight: 600, color: effColor }}>
             {eff != null ? `${eff}%` : '—'}
@@ -347,6 +359,7 @@ export default function ClockPage() {
                     <TableCell>Name</TableCell>
                     <TableCell>Clock in</TableCell>
                     <TableCell>Clock out</TableCell>
+                    <TableCell>Billed Hours</TableCell>
                     <TableCell>Time efficiency</TableCell>
                     <TableCell>Shift Period</TableCell>
                     <TableCell>Type</TableCell>
@@ -358,7 +371,7 @@ export default function ClockPage() {
                   {todayRecords.map((record: any, index: number) => renderRow(record, index, false))}
                   {todayRecords.length === 0 && (
                     <TableRow>
-                      <TableCell colSpan={9} align="center" sx={{ py: 4 }}>
+                      <TableCell colSpan={10} align="center" sx={{ py: 4 }}>
                         <Typography variant="body2" sx={{ color: 'text.secondary' }}>No clock records for today</Typography>
                       </TableCell>
                     </TableRow>
@@ -499,6 +512,7 @@ export default function ClockPage() {
                               <TableCell>Clock in</TableCell>
                               <TableCell>Clock out</TableCell>
                               <TableCell>Total Hours</TableCell>
+                              <TableCell>Billed Hours</TableCell>
                               <TableCell>Time efficiency</TableCell>
                               <TableCell>Shift Period</TableCell>
                               <TableCell>Type</TableCell>
@@ -550,6 +564,9 @@ export default function ClockPage() {
                                   <TableCell>{record.clockOut ? formatTime(record.clockOut) : '—'}</TableCell>
                                   <TableCell>
                                     {record.totalHours != null ? `${record.totalHours} hrs` : '—'}
+                                  </TableCell>
+                                  <TableCell>
+                                    {record.billedHours != null ? `${record.billedHours} hrs` : '—'}
                                   </TableCell>
                                   <TableCell>
                                     <Typography variant="body2" sx={{ fontWeight: 600, color: effColor }}>
@@ -624,6 +641,16 @@ export default function ClockPage() {
                 value={editClockOut}
                 onChange={(e) => setEditClockOut(e.target.value)}
                 InputLabelProps={{ shrink: true }}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                label="Billed Hours"
+                type="number"
+                value={editBilledHours}
+                onChange={(e) => setEditBilledHours(e.target.value)}
+                inputProps={{ step: 0.01, min: 0 }}
               />
             </Grid>
             <Grid item xs={12}>

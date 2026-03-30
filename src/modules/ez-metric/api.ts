@@ -36,7 +36,7 @@ function daysAgo(n: number) {
   return d.toISOString().split('T')[0];
 }
 
-const MOCK_CLOCK_RECORDS = [
+const MOCK_CLOCK_RECORDS_RAW = [
   // Today
   { _id: 'c1', worker: { name: 'Justin Naranjo' }, date: `${today}T00:00:00Z`, clockIn: `${today}T07:00:00Z`, clockOut: `${today}T15:30:00Z`, totalHours: 8.5, status: 'auto', note: '', efficiency: 112, shiftPeriod: '7AM-4PM', type: 'Normal', department: 'Shop' },
   { _id: 'c2', worker: { name: 'Emilio Rivera' }, date: `${today}T00:00:00Z`, clockIn: `${today}T06:30:00Z`, clockOut: `${today}T14:45:00Z`, totalHours: 8.25, status: 'auto', note: '', efficiency: 98, shiftPeriod: '6AM-3PM', type: 'Normal', department: 'Fleet' },
@@ -101,6 +101,14 @@ const MOCK_CLOCK_RECORDS = [
   { _id: 'c53', worker: { name: 'James Wilson' }, date: `${daysAgo(4)}T00:00:00Z`, clockIn: `${daysAgo(4)}T08:15:00Z`, clockOut: `${daysAgo(4)}T16:30:00Z`, totalHours: 8.25, status: 'auto', note: '', efficiency: 83, shiftPeriod: '8AM-5PM', type: 'Overtime', department: 'Office' },
   { _id: 'c54', worker: { name: 'Bernardo Grossi' }, date: `${daysAgo(4)}T00:00:00Z`, clockIn: `${daysAgo(4)}T07:00:00Z`, clockOut: `${daysAgo(4)}T14:00:00Z`, totalHours: 7.0, status: 'auto', note: '', efficiency: 82, shiftPeriod: '7AM-4PM', type: 'Normal', department: 'Shop' },
 ];
+
+// Derive billedHours from totalHours and efficiency
+const MOCK_CLOCK_RECORDS = MOCK_CLOCK_RECORDS_RAW.map((r) => ({
+  ...r,
+  billedHours: r.totalHours != null && r.efficiency != null
+    ? Math.round(r.totalHours * (r.efficiency / 100) * 100) / 100
+    : null,
+}));
 
 const MOCK_SHIFTS = [
   { _id: 's1', name: 'Morning Shift', startTime: '06:00', endTime: '14:00', breakMinutes: 30, totalHours: 7.5, color: '#FFAB00', active: true },
@@ -317,18 +325,18 @@ export function useEfficiency() {
 }
 
 // Generate ~50 days of daily clock/efficiency records per active worker
-const WORKER_META: Record<string, { name: string; department: string; expectedHours: number }> = {
-  '1':  { name: 'Justin Naranjo',   department: 'Shop',   expectedHours: 8 },
-  '2':  { name: 'Emilio Rivera',    department: 'Fleet',  expectedHours: 9 },
-  '3':  { name: 'Jeffrey Alvarez',  department: 'Shop',   expectedHours: 8 },
-  '4':  { name: 'Miguel Retana',    department: 'Fleet',  expectedHours: 9 },
-  '5':  { name: 'Bernardo Grossi',  department: 'Office', expectedHours: 8 },
-  '6':  { name: 'Islam Abdullaev',  department: 'Office', expectedHours: 8 },
-  '7':  { name: 'Carlos Mendez',    department: 'Shop',   expectedHours: 8 },
-  '9':  { name: 'Alex Thompson',    department: 'Fleet',  expectedHours: 9 },
-  '10': { name: 'Roberto Sanchez',  department: 'Office', expectedHours: 8 },
-  '11': { name: 'James Wilson',     department: 'Office', expectedHours: 8 },
-  '12': { name: 'Marco Lopez',      department: 'Shop',   expectedHours: 8 },
+const WORKER_META: Record<string, { name: string; department: string; billedHours: number }> = {
+  '1':  { name: 'Justin Naranjo',   department: 'Shop',   billedHours: 8 },
+  '2':  { name: 'Emilio Rivera',    department: 'Fleet',  billedHours: 9 },
+  '3':  { name: 'Jeffrey Alvarez',  department: 'Shop',   billedHours: 8 },
+  '4':  { name: 'Miguel Retana',    department: 'Fleet',  billedHours: 9 },
+  '5':  { name: 'Bernardo Grossi',  department: 'Office', billedHours: 8 },
+  '6':  { name: 'Islam Abdullaev',  department: 'Office', billedHours: 8 },
+  '7':  { name: 'Carlos Mendez',    department: 'Shop',   billedHours: 8 },
+  '9':  { name: 'Alex Thompson',    department: 'Fleet',  billedHours: 9 },
+  '10': { name: 'Roberto Sanchez',  department: 'Office', billedHours: 8 },
+  '11': { name: 'James Wilson',     department: 'Office', billedHours: 8 },
+  '12': { name: 'Marco Lopez',      department: 'Shop',   billedHours: 8 },
 };
 
 function seededRandom(seed: number) {
@@ -346,7 +354,7 @@ function generateDailyRecords() {
     clockOut: string;
     efficiency: number;
     actualHours: number;
-    expectedHours: number;
+    billedHours: number;
   }> = [];
 
   const baseDate = new Date(today);
@@ -387,7 +395,7 @@ function generateDailyRecords() {
           clockOut: `${pad(outHour > 12 ? outHour - 12 : outHour)}:${pad(outMin)} PM`,
           efficiency: eff,
           actualHours: actualHrs,
-          expectedHours: meta.expectedHours,
+          billedHours: meta.billedHours,
         });
       });
     }

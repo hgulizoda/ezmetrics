@@ -24,7 +24,7 @@ interface DailyRecord {
   clockOut: string;
   efficiency: number;
   actualHours: number;
-  expectedHours: number;
+  billedHours: number;
 }
 
 function getEffColor(eff: number): string {
@@ -92,7 +92,7 @@ export default function EfficiencyPage() {
       const prev = map.get(r.workerId) || { totalActual: 0, totalExpected: 0, effSum: 0, count: 0 };
       map.set(r.workerId, {
         totalActual: prev.totalActual + r.actualHours,
-        totalExpected: prev.totalExpected + r.expectedHours,
+        totalExpected: prev.totalExpected + r.billedHours,
         effSum: prev.effSum + r.efficiency,
         count: prev.count + 1,
       });
@@ -219,7 +219,7 @@ export default function EfficiencyPage() {
           sx={{ mb: 3, pb: 2.5, borderBottom: (t) => `1px solid ${t.palette.divider}` }}
         >
           <Box>
-            <Typography variant="h6">Actual vs Expected Hours</Typography>
+            <Typography variant="h6">Actual vs Billed Hours</Typography>
             <Stack direction="row" alignItems="center" spacing={2} sx={{ mt: 0.5 }}>
               <Stack direction="row" alignItems="center" spacing={0.5}>
                 <Box
